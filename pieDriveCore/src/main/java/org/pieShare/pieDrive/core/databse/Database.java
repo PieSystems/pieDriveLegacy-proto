@@ -28,9 +28,17 @@ public class Database {
         em.persist(entity);
         em.getTransaction().commit();
     }
-    
-    public FileEntity FindFirstFile(long id) {
+
+    public FileEntity findFileById(long id) {
         EntityManager em = databseFactory.getEntityManger(FileEntity.class);
         return em.find(FileEntity.class, id);
     }
+
+    public void remove(IBaseEntity entity) {
+        EntityManager em = databseFactory.getEntityManger(entity.getClass());
+        em.getTransaction().begin();
+        em.remove(entity);
+        em.getTransaction().commit();
+    }
+
 }

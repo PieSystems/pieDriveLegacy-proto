@@ -18,29 +18,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.util.Assert;
 
 /**
  *
  * @author richy
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=CoreAppConfig.class)
+@ContextConfiguration(classes = CoreAppConfig.class)
 public class DatabaseTest {
-    
-    @Autowired 
-    private Database database;
 
+    @Autowired
+    private Database database;
 
     @Test
     public void testDatabse() {
-    
+
         FileEntity entity = new FileEntity();
         entity.setFileName("TestFile");
-        
+
         database.persist(entity);
-    
-       FileEntity entity2 = database.FindFirstFile(entity.getId());
-    
+
+        FileEntity entity2 = database.findFileById(entity.getId());
+
+        Assert.isTrue(entity.getId().equals(entity2.getId()));
+        Assert.isTrue(entity.getFileName().equals(entity2.getFileName()));
+        
+        database.remove(entity);
     }
-    
+
 }
