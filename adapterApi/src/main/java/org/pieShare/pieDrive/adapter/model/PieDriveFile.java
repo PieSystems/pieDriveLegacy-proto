@@ -5,20 +5,30 @@
  */
 package org.pieShare.pieDrive.adapter.model;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public abstract class APieDriveFile {
-	private UUID uuid;
+public class PieDriveFile {
+	private String uuid;
+	private InputStream fileData;
 
-	public UUID getUuid() {
+	public String getUuid() {
 		return uuid;
 	}
 
-	public void setUuid(UUID uuid) {
+	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public InputStream getFileData() {
+		return fileData;
+	}
+
+	public void setFileData(InputStream fileData) {
+		this.fileData = fileData;
 	}
 }

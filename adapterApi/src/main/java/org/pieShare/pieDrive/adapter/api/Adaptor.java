@@ -5,15 +5,12 @@
  */
 package org.pieShare.pieDrive.adapter.api;
 
-import java.util.UUID;
-import org.pieShare.pieDrive.adapter.model.InMemoryFile;
-import org.pieShare.pieDrive.adapter.model.LocalFile;
+import org.pieShare.pieDrive.adapter.model.PieDriveFile;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public interface Adaptor {	
-	void upload(InMemoryFile file);
-	void upload(LocalFile file);
+	void upload(PieDriveFile file);
 }
