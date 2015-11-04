@@ -46,5 +46,4 @@ public class DatabaseTest {
         
         database.remove(entity);
     }
-
 }
