@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  *
  * @author richy
  */
-@Component
 public class Database {
 
     @Autowired
