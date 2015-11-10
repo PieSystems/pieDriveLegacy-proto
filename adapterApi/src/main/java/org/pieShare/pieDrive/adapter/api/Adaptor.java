@@ -11,6 +11,11 @@ import org.pieShare.pieDrive.adapter.model.PieDriveFile;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface Adaptor {	
-	void upload(PieDriveFile file);
+public interface Adaptor {
+
+    void delte(PieDriveFile file);
+
+    void upload(PieDriveFile file);
+
+    void download(PieDriveFile file);
 }
