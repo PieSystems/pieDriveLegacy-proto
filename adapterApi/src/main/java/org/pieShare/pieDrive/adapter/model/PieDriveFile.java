@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieDrive.adapter.model;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -14,7 +16,6 @@ import java.util.UUID;
  */
 public class PieDriveFile {
 	private String uuid;
-	private InputStream fileData;
 
 	public String getUuid() {
 		return uuid;
@@ -24,11 +25,7 @@ public class PieDriveFile {
 		this.uuid = uuid;
 	}
 
-	public InputStream getFileData() {
-		return fileData;
-	}
-
-	public void setFileData(InputStream fileData) {
-		this.fileData = fileData;
+	public InputStream getFileData() throws FileNotFoundException  {
+		return new FileInputStream(uuid);
 	}
 }
