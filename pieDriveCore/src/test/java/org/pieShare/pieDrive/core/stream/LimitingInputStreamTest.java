@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = CoreAppConfig.class)
 public class LimitingInputStreamTest {
-	private int bufferLength = 10;
+	private int bufferLength = 4096;
 	private byte[] inputBuffer = new byte[bufferLength];
 	
 	byte inputValue = (byte)1;
