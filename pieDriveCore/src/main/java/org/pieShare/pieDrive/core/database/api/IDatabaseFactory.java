@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.databse.entities;
+package org.pieShare.pieDrive.core.database.api;
 
-import java.io.Serializable;
+import javax.persistence.EntityManager;
 
 /**
  *
  * @author richy
  */
-public interface IBaseEntity extends Serializable{
-    
+public interface IDatabaseFactory {
+    EntityManager getEntityManger(Class clazz);
 }
