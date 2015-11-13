@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.databse.entities;
+package org.pieShare.pieDrive.core.database.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

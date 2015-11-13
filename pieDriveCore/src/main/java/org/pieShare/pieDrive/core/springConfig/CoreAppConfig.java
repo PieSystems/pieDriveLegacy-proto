@@ -5,8 +5,8 @@
  */
 package org.pieShare.pieDrive.core.springConfig;
 
-import org.pieShare.pieDrive.core.databse.Database;
-import org.pieShare.pieDrive.core.databse.DatabaseFactory;
+import org.pieShare.pieDrive.core.database.Database;
+import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
