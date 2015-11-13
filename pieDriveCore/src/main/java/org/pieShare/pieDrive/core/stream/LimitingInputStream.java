@@ -4,12 +4,13 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class LimitingInputStream extends FilterInputStream {
+public class LimitingInputStream extends InputStream {
+	private final InputStream in;
 	private final long limit;
 	private long readBytes = 0;
 	
 	public LimitingInputStream(InputStream in, long limit) {
-		super(in);
+		this.in = in;
 		this.limit = limit;
 	}
 
@@ -21,6 +22,6 @@ public class LimitingInputStream extends FilterInputStream {
 			return -1;
 		}
 		
-		return super.read();
+		return in.read();
 	}
 }
