@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.databse.api;
-
-import javax.persistence.EntityManager;
+package org.pieShare.pieDrive.core;
 
 /**
  *
- * @author richy
+ * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface IDatabaseFactory {
-    EntityManager getEntityManger(Class clazz);
+public interface PieDriveCore {
+	void handleHash(byte[] hash);
 }

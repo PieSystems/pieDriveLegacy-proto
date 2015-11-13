@@ -5,18 +5,36 @@
  */
 package org.pieShare.pieDrive.core.stream;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class HashingInputStream extends InputStream {
+public class HashingInputStream extends FilterInputStream {
+	
+	private MessageDigest messageDigest;
+	
+	public HashingInputStream(InputStream in) {
+		super(in);
+	}
 
 	@Override
 	public int read() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		int res = super.read(); 
+		
+		if(res == -1) {
+			byte[] hash = messageDigest.digest();
+			//todo call core
+		}
+		
+		if(res != -1) {
+			messageDigest.update((byte)res);
+		}
+		
+		return res;
 	}
-	
 }
