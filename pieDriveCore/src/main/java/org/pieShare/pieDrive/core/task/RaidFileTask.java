@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
+import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCore;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
+import org.pieShare.pieDrive.core.stream.LimitingInputStream;
 
 /**
  *
@@ -26,22 +28,23 @@ public class RaidFileTask {
 
 	private PieRaidFile file;
 	private PieDriveCore driveCoreService;
+	private AdapterCoreService adapterCoreService;
 
 	public void run() {
-		List<Adaptor> adapters;
+		List<Adaptor> adapters = adapterCoreService.getAdapters();
 		List<PhysicalChunk> chunks = driveCoreService.calculateChunks(file);
 		
-		BufferedInputStream str;
+		//todo: move to core or else where
+		long limit = 5000000;
 
 		try {
 			for (PhysicalChunk chunk : chunks) {
-
-				//todo fix this
-				FileInputStream fStr = new FileInputStream(new File("sfsl"));
-				
-				HashingInputStream hStr = new HashingInputStream(fStr);
-				
-
+				for(Adaptor adapter: adapters) {
+					//todo fix this
+					FileInputStream fStr = new FileInputStream(new File("sfsl"));
+					LimitingInputStream lStr = new LimitingInputStream(fStr, limit);
+					HashingInputStream hStr = new HashingInputStream(lStr);
+				}
 			}
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);

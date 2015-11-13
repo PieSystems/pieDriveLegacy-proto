@@ -7,6 +7,7 @@ package org.pieShare.pieDrive.core;
 
 import java.util.List;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
+import org.pieShare.pieDrive.core.model.AdapterId;
 
 /**
  *
@@ -14,4 +15,5 @@ import org.pieShare.pieDrive.adapter.api.Adaptor;
  */
 public interface AdapterCoreService {
 	List<Adaptor> getAdapters();
+	void registerAdapter(AdapterId id, Adaptor adapter);
 }
