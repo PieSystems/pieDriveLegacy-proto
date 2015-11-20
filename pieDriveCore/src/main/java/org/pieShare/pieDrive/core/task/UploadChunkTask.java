@@ -16,12 +16,13 @@ import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
 import org.pieShare.pieDrive.core.stream.LimitingInputStream;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class UploadChunkTask {
+public class UploadChunkTask implements IPieTask{
 	
 	private AdapterCoreService adapterCoreService;
 	private AdapterChunk chunk;
@@ -39,6 +40,7 @@ public class UploadChunkTask {
 		this.stream = stream;
 	}
 
+	@Override
 	public void run() {		
 		adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, stream);
 	}

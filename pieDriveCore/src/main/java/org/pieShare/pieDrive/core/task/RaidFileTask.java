@@ -29,16 +29,19 @@ import org.pieShare.pieDrive.core.FactoryException;
 import org.pieShare.pieDrive.core.stream.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
 import org.pieShare.pieDrive.core.stream.LimitingInputStream;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class RaidFileTask implements HashingDoneCallback {
+public class RaidFileTask implements IPieTask, HashingDoneCallback {
 
 	private File file;
 	private int reportedBack = 0;
 	
+	private IExecutorService executorService;
 	private PieDriveCore driveCoreService;
 	private AdapterCoreService adapterCoreService;
 	private Provider<AdapterChunk> adapterChunkProvider;
@@ -69,7 +72,7 @@ public class RaidFileTask implements HashingDoneCallback {
 					task.setChunk(chunk);
 					task.setStream(hStr);
 					
-					//todo: execute in executorService
+					this.executorService.execute(task);
 				} catch (FileNotFoundException ex) {
 					Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 				} catch (IOException ex) {
