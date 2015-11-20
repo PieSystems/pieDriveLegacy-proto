@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.databse;
+package org.pieShare.pieDrive.core.database;
 
+import org.pieShare.pieDrive.core.database.Database;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
-import org.pieShare.pieDrive.core.databse.entities.FileEntity;
+import org.pieShare.pieDrive.core.database.entities.FileEntity;
 import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

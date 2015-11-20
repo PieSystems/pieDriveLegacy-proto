@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieDrive.adapter.api;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import org.pieShare.pieDrive.adapter.model.PieDriveFile;
 
 /**
@@ -13,9 +15,9 @@ import org.pieShare.pieDrive.adapter.model.PieDriveFile;
  */
 public interface Adaptor {
 
-    void delte(PieDriveFile file);
+    void delete(PieDriveFile file);
 
-    void upload(PieDriveFile file);
+    void upload(PieDriveFile file, InputStream stream);
 
-    void download(PieDriveFile file);
+    void download(PieDriveFile file, OutputStream stream);
 }
