@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieDrive.core.AdapterCoreService;
@@ -24,6 +25,7 @@ public class UploadChunkTask {
 	
 	private AdapterCoreService adapterCoreService;
 	private AdapterChunk chunk;
+	private InputStream stream;
 
 	public void setAdapterCoreService(AdapterCoreService adapterCoreService) {
 		this.adapterCoreService = adapterCoreService;
@@ -33,25 +35,11 @@ public class UploadChunkTask {
 		this.chunk = chunk;
 	}
 
-	public void run() {
-		//todo: move to core or else where
-		long limit = 5000000;
-		
-		FileInputStream fStr = null;
-		try {
-			fStr = new FileInputStream(new File("sfsl"));
-			LimitingInputStream lStr = new LimitingInputStream(fStr, limit);
-			HashingInputStream hStr = new HashingInputStream(lStr);
-			
-			adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, hStr);
-		} catch (FileNotFoundException ex) {
-			Logger.getLogger(UploadChunkTask.class.getName()).log(Level.SEVERE, null, ex);
-		} finally {
-			try {
-				fStr.close();
-			} catch (IOException ex) {
-				Logger.getLogger(UploadChunkTask.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
+	public void setStream(InputStream stream) {
+		this.stream = stream;
+	}
+
+	public void run() {		
+		adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, stream);
 	}
 }

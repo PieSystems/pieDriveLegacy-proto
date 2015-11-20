@@ -26,6 +26,7 @@ import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.Factory;
 import org.pieShare.pieDrive.core.FactoryException;
+import org.pieShare.pieDrive.core.stream.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
 import org.pieShare.pieDrive.core.stream.LimitingInputStream;
 
@@ -33,9 +34,10 @@ import org.pieShare.pieDrive.core.stream.LimitingInputStream;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class RaidFileTask {
+public class RaidFileTask implements HashingDoneCallback {
 
 	private File file;
+	private int reportedBack = 0;
 	
 	private PieDriveCore driveCoreService;
 	private AdapterCoreService adapterCoreService;
@@ -55,16 +57,19 @@ public class RaidFileTask {
 					AdapterChunk chunk = adapterChunkProvider.get();
 					chunk.setAdapterId(id);
 					chunk.setUuid(UUID.randomUUID().toString());
-					UploadChunkTask task = uploadChunkTaskProvider.get();
-					task.setChunk(chunk);
+					
+					physicalChunk.addAdapterChunk(chunk);
 					
 					fStr = fileInputStreamFactory.get(file);
 					fStr.skip(physicalChunk.getOffset());
 					LimitingInputStream lStr = limitingInputStreamFactory.get(fStr, physicalChunk.getSize());
-					HashingInputStream hStr = hashingInputStreamFactory.get(lStr);
+					HashingInputStream hStr = hashingInputStreamFactory.get(lStr, this);
 					
-					this.adapterCoreService.getAdapter(id).upload(chunk, hStr);
-					physicalChunk.addAdapterChunk(chunk);
+					UploadChunkTask task = uploadChunkTaskProvider.get();
+					task.setChunk(chunk);
+					task.setStream(hStr);
+					
+					//todo: execute in executorService
 				} catch (FileNotFoundException ex) {
 					Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 				} catch (IOException ex) {
@@ -81,6 +86,19 @@ public class RaidFileTask {
 			}
 		}
 
+		while(this.reportedBack < 3) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex) {
+				Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
 		//todo: save this to the DB
+	}
+
+	@Override
+	public void hashingDone(AdapterId adapterId) {
+		this.reportedBack++;
 	}
 }

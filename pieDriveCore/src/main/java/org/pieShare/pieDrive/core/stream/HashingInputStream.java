@@ -19,10 +19,11 @@ public class HashingInputStream extends InputStream {
 	private InputStream stream;
 	private MessageDigest messageDigest;
 	private AdapterChunk chunk;
-	private PieDriveCore core;
+	private HashingDoneCallback callback;
 	
-	public HashingInputStream(InputStream in) {
+	public HashingInputStream(InputStream in, HashingDoneCallback cb) {
 		stream = in;
+		this.callback = cb;
 	}
 
 	@Override
@@ -31,8 +32,8 @@ public class HashingInputStream extends InputStream {
 		
 		if(res == -1) {
 			byte[] hash = messageDigest.digest();
-			//todo: maybe directly save to DB here
-			core.handleHash(chunk, hash);
+			chunk.setHash(hash);
+			callback.hashingDone(chunk.getAdapterId());
 		}
 		
 		if(res != -1) {
