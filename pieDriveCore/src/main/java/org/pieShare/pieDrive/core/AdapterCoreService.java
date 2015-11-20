@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieDrive.core;
 
-import java.util.List;
+import java.util.Collection;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.model.AdapterId;
 
@@ -14,6 +14,8 @@ import org.pieShare.pieDrive.core.model.AdapterId;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public interface AdapterCoreService {
-	List<Adaptor> getAdapters();
+	Collection<Adaptor> getAdapters();
+	Collection<AdapterId> getAdaptersKey();
+	Adaptor getAdapter(AdapterId id);
 	void registerAdapter(AdapterId id, Adaptor adapter);
 }

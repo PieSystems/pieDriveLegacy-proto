@@ -8,6 +8,8 @@ package org.pieShare.pieDrive.core.stream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import org.pieShare.pieDrive.core.PieDriveCore;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
 
 /**
  *
@@ -16,6 +18,8 @@ import java.security.MessageDigest;
 public class HashingInputStream extends InputStream {
 	private InputStream stream;
 	private MessageDigest messageDigest;
+	private AdapterChunk chunk;
+	private PieDriveCore core;
 	
 	public HashingInputStream(InputStream in) {
 		stream = in;
@@ -27,7 +31,8 @@ public class HashingInputStream extends InputStream {
 		
 		if(res == -1) {
 			byte[] hash = messageDigest.digest();
-			//todo call core
+			//todo: maybe directly save to DB here
+			core.handleHash(chunk, hash);
 		}
 		
 		if(res != -1) {

@@ -14,6 +14,15 @@ import java.util.Objects;
 public class AdapterId {
 	private String id;
 
+	public String getId() {
+		return id;
+	}
+
+	public AdapterId setId(String id) {
+		this.id = id;
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
 		int hash = 7;

@@ -7,16 +7,25 @@ package org.pieShare.pieDrive.core.task;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Provider;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCore;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.Factory;
+import org.pieShare.pieDrive.core.FactoryException;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
 import org.pieShare.pieDrive.core.stream.LimitingInputStream;
 
@@ -26,28 +35,52 @@ import org.pieShare.pieDrive.core.stream.LimitingInputStream;
  */
 public class RaidFileTask {
 
-	private PieRaidFile file;
+	private File file;
+	
 	private PieDriveCore driveCoreService;
 	private AdapterCoreService adapterCoreService;
+	private Provider<AdapterChunk> adapterChunkProvider;
+	private Provider<UploadChunkTask> uploadChunkTaskProvider;
+	private Factory<FileInputStream> fileInputStreamFactory;
+	private Factory<HashingInputStream> hashingInputStreamFactory;
+	private Factory<LimitingInputStream> limitingInputStreamFactory;
 
 	public void run() {
-		List<Adaptor> adapters = adapterCoreService.getAdapters();
-		List<PhysicalChunk> chunks = driveCoreService.calculateChunks(file);
-		
-		//todo: move to core or else where
-		long limit = 5000000;
+		PieRaidFile raidedFile = driveCoreService.calculateChunks(file);
 
-		try {
-			for (PhysicalChunk chunk : chunks) {
-				for(Adaptor adapter: adapters) {
-					//todo fix this
-					FileInputStream fStr = new FileInputStream(new File("sfsl"));
-					LimitingInputStream lStr = new LimitingInputStream(fStr, limit);
-					HashingInputStream hStr = new HashingInputStream(lStr);
+		for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+			for (AdapterId id : adapterCoreService.getAdaptersKey()) {
+				FileInputStream fStr = null;
+				try {
+					AdapterChunk chunk = adapterChunkProvider.get();
+					chunk.setAdapterId(id);
+					chunk.setUuid(UUID.randomUUID().toString());
+					UploadChunkTask task = uploadChunkTaskProvider.get();
+					task.setChunk(chunk);
+					
+					fStr = fileInputStreamFactory.get(file);
+					fStr.skip(physicalChunk.getOffset());
+					LimitingInputStream lStr = limitingInputStreamFactory.get(fStr, physicalChunk.getSize());
+					HashingInputStream hStr = hashingInputStreamFactory.get(lStr);
+					
+					this.adapterCoreService.getAdapter(id).upload(chunk, hStr);
+					physicalChunk.addAdapterChunk(chunk);
+				} catch (FileNotFoundException ex) {
+					Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (IOException ex) {
+					Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (FactoryException ex) {
+					Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+				} finally {
+					try {
+						fStr.close();
+					} catch (IOException ex) {
+						Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+					}
 				}
 			}
-		} catch (FileNotFoundException ex) {
-			Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 		}
+
+		//todo: save this to the DB
 	}
 }

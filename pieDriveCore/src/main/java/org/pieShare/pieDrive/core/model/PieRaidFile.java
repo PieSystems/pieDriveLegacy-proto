@@ -16,4 +16,38 @@ public class PieRaidFile {
 	private String fileName;
 	private long lastModified;
 	private List<PhysicalChunk> chunks;
+
+	public String getRelativeFilePath() {
+		return relativeFilePath;
+	}
+
+	public void setRelativeFilePath(String relativeFilePath) {
+		this.relativeFilePath = relativeFilePath;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public long getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
+	}
+
+	public List<PhysicalChunk> getChunks() {
+		return chunks;
+	}
+
+	public void setChunks(List<PhysicalChunk> chunks) {
+		this.chunks = chunks;
+	}
+	
+	
 }

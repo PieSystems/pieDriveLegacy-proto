@@ -15,4 +15,26 @@ public class PhysicalChunk {
 	private Map<AdapterId, AdapterChunk> chunks;
 	private long offset;
 	private long size;
+	
+	public PhysicalChunk addAdapterChunk(AdapterChunk chunk) {
+		this.chunks.put(chunk.getAdapterId(), chunk);
+		return this;
+	}
+
+	public long getOffset() {
+		return offset;
+	}
+
+	public void setOffset(long offset) {
+		this.offset = offset;
+	}
+
+	public long getSize() {
+		return size;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
+	}
+	
 }

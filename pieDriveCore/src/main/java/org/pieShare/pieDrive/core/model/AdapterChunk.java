@@ -13,4 +13,13 @@ import org.pieShare.pieDrive.adapter.model.PieDriveFile;
  */
 public class AdapterChunk extends PieDriveFile {
 	private AdapterId adapterId;
+
+	public AdapterId getAdapterId() {
+		return adapterId;
+	}
+
+	public AdapterChunk setAdapterId(AdapterId adapterId) {
+		this.adapterId = adapterId;
+		return this;
+	}
 }
