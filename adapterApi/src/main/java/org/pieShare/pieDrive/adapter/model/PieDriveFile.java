@@ -24,8 +24,4 @@ public class PieDriveFile {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-
-	public InputStream getFileData() throws FileNotFoundException  {
-		return new FileInputStream(uuid);
-	}
 }
