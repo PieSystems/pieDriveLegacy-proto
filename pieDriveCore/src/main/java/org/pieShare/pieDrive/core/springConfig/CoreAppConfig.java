@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.AdapterCoreService;
+import org.pieShare.pieDrive.core.PieDriveCore;
+import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.DatabaseFactory;
@@ -62,6 +64,15 @@ public class CoreAppConfig {
 		service.registerAdapter(this.adapterId().setId("dropbox"), dropboxAdapter());
 		service.registerAdapter(this.adapterId().setId("box"), boxAdapter());
 		service.registerAdapter(this.adapterId().setId("s3"), s3Adapter());
+		return service;
+	}
+	
+	@Bean
+	@Lazy
+	public PieDriveCore pieDriveCore() {
+		PieDriveCoreService service = new PieDriveCoreService();
+		service.setChunkSize(5 * 1024 * 1024); // 5MiB
+		
 		return service;
 	}
 	

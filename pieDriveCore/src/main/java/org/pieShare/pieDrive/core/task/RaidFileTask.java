@@ -51,7 +51,7 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 	private Factory<LimitingInputStream> limitingInputStreamFactory;
 
 	public void run() {
-		PieRaidFile raidedFile = driveCoreService.calculateChunks(file);
+		PieRaidFile raidedFile = driveCoreService.calculateRaidFile(file);
 
 		for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
 			for (AdapterId id : adapterCoreService.getAdaptersKey()) {
