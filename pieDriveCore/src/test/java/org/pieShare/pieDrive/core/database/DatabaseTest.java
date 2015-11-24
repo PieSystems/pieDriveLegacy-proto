@@ -117,6 +117,13 @@ public class DatabaseTest {
 
         Assert.notNull(fromDB);
         
+        
+        List<PieRaidFile> fromDBList = database.findAllPieRaidFiles();
+        
+        Assert.notNull(fromDBList);
+        
+        
+                
         database.removePieRadFile(file1);
         
     }
