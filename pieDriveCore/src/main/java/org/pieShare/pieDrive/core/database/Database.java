@@ -5,10 +5,19 @@
  */
 package org.pieShare.pieDrive.core.database;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
+import org.pieShare.pieDrive.core.database.entities.AdapterChunkEntity;
 import org.pieShare.pieDrive.core.database.entities.FileEntity;
 import org.pieShare.pieDrive.core.database.entities.IBaseEntity;
+import org.pieShare.pieDrive.core.database.entities.PhysicalChunkEntity;
+import org.pieShare.pieDrive.core.database.entities.PieRaidFileEntity;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.model.PhysicalChunk;
+import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +48,118 @@ public class Database {
         em.getTransaction().begin();
         em.remove(entity);
         em.getTransaction().commit();
+    }
+
+    public void removePieRadFile(PieRaidFile file) {
+
+        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+        em.getTransaction().begin();
+        PieRaidFileEntity pieRaidFileEntity = em.find(PieRaidFileEntity.class, file.getFileName());
+        if (pieRaidFileEntity != null) {
+            em.remove(em.merge(pieRaidFileEntity));
+        }
+        em.getTransaction().commit();
+    }
+
+    public void persistPieRaidFile(PieRaidFile pieRaidFile) {
+        PieRaidFileEntity pieRaidFileEntity = new PieRaidFileEntity();
+
+        List<PhysicalChunkEntity> physicalChunkEntities = new ArrayList<>();
+
+        for (PhysicalChunk chunk : pieRaidFile.getChunks()) {
+
+            PhysicalChunkEntity physicalChunkEntity = new PhysicalChunkEntity();
+
+            List<AdapterChunkEntity> ace = new ArrayList<>();
+
+            for (AdapterChunk adapterChunk : chunk.getChunks().values()) {
+                AdapterChunkEntity adc = new AdapterChunkEntity();
+                adc.setAdapterId(adapterChunk.getAdapterId().getId());
+                adc.setHash(adc.getHash());
+                adc.setPhysicalChunkEntity(physicalChunkEntity);
+                adc.setUUID(adapterChunk.getUuid());
+
+                ace.add(adc);
+            }
+
+            physicalChunkEntity.setChunks(ace);
+            physicalChunkEntity.setOffset(chunk.getOffset());
+            physicalChunkEntity.setSize(chunk.getSize());
+            physicalChunkEntity.setPieRaidFileEntity(pieRaidFileEntity);
+            physicalChunkEntities.add(physicalChunkEntity);
+        }
+
+        pieRaidFileEntity.setChunks(physicalChunkEntities);
+        pieRaidFileEntity.setFileName(pieRaidFile.getFileName());
+        pieRaidFileEntity.setLastModified(pieRaidFile.getLastModified());
+        pieRaidFileEntity.setRelativeFilePath(pieRaidFile.getRelativeFilePath());
+
+        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+        em.getTransaction().begin();
+        em.persist(pieRaidFileEntity);
+        em.getTransaction().commit();
+    }
+
+    public PieRaidFile findPieRaidFileByName(String name) {
+
+        PieRaidFile piePieRaidFile = new PieRaidFile();
+
+        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+        PieRaidFileEntity pieRaidFileEntity = em.find(PieRaidFileEntity.class, name);
+
+        return convertPieRaidFileEntityToObject(pieRaidFileEntity);
+    }
+
+    public List<PieRaidFile> findAllPieRaidFiles() {
+        List<PieRaidFile> pieRaidFiles = new ArrayList<>();
+
+        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+        for (PieRaidFileEntity entity : (List<PieRaidFileEntity>) em.createQuery("Select t from " + PieRaidFileEntity.class.getSimpleName() + " t").getResultList()) {
+
+            PieRaidFile file = convertPieRaidFileEntityToObject(entity);
+            if (file != null) {
+                pieRaidFiles.add(file);
+            }
+        }
+        return pieRaidFiles;
+    }
+
+    private PieRaidFile convertPieRaidFileEntityToObject(PieRaidFileEntity pieRaidFileEntity) {
+        PieRaidFile piePieRaidFile = new PieRaidFile();
+
+        if (pieRaidFileEntity == null) {
+            return null;
+        }
+
+        List<PhysicalChunk> physicalChunks = new ArrayList<>();
+
+        for (PhysicalChunkEntity physicalChunkEntity : pieRaidFileEntity.getChunks()) {
+            PhysicalChunk physicalChunk = new PhysicalChunk();
+
+            for (AdapterChunkEntity adapterChunkEntity : physicalChunkEntity.getChunks()) {
+                AdapterChunk adapterChunk = new AdapterChunk();
+                AdapterId id = new AdapterId();
+                id.setId(adapterChunkEntity.getAdapterId());
+                adapterChunk.setAdapterId(id);
+                adapterChunk.setHash(adapterChunkEntity.getHash());
+                adapterChunk.setUuid(adapterChunkEntity.getUUID());
+
+                physicalChunk.addAdapterChunk(adapterChunk);
+
+            }
+
+            physicalChunk.setOffset(physicalChunkEntity.getOffset());
+            physicalChunk.setSize(physicalChunkEntity.getSize());
+
+            physicalChunks.add(physicalChunk);
+        }
+
+        piePieRaidFile.setChunks(physicalChunks);
+        piePieRaidFile.setFileName(pieRaidFileEntity.getFileName());
+        piePieRaidFile.setLastModified(pieRaidFileEntity.getLastModified());
+        piePieRaidFile.setRelativeFilePath(pieRaidFileEntity.getRelativeFilePath());
+
+        return piePieRaidFile;
     }
 
 }

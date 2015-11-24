@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieDrive.core.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -12,29 +13,38 @@ import java.util.Map;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class PhysicalChunk {
-	private Map<AdapterId, AdapterChunk> chunks;
-	private long offset;
-	private long size;
-	
-	public PhysicalChunk addAdapterChunk(AdapterChunk chunk) {
-		this.chunks.put(chunk.getAdapterId(), chunk);
-		return this;
-	}
 
-	public long getOffset() {
-		return offset;
-	}
+    private Map<AdapterId, AdapterChunk> chunks;
+    private long offset;
+    private long size;
 
-	public void setOffset(long offset) {
-		this.offset = offset;
-	}
+    public PhysicalChunk() {
+        chunks = new HashMap<>();
+    }
 
-	public long getSize() {
-		return size;
-	}
+    public PhysicalChunk addAdapterChunk(AdapterChunk chunk) {
+        this.chunks.put(chunk.getAdapterId(), chunk);
+        return this;
+    }
 
-	public void setSize(long size) {
-		this.size = size;
-	}
-	
+    public long getOffset() {
+        return offset;
+    }
+
+    public void setOffset(long offset) {
+        this.offset = offset;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public Map<AdapterId, AdapterChunk> getChunks() {
+        return chunks;
+    }
+
 }
