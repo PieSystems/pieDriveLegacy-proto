@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.stream;
+package org.pieShare.pieDrive.core.stream.util;
 
 import org.pieShare.pieDrive.core.model.AdapterId;
 
@@ -12,5 +12,5 @@ import org.pieShare.pieDrive.core.model.AdapterId;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public interface HashingDoneCallback {
-	void hashingDone(AdapterId adapterId);
+	void hashingDone(String id, byte[] hash);
 }
