@@ -14,14 +14,14 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
  */
 public class StreamCallbackHelper {
 	private HashingDoneCallback callback;
-	private String callbackId;
+	private ICallbackId callbackId;
 	private boolean done;
 	
 	public StreamCallbackHelper() {
 		this.done = false;
 	}
 
-	public void setCallbackId(String callbackId) {
+	public void setCallbackId(ICallbackId callbackId) {
 		this.callbackId = callbackId;
 	}
 

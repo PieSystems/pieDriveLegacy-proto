@@ -5,12 +5,10 @@
  */
 package org.pieShare.pieDrive.core.stream.util;
 
-import org.pieShare.pieDrive.core.model.AdapterId;
-
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface HashingDoneCallback {
-	void hashingDone(ICallbackId id, byte[] hash);
+public interface ICallbackId {
+	
 }

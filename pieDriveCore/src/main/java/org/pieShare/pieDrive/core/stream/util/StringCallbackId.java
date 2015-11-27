@@ -5,12 +5,21 @@
  */
 package org.pieShare.pieDrive.core.stream.util;
 
-import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface HashingDoneCallback {
-	void hashingDone(ICallbackId id, byte[] hash);
+public class StringCallbackId implements ICallbackId {
+	private String chunkId;
+
+	public String getChunk() {
+		return chunkId;
+	}
+
+	public StringCallbackId setChunk(String chunk) {
+		this.chunkId = chunk;
+		return this;
+	}
 }

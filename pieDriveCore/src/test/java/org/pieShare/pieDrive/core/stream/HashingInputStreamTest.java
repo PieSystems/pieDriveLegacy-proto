@@ -13,7 +13,9 @@ import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pieShare.pieDrive.core.stream.util.StringCallbackId;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
+import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
 
 /**
@@ -44,11 +46,12 @@ public class HashingInputStreamTest {
 	@Test
 	public void testReadAllBytesIntoBufferAndSomeMore() throws Exception {
 		StreamCallbackHelper helper = new StreamCallbackHelper();
-		helper.setCallbackId("test");
+		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
-			public void hashingDone(String id, byte[] hash) {
-				Assert.assertEquals("test", id);				
+			public void hashingDone(ICallbackId id, byte[] hash) {
+				StringCallbackId sId = (StringCallbackId)id;
+				Assert.assertEquals("test", sId.getChunk());				
 				String result = (new BigInteger(1, hash)).toString(16);
 				Assert.assertEquals(md5, result);
 				hashOk = true;
@@ -73,11 +76,12 @@ public class HashingInputStreamTest {
 	@Test
 	public void testReadMoreBytesThenInInput() throws Exception {
 		StreamCallbackHelper helper = new StreamCallbackHelper();
-		helper.setCallbackId("test");
+		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
-			public void hashingDone(String id, byte[] hash) {
-				Assert.assertEquals("test", id);				
+			public void hashingDone(ICallbackId id, byte[] hash) {
+				StringCallbackId sId = (StringCallbackId)id;
+				Assert.assertEquals("test", sId.getChunk());			
 				String result = (new BigInteger(1, hash)).toString(16);
 				Assert.assertEquals(md5, result);
 				hashOk = true;
@@ -98,11 +102,12 @@ public class HashingInputStreamTest {
 	@Test
 	public void testReadAllBytesOneByOne() throws Exception {
 		StreamCallbackHelper helper = new StreamCallbackHelper();
-		helper.setCallbackId("test");
+		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
-			public void hashingDone(String id, byte[] hash) {
-				Assert.assertEquals("test", id);				
+			public void hashingDone(ICallbackId id, byte[] hash) {
+				StringCallbackId sId = (StringCallbackId)id;
+				Assert.assertEquals("test", sId.getChunk());			
 				String result = (new BigInteger(1, hash)).toString(16);
 				Assert.assertEquals(md5, result);
 				hashOk = true;
@@ -128,10 +133,10 @@ public class HashingInputStreamTest {
 	@Test
 	public void testNoCallbackOnError() throws Exception {
 		StreamCallbackHelper helper = new StreamCallbackHelper();
-		helper.setCallbackId("test");
+		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
-			public void hashingDone(String id, byte[] hash) {
+			public void hashingDone(ICallbackId id, byte[] hash) {
 				hashOk = true;
 			}
 		});

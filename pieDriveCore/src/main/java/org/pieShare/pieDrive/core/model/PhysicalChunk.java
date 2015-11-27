@@ -21,6 +21,10 @@ public class PhysicalChunk {
 		return this;
 	}
 
+	public Map<AdapterId, AdapterChunk> getChunks() {
+		return chunks;
+	}
+
 	public long getOffset() {
 		return offset;
 	}

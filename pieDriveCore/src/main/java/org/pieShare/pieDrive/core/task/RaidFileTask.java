@@ -24,7 +24,9 @@ import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
 import org.pieShare.pieDrive.core.stream.LimitingInputStream;
+import org.pieShare.pieDrive.core.stream.util.StringCallbackId;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
+import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -47,6 +49,7 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 	private Provider<StreamCallbackHelper> streamCallbackHelperProvider;
 	private Provider<AdapterChunk> adapterChunkProvider;
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
+	private Provider<StringCallbackId> stringCallbackIdProvider;
 
 	public void run() {
 		raidedFile = driveCoreService.calculateRaidFile(file);
@@ -71,7 +74,9 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 
 					StreamCallbackHelper cb = this.streamCallbackHelperProvider.get();
 					cb.setCallback(this);
-					cb.setCallbackId(chunk.getUuid());
+					StringCallbackId chunkId = this.stringCallbackIdProvider.get();
+					chunkId.setChunk(chunk.getUuid());
+					cb.setCallbackId(chunkId);
 					//todo-pieShare: proper referencing to the provider will be needed
 					hStr = StreamFactory.getHashingInputStream(lStr, MessageDigest.getInstance("MD5"), cb);
 
@@ -117,7 +122,8 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 	}
 
 	@Override
-	public void hashingDone(String id, byte[] hash) {
+	public void hashingDone(ICallbackId id, byte[] hash) {
+		StringCallbackId cbId = (StringCallbackId) id;
 		//todo: save hash to DB
 		this.reportedBack--;
 	}
