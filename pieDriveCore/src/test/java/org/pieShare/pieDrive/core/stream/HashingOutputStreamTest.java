@@ -17,7 +17,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
+import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
+import org.pieShare.pieDrive.core.stream.util.StringCallbackId;
 
 /**
  *
@@ -44,11 +46,12 @@ public class HashingOutputStreamTest {
 	@Test
 	public void testCloseAfterWorkDone() throws Exception {
 		StreamCallbackHelper helper = new StreamCallbackHelper();
-		helper.setCallbackId("test");
+		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
-			public void hashingDone(String id, byte[] hash) {
-				Assert.assertEquals("test", id);				
+			public void hashingDone(ICallbackId id, byte[] hash) {
+				StringCallbackId sId = (StringCallbackId)id;
+				Assert.assertEquals("test", sId.getChunk());			
 				String result = (new BigInteger(1, hash)).toString(16);
 				Assert.assertEquals(md5, result);
 				hashOk = true;
@@ -68,11 +71,12 @@ public class HashingOutputStreamTest {
 	@Test
 	public void testCloseDueToError() throws Exception {
 		StreamCallbackHelper helper = new StreamCallbackHelper();
-		helper.setCallbackId("test");
+		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
-			public void hashingDone(String id, byte[] hash) {
-				Assert.assertEquals("test", id);				
+			public void hashingDone(ICallbackId id, byte[] hash) {
+				StringCallbackId sId = (StringCallbackId)id;
+				Assert.assertEquals("test", sId.getChunk());			
 				String result = (new BigInteger(1, hash)).toString(16);
 				Assert.assertThat(md5, is(not(result)));
 				hashOk = true;

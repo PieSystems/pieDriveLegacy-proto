@@ -8,9 +8,12 @@ package org.pieShare.pieDrive.core.stream.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
+import org.pieShare.pieDrive.core.stream.HashingOutputStream;
 import org.pieShare.pieDrive.core.stream.LimitingInputStream;
 
 /**
@@ -46,4 +49,11 @@ public class StreamFactory {
 		return new HashingInputStream(stream, dig, cb);
 	}
 	
+	public static FileOutputStream getFileOutputStream(File file) throws FileNotFoundException {
+		return new FileOutputStream(file);
+	}
+	
+	public static HashingOutputStream getHashingOutputStream(OutputStream stream, MessageDigest dig, StreamCallbackHelper cb) {
+		return new HashingOutputStream(stream, dig, cb);
+	}
 }
