@@ -4,6 +4,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+//TODO rename to BoundedInputStream
 public class LimitingInputStream extends InputStream {
 	private final InputStream in;
 	private final long limit;
