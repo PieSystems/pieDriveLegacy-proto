@@ -5,6 +5,14 @@
  */
 package org.pieShare.pieDrive.core.database.entities;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -16,9 +24,20 @@ import javax.persistence.ManyToOne;
 @Entity
 public class AdapterChunkEntity {
 
-    @Id
     private String adapterId;
-    private byte[] hash;
+    
+    @Column(nullable = true)
+    private byte[] hashValue;
+    
+    public AdapterChunkEntity()
+    {
+        //values = new HashMap<>();
+    }
+    
+   // @ElementCollection
+    //public Map<Integer, Byte> values;
+    
+    @Id
     private String UUID;
     
     @ManyToOne
@@ -33,11 +52,30 @@ public class AdapterChunkEntity {
     }
 
     public byte[] getHash() {
-        return hash;
+        
+        return hashValue;
+        /*
+        byte[] retValue = new byte[values.size()];
+        
+        for(Entry<Integer, Byte> entry : values.entrySet())
+        {
+            retValue[entry.getKey()] = (byte)entry.getValue();
+        }
+        
+        return retValue;*/
     }
 
     public void setHash(byte[] hash) {
-        this.hash = hash;
+        
+        hashValue = hash;
+        /*
+        values = new HashMap<>();
+        if(hash == null) return;
+        
+        for(int i = 0; i < hash.length; i++)
+        {
+            values.put(i, (Byte)hash[i]);
+        }*/
     }
 
     public PhysicalChunkEntity getPhysicalChunkEntity() {

@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Database {
 
+    
     @Autowired
     private IDatabaseFactory databseFactory;
 
@@ -75,7 +76,7 @@ public class Database {
             for (AdapterChunk adapterChunk : chunk.getChunks().values()) {
                 AdapterChunkEntity adc = new AdapterChunkEntity();
                 adc.setAdapterId(adapterChunk.getAdapterId().getId());
-                adc.setHash(adc.getHash());
+                adc.setHash(adapterChunk.getHash());
                 adc.setPhysicalChunkEntity(physicalChunkEntity);
                 adc.setUUID(adapterChunk.getUuid());
 
@@ -145,7 +146,6 @@ public class Database {
                 adapterChunk.setUuid(adapterChunkEntity.getUUID());
 
                 physicalChunk.addAdapterChunk(adapterChunk);
-
             }
 
             physicalChunk.setOffset(physicalChunkEntity.getOffset());
@@ -161,5 +161,22 @@ public class Database {
 
         return piePieRaidFile;
     }
-
+    
+    public void updateAdaptorChunk(AdapterChunk chunk)
+    {
+        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+        AdapterChunkEntity entity = em.find(AdapterChunkEntity.class, chunk.getUuid());
+        
+        if(entity == null)
+        {
+            return;
+        }
+        
+        entity.setAdapterId(chunk.getAdapterId().getId());
+        entity.setHash(chunk.getHash());
+        
+        em.getTransaction().begin();
+        em.merge(entity);
+        em.getTransaction().commit();
+    }
 }
