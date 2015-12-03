@@ -8,6 +8,7 @@ package org.pieShare.pieDrive.core.database.entities;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,6 +35,9 @@ public class PhysicalChunkEntity {
     private long offset;
     private long size;
 
+    @Column(nullable = true)
+    private byte[] hashValues;
+    
     @ManyToOne
     private PieRaidFileEntity pieRaidFileEntity;
 
@@ -71,5 +75,13 @@ public class PhysicalChunkEntity {
 
     public Long getId() {
         return id;
+    }
+
+    public byte[] getHashValues() {
+        return hashValues;
+    }
+
+    public void setHashValues(byte[] hashValues) {
+        this.hashValues = hashValues;
     }
 }

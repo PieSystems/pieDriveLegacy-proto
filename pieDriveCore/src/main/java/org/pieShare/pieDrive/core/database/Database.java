@@ -87,6 +87,7 @@ public class Database {
             physicalChunkEntity.setOffset(chunk.getOffset());
             physicalChunkEntity.setSize(chunk.getSize());
             physicalChunkEntity.setPieRaidFileEntity(pieRaidFileEntity);
+            physicalChunkEntity.setHashValues(chunk.getHash());
             physicalChunkEntities.add(physicalChunkEntity);
         }
 
@@ -150,6 +151,7 @@ public class Database {
 
             physicalChunk.setOffset(physicalChunkEntity.getOffset());
             physicalChunk.setSize(physicalChunkEntity.getSize());
+            physicalChunk.setHash(physicalChunkEntity.getHashValues());
 
             physicalChunks.add(physicalChunk);
         }
@@ -179,4 +181,23 @@ public class Database {
         em.merge(entity);
         em.getTransaction().commit();
     }
+    
+    public void updatePhysicalChunk(PhysicalChunk physicalChunk)
+    {
+        if(physicalChunk.getChunks().isEmpty())
+            return;
+        
+        String id = physicalChunk.getChunks().entrySet().stream().findFirst().get().getValue().getUuid();
+        
+        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+        AdapterChunkEntity entity = em.find(AdapterChunkEntity.class, id);
+        PhysicalChunkEntity physicalChunkEntity = entity.getPhysicalChunkEntity();
+        
+        physicalChunkEntity.setHashValues(physicalChunk.getHash());
+    
+        em.getTransaction().begin();
+        em.merge(physicalChunkEntity);
+        em.getTransaction().commit();
+    }
+    
 }
