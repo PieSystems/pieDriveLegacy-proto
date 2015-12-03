@@ -44,6 +44,4 @@ public class AdapterId {
 		}
 		return true;
 	}
-	
-	
 }

@@ -22,14 +22,23 @@ public class DatabaseFactory implements IDatabaseFactory {
     private EntityManagerFactory emf;
     private HashMap<Class, EntityManager> entityManagers;
 
+    private String databaseName = "database.odb";
+    
     public DatabaseFactory()
     {
         this.entityManagers = new HashMap<>();
     }
     
     @PostConstruct
+    @Override
     public void init() {
-        emf = Persistence.createEntityManagerFactory("database.odb");
+        
+        if(emf != null && emf.isOpen())
+        {
+            emf.close();
+        }
+        
+        emf = Persistence.createEntityManagerFactory(databaseName);
     }
 
     @Override
@@ -43,4 +52,11 @@ public class DatabaseFactory implements IDatabaseFactory {
         entityManagers.put(clazz, manager);
         return manager;
     }
+
+    @Override
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
+    
+  
 }
