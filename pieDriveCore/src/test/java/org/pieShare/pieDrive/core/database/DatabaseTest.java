@@ -34,26 +34,24 @@ import org.springframework.util.Assert;
 public class DatabaseTest {
 
     private String databaseTestFile = "databaseTest.odb";
-    
+
     @Autowired
     private Database database;
-    
+
     @Autowired
     private IDatabaseFactory databaseFactory;
 
     @Before
-    public void beforeTest()
-    {
+    public void beforeTest() {
         databaseFactory.setDatabaseName(databaseTestFile);
         databaseFactory.init();
     }
-    
+
     @After
-    public void afterTest()
-    {
-    
+    public void afterTest() {
+
     }
-    
+
     @Test
     public void testDatabse() {
 
@@ -127,59 +125,63 @@ public class DatabaseTest {
         file1.setRelativeFilePath("Relative");
 
         database.persistPieRaidFile(file1);
-        
+
         PieRaidFile fromDB = database.findPieRaidFileByName("FileName1");
         Assert.notNull(fromDB);
-       
-        for(PhysicalChunk physicalChunk : fromDB.getChunks())
-        {
+
+        for (PhysicalChunk physicalChunk : fromDB.getChunks()) {
+            Assert.isNull(physicalChunk.getHash());
             Assert.notNull(physicalChunk);
-            
-            for(AdapterChunk adapterChunk : physicalChunk.getChunks().values())
-            {
-                 Assert.notNull(physicalChunk);
-                 
-                 if(adapterChunk.getUuid().equals("UUID1"))
-                 {
-                     Assert.isNull(adapterChunk.getHash());
-                 }
-                 else
-                 {
-                     Assert.notNull(adapterChunk.getHash());
-                 }
+
+            for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+                Assert.notNull(physicalChunk);
+
+                if (adapterChunk.getUuid().equals("UUID1")) {
+                    Assert.isNull(adapterChunk.getHash());
+                } else {
+                    Assert.notNull(adapterChunk.getHash());
+                }
             }
         }
-        
+
         adChunk1.setHash("VALUE".getBytes());
         database.updateAdaptorChunk(adChunk1);
-        
+
         PieRaidFile fromDBNew = database.findPieRaidFileByName("FileName1");
         Assert.notNull(fromDB);
-       
-        for(PhysicalChunk physicalChunk : fromDBNew.getChunks())
-        {
+
+        for (PhysicalChunk physicalChunk : fromDBNew.getChunks()) {
             Assert.notNull(physicalChunk);
-            
-            for(AdapterChunk adapterChunk : physicalChunk.getChunks().values())
-            {
-                 Assert.notNull(physicalChunk);
-                 
-                 if(adapterChunk.getUuid().equals("UUID1"))
-                 {
-                     Assert.notNull(adapterChunk.getHash());
-                     org.junit.Assert.assertArrayEquals(adapterChunk.getHash(), "VALUE".getBytes());
-                 }
-                 else
-                 {
-                     Assert.notNull(adapterChunk.getHash());
-                 }
+
+            for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+                Assert.notNull(physicalChunk);
+
+                if (adapterChunk.getUuid().equals("UUID1")) {
+                    Assert.notNull(adapterChunk.getHash());
+                    org.junit.Assert.assertArrayEquals(adapterChunk.getHash(), "VALUE".getBytes());
+                } else {
+                    Assert.notNull(adapterChunk.getHash());
+                }
             }
         }
-        
+
         List<PieRaidFile> fromDBList = database.findAllPieRaidFiles();
         Assert.notNull(fromDBList);
-                
+
+        phChunk1.setHash("TEST".getBytes());
+        phChunk2.setHash("TEST2".getBytes());
+
+        database.updatePhysicalChunk(phChunk1);
+        database.updatePhysicalChunk(phChunk2);
+
+        PieRaidFile fromDBNewPhysical = database.findPieRaidFileByName("FileName1");
+        Assert.notNull(fromDBNewPhysical);
+
+        for (PhysicalChunk physicalChunk : fromDBNewPhysical.getChunks()) {
+            Assert.notNull(physicalChunk.getHash());
+        }
+
         database.removePieRadFile(file1);
-        
+
     }
 }
