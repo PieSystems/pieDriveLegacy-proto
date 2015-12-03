@@ -23,7 +23,7 @@ public class AdapterChunk extends PieDriveFile {
 		this.adapterId = adapterId;
 		return this;
 	}
-
+	
 	public byte[] getHash() {
 		return hash;
 	}
@@ -31,5 +31,4 @@ public class AdapterChunk extends PieDriveFile {
 	public void setHash(byte[] hash) {
 		this.hash = hash;
 	}
-	
 }

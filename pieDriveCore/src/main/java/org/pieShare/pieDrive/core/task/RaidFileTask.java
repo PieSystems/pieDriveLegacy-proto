@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.inject.Provider;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCore;
+import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
@@ -27,6 +28,7 @@ import org.pieShare.pieDrive.core.stream.LimitingInputStream;
 import org.pieShare.pieDrive.core.stream.util.StringCallbackId;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
+import org.pieShare.pieDrive.core.stream.util.PhysicalChunkCallbackId;
 import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -45,10 +47,13 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 	private IExecutorService executorService;
 	private PieDriveCore driveCoreService;
 	private AdapterCoreService adapterCoreService;
+	//todo: will need abstraction when merging into PieShare
+	private Database database;
 
 	private Provider<StreamCallbackHelper> streamCallbackHelperProvider;
 	private Provider<AdapterChunk> adapterChunkProvider;
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
+	private Provider<PhysicalChunkCallbackId> physicalChunkCallbackIdProvider;
 	private Provider<StringCallbackId> stringCallbackIdProvider;
 
 	public void run() {
@@ -56,7 +61,7 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 
 		for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
 			for (AdapterId id : adapterCoreService.getAdaptersKey()) {
-
+				
 				FileInputStream fileStr = null;
 				LimitingInputStream lStr = null;
 				HashingInputStream hStr = null;
@@ -74,9 +79,15 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 
 					StreamCallbackHelper cb = this.streamCallbackHelperProvider.get();
 					cb.setCallback(this);
-					StringCallbackId chunkId = this.stringCallbackIdProvider.get();
-					chunkId.setChunk(chunk.getUuid());
-					cb.setCallbackId(chunkId);
+					
+					PhysicalChunkCallbackId cbId = this.physicalChunkCallbackIdProvider.get();
+					cbId.setChunk(chunk);
+					cbId.setPhysicalChunk(physicalChunk);
+					cb.setCallbackId(cbId);
+					
+//					StringCallbackId chunkId = this.stringCallbackIdProvider.get();
+//					chunkId.setChunk(chunk.getUuid());
+//					cb.setCallbackId(chunkId);
 					//todo-pieShare: proper referencing to the provider will be needed
 					hStr = StreamFactory.getHashingInputStream(lStr, MessageDigest.getInstance("MD5"), cb);
 
@@ -94,19 +105,8 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 				}
 			}
 		}
-
-		//todo: instead do incremental DB saves?
-		//first save structure and then update hashes
-		//todo: this is wrong!!! every physical chunk has three chunks that need to report back
-		while (this.reportedBack < 3) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ex) {
-				Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-
-		//todo: save this to the DB
+		
+		database.persistPieRaidFile(raidedFile);
 	}
 
 	private void silentlyCloseStream(InputStream stream) {
@@ -123,8 +123,17 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 
 	@Override
 	public void hashingDone(ICallbackId id, byte[] hash) {
-		StringCallbackId cbId = (StringCallbackId) id;
-		//todo: save hash to DB
-		this.reportedBack--;
+		PhysicalChunkCallbackId cbId = (PhysicalChunkCallbackId) id;
+		
+		PhysicalChunk physicalChunk = cbId.getPhysicalChunk();
+		
+		if(physicalChunk.getHash() == null 
+				|| physicalChunk.getHash().length == 0) {
+			physicalChunk.setHash(hash);
+			//todo: update DB
+			return;
+		}
+		
+		//todo: compare
 	}
 }

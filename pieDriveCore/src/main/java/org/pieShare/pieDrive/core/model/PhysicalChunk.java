@@ -17,6 +17,7 @@ public class PhysicalChunk {
     private Map<AdapterId, AdapterChunk> chunks;
     private long offset;
     private long size;
+	private byte[] hash;
 
     public PhysicalChunk() {
         chunks = new HashMap<>();
@@ -46,4 +47,12 @@ public class PhysicalChunk {
     public void setSize(long size) {
         this.size = size;
     }
+	
+	public byte[] getHash() {
+		return hash;
+	}
+
+	public void setHash(byte[] hash) {
+		this.hash = hash;
+	}
 }
