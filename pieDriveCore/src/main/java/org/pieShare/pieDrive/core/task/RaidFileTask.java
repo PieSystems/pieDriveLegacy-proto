@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +62,7 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 
 		for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
 			for (AdapterId id : adapterCoreService.getAdaptersKey()) {
-				
+
 				FileInputStream fileStr = null;
 				LimitingInputStream lStr = null;
 				HashingInputStream hStr = null;
@@ -79,12 +80,12 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 
 					StreamCallbackHelper cb = this.streamCallbackHelperProvider.get();
 					cb.setCallback(this);
-					
+
 					PhysicalChunkCallbackId cbId = this.physicalChunkCallbackIdProvider.get();
 					cbId.setChunk(chunk);
 					cbId.setPhysicalChunk(physicalChunk);
 					cb.setCallbackId(cbId);
-					
+
 //					StringCallbackId chunkId = this.stringCallbackIdProvider.get();
 //					chunkId.setChunk(chunk.getUuid());
 //					cb.setCallbackId(chunkId);
@@ -98,14 +99,14 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 					this.executorService.execute(task);
 				} catch (IOException | NoSuchAlgorithmException ex) {
 					Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
-					
+
 					this.silentlyCloseStream(fileStr);
 					this.silentlyCloseStream(lStr);
 					this.silentlyCloseStream(hStr);
 				}
 			}
 		}
-		
+
 		database.persistPieRaidFile(raidedFile);
 	}
 
@@ -113,7 +114,7 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 		if (stream == null) {
 			return;
 		}
-		
+
 		try {
 			stream.close();
 		} catch (IOException ex) {
@@ -124,16 +125,29 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 	@Override
 	public void hashingDone(ICallbackId id, byte[] hash) {
 		PhysicalChunkCallbackId cbId = (PhysicalChunkCallbackId) id;
-		
+
 		PhysicalChunk physicalChunk = cbId.getPhysicalChunk();
+		AdapterChunk chunk = cbId.getChunk();
+		chunk.setHash(hash);
+
+		//if we are the first and the physical chunk has not yet a hash value
 		
-		if(physicalChunk.getHash() == null 
-				|| physicalChunk.getHash().length == 0) {
-			physicalChunk.setHash(hash);
-			//todo: update DB
+		synchronized (physicalChunk) {
+			if (physicalChunk.getHash() == null
+					|| physicalChunk.getHash().length == 0) {
+				physicalChunk.setHash(hash);
+				//todo: update phyChunk in DB
+			}
+		}
+
+		//otherwise do an sanity check and persist hashes
+		if (Arrays.equals(physicalChunk.getHash(), hash)) {
+			this.database.updateAdaptorChunk(chunk);
 			return;
 		}
-		
-		//todo: compare
+
+		//this should never happen!!! if this happens two adapters
+		//produced different hashes while reading the samephysical chunk
+		//todo: log! eventually pass on to user
 	}
 }
