@@ -5,16 +5,18 @@
  */
 package org.pieShare.pieDrive.core.stream.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.security.MessageDigest;
+import org.pieShare.pieDrive.core.stream.BoundedOutputStream;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
 import org.pieShare.pieDrive.core.stream.HashingOutputStream;
-import org.pieShare.pieDrive.core.stream.LimitingInputStream;
+import org.pieShare.pieDrive.core.stream.BoundedInputStream;
+import org.pieShare.pieDrive.core.stream.NioInputStream;
+import org.pieShare.pieDrive.core.stream.NioOutputStream;
 
 /**
  *
@@ -22,12 +24,8 @@ import org.pieShare.pieDrive.core.stream.LimitingInputStream;
  */
 public class StreamFactory {
 	
-	public static FileInputStream getFileInputStream(File file) throws FileNotFoundException {
-		return new FileInputStream(file);
-	}
-	
-	public static LimitingInputStream getLimitingInputStream(InputStream in, long limit) {
-		return new LimitingInputStream(in, limit);
+	public static BoundedInputStream getLimitingInputStream(InputStream in, long limit) {
+		return new BoundedInputStream(in, limit);
 	}
 	
 	/**
@@ -49,11 +47,27 @@ public class StreamFactory {
 		return new HashingInputStream(stream, dig, cb);
 	}
 	
-	public static FileOutputStream getFileOutputStream(File file) throws FileNotFoundException {
-		return new FileOutputStream(file);
-	}
-	
 	public static HashingOutputStream getHashingOutputStream(OutputStream stream, MessageDigest dig, StreamCallbackHelper cb) {
 		return new HashingOutputStream(stream, dig, cb);
+	}
+	
+	public static BoundedOutputStream getBoundedOutputStream(OutputStream out, long limit) {
+		return new BoundedOutputStream(out, limit);
+	}
+
+	public static BufferedOutputStream getBufferedOutputStream(OutputStream out, int size) {
+		return new BufferedOutputStream(out, size);
+	}
+
+	public static NioOutputStream getNioOutputStream(RandomAccessFile file, long offset) {
+		return new NioOutputStream(file, offset);
+	}
+
+	public static NioInputStream getNioInputStream(RandomAccessFile file, long offset) {
+		return new NioInputStream(file, offset);
+	}
+
+	public static BufferedInputStream getBufferedInputStream(InputStream in, int size) {
+		return new BufferedInputStream(in, size);
 	}
 }

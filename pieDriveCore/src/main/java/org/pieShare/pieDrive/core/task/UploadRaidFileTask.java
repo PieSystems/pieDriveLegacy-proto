@@ -5,11 +5,13 @@
  */
 package org.pieShare.pieDrive.core.task;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -25,8 +27,8 @@ import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
-import org.pieShare.pieDrive.core.stream.LimitingInputStream;
-import org.pieShare.pieDrive.core.stream.util.StringCallbackId;
+import org.pieShare.pieDrive.core.stream.BoundedInputStream;
+import org.pieShare.pieDrive.core.stream.NioInputStream;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.PhysicalChunkCallbackId;
@@ -39,10 +41,9 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class RaidFileTask implements IPieTask, HashingDoneCallback {
+public class UploadRaidFileTask implements IPieTask, HashingDoneCallback {
 
 	private File file;
-	private int reportedBack = 0;
 	private PieRaidFile raidedFile;
 
 	private IExecutorService executorService;
@@ -55,28 +56,31 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 	private Provider<AdapterChunk> adapterChunkProvider;
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
 	private Provider<PhysicalChunkCallbackId> physicalChunkCallbackIdProvider;
-	private Provider<StringCallbackId> stringCallbackIdProvider;
 
 	public void run() {
-		raidedFile = driveCoreService.calculateRaidFile(file);
-
-		for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-			for (AdapterId id : adapterCoreService.getAdaptersKey()) {
-
-				FileInputStream fileStr = null;
-				LimitingInputStream lStr = null;
-				HashingInputStream hStr = null;
-
-				try {
+		try {
+			raidedFile = driveCoreService.calculateRaidFile(file);
+			RandomAccessFile rFile = new RandomAccessFile(file, "r");
+			
+			//we need to iterate twice so we can guarante that the object 
+			//will be completely initizilised before we start working on it
+			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+				for (AdapterId id : adapterCoreService.getAdaptersKey()) {
 					AdapterChunk chunk = adapterChunkProvider.get();
 					chunk.setAdapterId(id);
 					chunk.setUuid(UUID.randomUUID().toString());
 
 					physicalChunk.addAdapterChunk(chunk);
+				}
+			}
+			
+			this.database.persistPieRaidFile(raidedFile);
 
-					fileStr = StreamFactory.getFileInputStream(file);
-					fileStr.skip(physicalChunk.getOffset());
-					lStr = StreamFactory.getLimitingInputStream(fileStr, physicalChunk.getSize());
+			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+				for (AdapterChunk chunk: physicalChunk.getChunks().values()) {
+					NioInputStream nioStream = StreamFactory.getNioInputStream(rFile, physicalChunk.getOffset());
+					BufferedInputStream bufferedStream = StreamFactory.getBufferedInputStream(nioStream, 65536); //64kB
+					BoundedInputStream lStr = StreamFactory.getLimitingInputStream(bufferedStream, physicalChunk.getSize());
 
 					StreamCallbackHelper cb = this.streamCallbackHelperProvider.get();
 					cb.setCallback(this);
@@ -86,28 +90,20 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 					cbId.setPhysicalChunk(physicalChunk);
 					cb.setCallbackId(cbId);
 
-//					StringCallbackId chunkId = this.stringCallbackIdProvider.get();
-//					chunkId.setChunk(chunk.getUuid());
-//					cb.setCallbackId(chunkId);
-					//todo-pieShare: proper referencing to the provider will be needed
-					hStr = StreamFactory.getHashingInputStream(lStr, MessageDigest.getInstance("MD5"), cb);
+					HashingInputStream hStr = StreamFactory.getHashingInputStream(lStr, MessageDigest.getInstance("MD5"), cb);
 
 					UploadChunkTask task = uploadChunkTaskProvider.get();
 					task.setChunk(chunk);
 					task.setStream(hStr);
 
 					this.executorService.execute(task);
-				} catch (IOException | NoSuchAlgorithmException ex) {
-					Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
-
-					this.silentlyCloseStream(fileStr);
-					this.silentlyCloseStream(lStr);
-					this.silentlyCloseStream(hStr);
 				}
 			}
+		} catch (FileNotFoundException ex) {
+			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (NoSuchAlgorithmException ex) {
+			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
-		database.persistPieRaidFile(raidedFile);
 	}
 
 	private void silentlyCloseStream(InputStream stream) {
@@ -118,12 +114,13 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 		try {
 			stream.close();
 		} catch (IOException ex) {
-			Logger.getLogger(RaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	@Override
 	public void hashingDone(ICallbackId id, byte[] hash) {
+		//todo: maybe generalize callback function so we do not have to parse the callback objects!!!
 		PhysicalChunkCallbackId cbId = (PhysicalChunkCallbackId) id;
 
 		PhysicalChunk physicalChunk = cbId.getPhysicalChunk();
@@ -131,23 +128,66 @@ public class RaidFileTask implements IPieTask, HashingDoneCallback {
 		chunk.setHash(hash);
 
 		//if we are the first and the physical chunk has not yet a hash value
-		
+		//has to be synchronized for the adapters of the same physical chunk
+		//after this point they can work in parallel again
 		synchronized (physicalChunk) {
 			if (physicalChunk.getHash() == null
 					|| physicalChunk.getHash().length == 0) {
 				physicalChunk.setHash(hash);
-				//todo: update phyChunk in DB
+				synchronized (database) {
+					this.database.updatePhysicalChunk(physicalChunk);
+					return;
+				}
 			}
 		}
 
+		//todo: remove synchronizations after @richy fixes threading in DB
 		//otherwise do an sanity check and persist hashes
 		if (Arrays.equals(physicalChunk.getHash(), hash)) {
-			this.database.updateAdaptorChunk(chunk);
-			return;
+			synchronized (database) {
+				this.database.updateAdaptorChunk(chunk);
+				return;
+			}
 		}
 
 		//this should never happen!!! if this happens two adapters
 		//produced different hashes while reading the samephysical chunk
 		//todo: log! eventually pass on to user
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public void setExecutorService(IExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
+	public void setDriveCoreService(PieDriveCore driveCoreService) {
+		this.driveCoreService = driveCoreService;
+	}
+
+	public void setAdapterCoreService(AdapterCoreService adapterCoreService) {
+		this.adapterCoreService = adapterCoreService;
+	}
+
+	public void setDatabase(Database database) {
+		this.database = database;
+	}
+
+	public void setStreamCallbackHelperProvider(Provider<StreamCallbackHelper> streamCallbackHelperProvider) {
+		this.streamCallbackHelperProvider = streamCallbackHelperProvider;
+	}
+
+	public void setAdapterChunkProvider(Provider<AdapterChunk> adapterChunkProvider) {
+		this.adapterChunkProvider = adapterChunkProvider;
+	}
+
+	public void setUploadChunkTaskProvider(Provider<UploadChunkTask> uploadChunkTaskProvider) {
+		this.uploadChunkTaskProvider = uploadChunkTaskProvider;
+	}
+
+	public void setPhysicalChunkCallbackIdProvider(Provider<PhysicalChunkCallbackId> physicalChunkCallbackIdProvider) {
+		this.physicalChunkCallbackIdProvider = physicalChunkCallbackIdProvider;
 	}
 }

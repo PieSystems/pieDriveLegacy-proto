@@ -16,6 +16,7 @@ public class PieRaidFile {
 	private String fileName;
 	private long lastModified;
 	private List<PhysicalChunk> chunks;
+	private long fileSize;
 
 	public String getRelativeFilePath() {
 		return relativeFilePath;
@@ -48,6 +49,12 @@ public class PieRaidFile {
 	public void setChunks(List<PhysicalChunk> chunks) {
 		this.chunks = chunks;
 	}
-	
-	
+
+	public long getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(long fileSize) {
+		this.fileSize = fileSize;
+	}
 }

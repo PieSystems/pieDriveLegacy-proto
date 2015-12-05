@@ -6,6 +6,7 @@
 package org.pieShare.pieDrive.core;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.model.AdapterId;
@@ -17,6 +18,10 @@ import org.pieShare.pieDrive.core.model.AdapterId;
 public class SimpleAdapterCoreService implements AdapterCoreService {
 	
 	private Map<AdapterId, Adaptor> adapters;
+	
+	public SimpleAdapterCoreService() {
+		this.adapters = new HashMap<>();
+	}
 
 	public void setAdapters(Map<AdapterId, Adaptor> adapters) {
 		this.adapters = adapters;

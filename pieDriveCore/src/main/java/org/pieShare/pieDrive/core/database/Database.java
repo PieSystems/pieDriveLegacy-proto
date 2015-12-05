@@ -32,6 +32,10 @@ public class Database {
     @Autowired
     private IDatabaseFactory databseFactory;
 
+	public void setDatabseFactory(IDatabaseFactory databseFactory) {
+		this.databseFactory = databseFactory;
+	}
+
     public void persist(IBaseEntity entity) {
         EntityManager em = databseFactory.getEntityManger(entity.getClass());
         em.getTransaction().begin();

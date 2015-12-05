@@ -1,8 +1,10 @@
 package org.pieShare.pieDrive.core.stream;
 
+import org.pieShare.pieDrive.core.stream.util.LimitReachedException;
 import java.io.IOException;
 import java.io.OutputStream;
 
+//todo: mention in comment why not extending the filterOutputStream!!!
 public class BoundedOutputStream extends OutputStream {
 	private final OutputStream out;
 	private final long limit;
@@ -22,5 +24,15 @@ public class BoundedOutputStream extends OutputStream {
 		}
 		
 		out.write(b);
+	}
+
+	@Override
+	public void close() throws IOException {
+		this.out.close();
+	}
+
+	@Override
+	public void flush() throws IOException {
+		this.out.flush();
 	}
 }

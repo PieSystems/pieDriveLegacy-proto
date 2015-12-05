@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.pieShare.pieDrive.core.stream.util.StringCallbackId;
+import org.pieShare.pieDrive.core.stream.helper.StringCallbackId;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;

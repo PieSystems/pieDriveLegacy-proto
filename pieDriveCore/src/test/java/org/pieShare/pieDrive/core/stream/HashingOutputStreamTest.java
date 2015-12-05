@@ -19,7 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
-import org.pieShare.pieDrive.core.stream.util.StringCallbackId;
+import org.pieShare.pieDrive.core.stream.helper.StringCallbackId;
 
 /**
  *

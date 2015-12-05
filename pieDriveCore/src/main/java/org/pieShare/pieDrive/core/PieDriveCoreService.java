@@ -41,6 +41,7 @@ public class PieDriveCoreService implements PieDriveCore {
 		raidFile.setLastModified(file.lastModified());
 		raidFile.setRelativeFilePath(file.getPath());
 		raidFile.setChunks(calculateChunks(file));
+		raidFile.setFileSize(file.length());
 		return raidFile;
 	}
 }

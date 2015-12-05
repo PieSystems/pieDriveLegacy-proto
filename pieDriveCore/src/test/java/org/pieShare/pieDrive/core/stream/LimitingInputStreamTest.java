@@ -56,7 +56,7 @@ public class LimitingInputStreamTest {
 		initializeBuffer(outputBuffer, emptyValue);
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBuffer);
-		LimitingInputStream limitingStream = new LimitingInputStream(inputStream, limit);
+		BoundedInputStream limitingStream = new BoundedInputStream(inputStream, limit);
 		
 		limitingStream.read(outputBuffer);
 		
@@ -70,7 +70,7 @@ public class LimitingInputStreamTest {
 		initializeBuffer(outputBuffer, emptyValue);
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBuffer);
-		LimitingInputStream limitingStream = new LimitingInputStream(inputStream, limit);
+		BoundedInputStream limitingStream = new BoundedInputStream(inputStream, limit);
 		
 		limitingStream.read(outputBuffer);
 		
@@ -84,7 +84,7 @@ public class LimitingInputStreamTest {
 		initializeBuffer(outputBuffer, emptyValue);
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBuffer);
-		LimitingInputStream limitingStream = new LimitingInputStream(inputStream, limit);
+		BoundedInputStream limitingStream = new BoundedInputStream(inputStream, limit);
 		
 		limitingStream.read(outputBuffer);
 		

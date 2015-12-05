@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.stream.util;
+package org.pieShare.pieDrive.core.stream.helper;
 
 import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 
 /**
  *

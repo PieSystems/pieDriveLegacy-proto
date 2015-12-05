@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 //TODO rename to BoundedInputStream
-public class LimitingInputStream extends InputStream {
+public class BoundedInputStream extends InputStream {
 	private final InputStream in;
 	private final long limit;
 	private long readBytes = 0;
 	
-	public LimitingInputStream(InputStream in, long limit) {
+	public BoundedInputStream(InputStream in, long limit) {
 		this.in = in;
 		this.limit = limit;
 	}

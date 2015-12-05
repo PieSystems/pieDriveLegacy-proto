@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.stream.HashingInputStream;
-import org.pieShare.pieDrive.core.stream.LimitingInputStream;
+import org.pieShare.pieDrive.core.stream.BoundedInputStream;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
