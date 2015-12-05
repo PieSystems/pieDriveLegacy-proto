@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.pieShare.pieDrive.core.stream.helper.StringCallbackId;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
-import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
+import org.pieShare.pieDrive.core.stream.util.HashingStreamCallbackHelper;
 
 /**
  *
@@ -45,7 +45,7 @@ public class HashingInputStreamTest {
 
 	@Test
 	public void testReadAllBytesIntoBufferAndSomeMore() throws Exception {
-		StreamCallbackHelper helper = new StreamCallbackHelper();
+		HashingStreamCallbackHelper helper = new HashingStreamCallbackHelper();
 		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
@@ -75,7 +75,7 @@ public class HashingInputStreamTest {
 	
 	@Test
 	public void testReadMoreBytesThenInInput() throws Exception {
-		StreamCallbackHelper helper = new StreamCallbackHelper();
+		HashingStreamCallbackHelper helper = new HashingStreamCallbackHelper();
 		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
@@ -101,7 +101,7 @@ public class HashingInputStreamTest {
 
 	@Test
 	public void testReadAllBytesOneByOne() throws Exception {
-		StreamCallbackHelper helper = new StreamCallbackHelper();
+		HashingStreamCallbackHelper helper = new HashingStreamCallbackHelper();
 		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
@@ -132,7 +132,7 @@ public class HashingInputStreamTest {
 	
 	@Test
 	public void testNoCallbackOnError() throws Exception {
-		StreamCallbackHelper helper = new StreamCallbackHelper();
+		HashingStreamCallbackHelper helper = new HashingStreamCallbackHelper();
 		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override

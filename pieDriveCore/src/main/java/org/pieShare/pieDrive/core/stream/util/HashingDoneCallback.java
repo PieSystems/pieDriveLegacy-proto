@@ -11,6 +11,6 @@ import org.pieShare.pieDrive.core.model.AdapterId;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface HashingDoneCallback {
-	void hashingDone(ICallbackId id, byte[] hash);
+public interface HashingDoneCallback<T extends ICallbackId> {
+	void hashingDone(T id, byte[] hash);
 }

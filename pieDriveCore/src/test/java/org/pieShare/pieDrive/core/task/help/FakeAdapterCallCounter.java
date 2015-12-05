@@ -12,15 +12,15 @@ package org.pieShare.pieDrive.core.task.help;
 public class FakeAdapterCallCounter {
 	private int counter;
 	
-	public FakeAdapterCallCounter(int init) {
-		this.counter = init;
-	}
-	
 	public void increment() {
 		this.counter ++;
 	}
 
 	public int getCount() {
 		return counter;
+	}
+
+	public void setCounter(int counter) {
+		this.counter = counter;
 	}
 }

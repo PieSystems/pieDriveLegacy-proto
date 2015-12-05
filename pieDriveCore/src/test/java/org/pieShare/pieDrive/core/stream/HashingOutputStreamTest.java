@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
-import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
+import org.pieShare.pieDrive.core.stream.util.HashingStreamCallbackHelper;
 import org.pieShare.pieDrive.core.stream.helper.StringCallbackId;
 
 /**
@@ -45,7 +45,7 @@ public class HashingOutputStreamTest {
 
 	@Test
 	public void testCloseAfterWorkDone() throws Exception {
-		StreamCallbackHelper helper = new StreamCallbackHelper();
+		HashingStreamCallbackHelper helper = new HashingStreamCallbackHelper();
 		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override
@@ -70,7 +70,7 @@ public class HashingOutputStreamTest {
 	
 	@Test
 	public void testCloseDueToError() throws Exception {
-		StreamCallbackHelper helper = new StreamCallbackHelper();
+		HashingStreamCallbackHelper helper = new HashingStreamCallbackHelper();
 		helper.setCallbackId((new StringCallbackId()).setChunk("test"));
 		helper.setCallback(new HashingDoneCallback() {
 			@Override

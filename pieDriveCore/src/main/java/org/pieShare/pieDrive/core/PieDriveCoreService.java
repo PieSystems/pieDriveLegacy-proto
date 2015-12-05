@@ -9,6 +9,7 @@ import org.pieShare.pieDrive.core.model.PieRaidFile;
 
 public class PieDriveCoreService implements PieDriveCore {
 
+	//5MB
 	private long chunkSize = 5 * 1024 * 1024;
 	
 	public void setChunkSize(long chunkSize) {

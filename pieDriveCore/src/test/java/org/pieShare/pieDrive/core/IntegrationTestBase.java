@@ -8,23 +8,23 @@ package org.pieShare.pieDrive.core;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public abstract class IntegrationTestBase {
+public abstract class IntegrationTestBase extends AbstractTestNGSpringContextTests {
 	
 	protected File integrationTestFolder;
 	
-	@BeforeTest
-	public void setUpIt() throws IOException {
+	@BeforeClass
+	public void setUpIt() throws IOException, Exception {
 		this.integrationTestFolder = new File("integrationTest");
-		
 		cleanup();
-		
 		this.integrationTestFolder.mkdir();
 	}
 	

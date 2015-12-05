@@ -6,12 +6,10 @@
 package org.pieShare.pieDrive.core.database;
 
 import java.util.HashMap;
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
-import org.springframework.stereotype.Component;
 
 /**
  *
@@ -29,7 +27,6 @@ public class DatabaseFactory implements IDatabaseFactory {
         this.entityManagers = new HashMap<>();
     }
     
-    @PostConstruct
     @Override
     public void init() {
         

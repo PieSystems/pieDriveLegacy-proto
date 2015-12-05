@@ -10,31 +10,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import javax.inject.Provider;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieDrive.core.IntegrationTestBase;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
-import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.DatabaseFactory;
-import org.pieShare.pieDrive.core.model.AdapterChunk;
-import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
-import org.pieShare.pieDrive.core.stream.util.PhysicalChunkCallbackId;
-import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
+import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
 import org.pieShare.pieDrive.core.task.help.FakeAdapterCallCounter;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -43,14 +37,20 @@ import org.testng.annotations.Test;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
+@DirtiesContext
+@ContextConfiguration(classes = CoreTestConfig.class)
 public class RaidFileTaskTest extends IntegrationTestBase {
-
-	private UploadRaidFileTask uploadTask;
-	private DownloadRaidFileTask downloadTask;
-	PieExecutorService executorService;
-	SimpleAdapterCoreService aCore;
-	Database db;
+	@Autowired
+	private Provider<UploadRaidFileTask> uploadRaidFileProvider;
+	@Autowired
+	private Provider<DownloadRaidFileTask> downloadRaidFileProvider;
+	
+	@Autowired
 	private FakeAdapterCallCounter counter;
+	@Autowired
+	private Database db;
+	@Autowired
+	private DatabaseFactory fac;
 	
 	private File testFolder;
 	private File upload;
@@ -58,19 +58,15 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 	private File out;	
 
 	@Override
-	@BeforeTest
-	public void setUpIt() throws IOException {
+	@BeforeClass
+	public void setUpIt() throws IOException, Exception {
 		super.setUpIt();
 		this.testFolder = new File(this.integrationTestFolder, "test");
 		
 		//init new DB
 		File dbFile = new File(super.integrationTestFolder, "databaseTaskTest.odb");
-		DatabaseFactory fac = new DatabaseFactory();
 		fac.setDatabaseName(dbFile.getPath());
-		fac.init();
-		db = new Database();
-		db.setDatabseFactory(fac);
-		
+		fac.init();		
 	}
 
 	@BeforeMethod
@@ -86,81 +82,20 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		this.in.mkdirs();
 		this.out = new File(this.testFolder, "out");
 		this.out.mkdirs();
-
-		//create tasks
-		uploadTask = new UploadRaidFileTask();
-		downloadTask = new DownloadRaidFileTask();
-
-		//create and set adapter core service
-		this.counter = new FakeAdapterCallCounter(0);
-		aCore = new SimpleAdapterCoreService();
-		aCore.registerAdapter((new AdapterId()).setId("fakeDropBox"), new FakeAdapter(this.upload, this.counter));
-		aCore.registerAdapter((new AdapterId()).setId("fakeBox"), new FakeAdapter(this.upload, this.counter));
-		aCore.registerAdapter((new AdapterId()).setId("fakeS3"), new FakeAdapter(this.upload, this.counter));
-		uploadTask.setAdapterCoreService(aCore);
-		downloadTask.setAdapterCoreService(aCore);
-
-		//create and set providers
-		Provider<PhysicalChunkCallbackId> physicalChunkCallbackIdProvider = new Provider<PhysicalChunkCallbackId>() {
-			@Override
-			public PhysicalChunkCallbackId get() {
-				return new PhysicalChunkCallbackId();
-			}
-		};
-
-		Provider<StreamCallbackHelper> streamCallbackHelperProvider = new Provider<StreamCallbackHelper>() {
-			@Override
-			public StreamCallbackHelper get() {
-				return new StreamCallbackHelper();
-			}
-		};
-
-		uploadTask.setAdapterChunkProvider(new Provider<AdapterChunk>() {
-			@Override
-			public AdapterChunk get() {
-				return new AdapterChunk();
-			}
-		});
-		uploadTask.setPhysicalChunkCallbackIdProvider(physicalChunkCallbackIdProvider);
-		uploadTask.setStreamCallbackHelperProvider(streamCallbackHelperProvider);
-		uploadTask.setUploadChunkTaskProvider(new Provider<UploadChunkTask>() {
-			@Override
-			public UploadChunkTask get() {
-				UploadChunkTask task = new UploadChunkTask();
-				task.setAdapterCoreService(aCore);
-				return task;
-			}
-		});
-
-		downloadTask.setDownloadChunkProvider(new Provider<DownloadChunkTask>() {
-			@Override
-			public DownloadChunkTask get() {
-				DownloadChunkTask task = new DownloadChunkTask();
-				task.setAdapterCoreService(aCore);
-				return task;
-			}
-		});
-		downloadTask.setPhysicalChunkCallbackIdProvider(physicalChunkCallbackIdProvider);
-		downloadTask.setStreamCallbackHelperProvider(streamCallbackHelperProvider);
-
-		//create and set pie drive core service
-		PieDriveCoreService pCore = new PieDriveCoreService();
-		pCore.setChunkSize(20); //20 byte
-		uploadTask.setDriveCoreService(pCore);
-
-		//create and set executor service
-		executorService = PieExecutorService.newCachedPieExecutorService();
-		PieExecutorTaskFactory execFactory = new PieExecutorTaskFactory();
-		executorService.setExecutorFactory(execFactory);
-		uploadTask.setExecutorService(executorService);
-		downloadTask.setExecutorService(executorService);
 		
-		uploadTask.setDatabase(db);
-	}
+		FakeAdapter adapter = super.applicationContext.getBean("s3Adapter", FakeAdapter.class);
+		adapter.setParent(this.upload);
+		adapter = super.applicationContext.getBean("boxAdapter", FakeAdapter.class);
+		adapter.setParent(this.upload);
+		adapter = super.applicationContext.getBean("dropboxAdapter", FakeAdapter.class);
+		adapter.setParent(this.upload);
 
-	@AfterMethod
-	public void tearDown() {
-		executorService.shutdown();
+		//reset download counter
+		this.counter.setCounter(0);
+
+		//set chunk size for tests
+		PieDriveCoreService pCore = super.applicationContext.getBean(PieDriveCoreService.class);
+		pCore.setChunkSize(20); //20 byte
 	}
 
 	private File createFileHelper(File parent, String fileName, int size) throws IOException {
@@ -186,23 +121,25 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 	/**
 	 * Test of run method, of class RaidFileTask.
 	 */
-	//@Test
+	@Test
 	public void testUpAndDownLoadFileRaid1() throws Exception {
 		String fileName = "testOneChunkFile";
 		File expected = this.createFileHelper(this.in, fileName, 15);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.run();
 		
 		Thread.sleep(2000);
 		
 		File[] uploadedFiles = this.upload.listFiles();
-		Assert.assertEquals(3, uploadedFiles.length);
+		Assert.assertEquals(uploadedFiles.length, 3);
 		byte[] expectedBytes = this.generateMd5(expected);
 		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[0]));
 		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[1]));
 		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[2]));
 		
 		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
@@ -219,6 +156,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 	public void testUpAndDownLoadFileRaid1WithMultiChunks() throws Exception {
 		String fileName = "testMultiChunkFile";
 		File expected = this.createFileHelper(this.in, fileName, 96);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.run();
 		
@@ -228,6 +166,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		Assert.assertEquals(15, uploadedFiles.length);
 		
 		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();

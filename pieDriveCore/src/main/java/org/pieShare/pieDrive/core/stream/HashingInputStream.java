@@ -6,7 +6,7 @@
 package org.pieShare.pieDrive.core.stream;
 
 import java.io.FilterInputStream;
-import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
+import org.pieShare.pieDrive.core.stream.util.HashingStreamCallbackHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
@@ -24,9 +24,9 @@ import java.security.MessageDigest;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class HashingInputStream extends DigestInputStream {
-	private StreamCallbackHelper callback;
+	private HashingStreamCallbackHelper callback;
 	
-	public HashingInputStream(InputStream stream, MessageDigest dig, StreamCallbackHelper cb) {
+	public HashingInputStream(InputStream stream, MessageDigest dig, HashingStreamCallbackHelper cb) {
 		super(stream, dig);
 		this.callback = cb;
 	}

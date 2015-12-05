@@ -8,48 +8,43 @@ package org.pieShare.pieDrive.core.database;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
-import org.pieShare.pieDrive.core.database.Database;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
+import org.pieShare.pieDrive.core.IntegrationTestBase;
 import org.pieShare.pieDrive.core.database.entities.FileEntity;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
+import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author richy
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = CoreAppConfig.class)
-public class DatabaseTest {
+@DirtiesContext
+@ContextConfiguration(classes = CoreTestConfig.class)
+public class DatabaseTest extends IntegrationTestBase {
 
     private String databaseTestFile = "databaseTest.odb";
 
     @Autowired
     private Database database;
-
     @Autowired
-    private IDatabaseFactory databaseFactory;
+    private DatabaseFactory databaseFactory;
 
-    @Before
-    public void beforeTest() {
-        databaseFactory.setDatabaseName(databaseTestFile);
+    @BeforeClass
+    public void beforeTest() throws Exception {
+		super.setUpIt();
+		File dbFile = new File(super.integrationTestFolder, databaseTestFile);
+        databaseFactory.setDatabaseName(dbFile.getPath());
         databaseFactory.init();
-    }
-
-    @After
-    public void afterTest() {
-
     }
 
     @Test

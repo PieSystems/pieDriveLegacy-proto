@@ -12,20 +12,20 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class StreamCallbackHelper {
-	private HashingDoneCallback callback;
-	private ICallbackId callbackId;
+public class HashingStreamCallbackHelper<T extends ICallbackId> {
+	private HashingDoneCallback<T> callback;
+	private T callbackId;
 	private boolean done;
 	
-	public StreamCallbackHelper() {
+	public HashingStreamCallbackHelper() {
 		this.done = false;
 	}
 
-	public void setCallbackId(ICallbackId callbackId) {
+	public void setCallbackId(T callbackId) {
 		this.callbackId = callbackId;
 	}
 
-	public void setCallback(HashingDoneCallback callback) {
+	public void setCallback(HashingDoneCallback<T> callback) {
 		this.callback = callback;
 	}
 

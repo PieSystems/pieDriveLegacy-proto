@@ -22,6 +22,7 @@ import org.pieShare.pieDrive.core.stream.NioOutputStream;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
+//todo: consider changing this into a bean for easier testing?
 public class StreamFactory {
 	
 	public static BoundedInputStream getLimitingInputStream(InputStream in, long limit) {
@@ -43,11 +44,11 @@ public class StreamFactory {
 	 * @param cb
 	 * @return 
 	 */
-	public static HashingInputStream getHashingInputStream(InputStream stream, MessageDigest dig, StreamCallbackHelper cb) {
+	public static HashingInputStream getHashingInputStream(InputStream stream, MessageDigest dig, HashingStreamCallbackHelper cb) {
 		return new HashingInputStream(stream, dig, cb);
 	}
 	
-	public static HashingOutputStream getHashingOutputStream(OutputStream stream, MessageDigest dig, StreamCallbackHelper cb) {
+	public static HashingOutputStream getHashingOutputStream(OutputStream stream, MessageDigest dig, HashingStreamCallbackHelper cb) {
 		return new HashingOutputStream(stream, dig, cb);
 	}
 	

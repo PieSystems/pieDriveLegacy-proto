@@ -32,7 +32,7 @@ import org.pieShare.pieDrive.core.stream.NioInputStream;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.PhysicalChunkCallbackId;
-import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
+import org.pieShare.pieDrive.core.stream.util.HashingStreamCallbackHelper;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
@@ -41,7 +41,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class UploadRaidFileTask implements IPieTask, HashingDoneCallback {
+public class UploadRaidFileTask implements IPieTask, HashingDoneCallback<PhysicalChunkCallbackId> {
 
 	private File file;
 	private PieRaidFile raidedFile;
@@ -52,7 +52,7 @@ public class UploadRaidFileTask implements IPieTask, HashingDoneCallback {
 	//todo: will need abstraction when merging into PieShare
 	private Database database;
 
-	private Provider<StreamCallbackHelper> streamCallbackHelperProvider;
+	private Provider<HashingStreamCallbackHelper> streamCallbackHelperProvider;
 	private Provider<AdapterChunk> adapterChunkProvider;
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
 	private Provider<PhysicalChunkCallbackId> physicalChunkCallbackIdProvider;
@@ -82,7 +82,7 @@ public class UploadRaidFileTask implements IPieTask, HashingDoneCallback {
 					BufferedInputStream bufferedStream = StreamFactory.getBufferedInputStream(nioStream, 65536); //64kB
 					BoundedInputStream lStr = StreamFactory.getLimitingInputStream(bufferedStream, physicalChunk.getSize());
 
-					StreamCallbackHelper cb = this.streamCallbackHelperProvider.get();
+					HashingStreamCallbackHelper<PhysicalChunkCallbackId> cb = this.streamCallbackHelperProvider.get();
 					cb.setCallback(this);
 
 					PhysicalChunkCallbackId cbId = this.physicalChunkCallbackIdProvider.get();
@@ -119,7 +119,7 @@ public class UploadRaidFileTask implements IPieTask, HashingDoneCallback {
 	}
 
 	@Override
-	public void hashingDone(ICallbackId id, byte[] hash) {
+	public void hashingDone(PhysicalChunkCallbackId id, byte[] hash) {
 		//todo: maybe generalize callback function so we do not have to parse the callback objects!!!
 		PhysicalChunkCallbackId cbId = (PhysicalChunkCallbackId) id;
 
@@ -175,7 +175,7 @@ public class UploadRaidFileTask implements IPieTask, HashingDoneCallback {
 		this.database = database;
 	}
 
-	public void setStreamCallbackHelperProvider(Provider<StreamCallbackHelper> streamCallbackHelperProvider) {
+	public void setStreamCallbackHelperProvider(Provider<HashingStreamCallbackHelper> streamCallbackHelperProvider) {
 		this.streamCallbackHelperProvider = streamCallbackHelperProvider;
 	}
 

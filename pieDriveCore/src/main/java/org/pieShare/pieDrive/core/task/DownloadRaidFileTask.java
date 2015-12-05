@@ -27,7 +27,7 @@ import org.pieShare.pieDrive.core.stream.NioOutputStream;
 import org.pieShare.pieDrive.core.stream.util.HashingDoneCallback;
 import org.pieShare.pieDrive.core.stream.util.ICallbackId;
 import org.pieShare.pieDrive.core.stream.util.PhysicalChunkCallbackId;
-import org.pieShare.pieDrive.core.stream.util.StreamCallbackHelper;
+import org.pieShare.pieDrive.core.stream.util.HashingStreamCallbackHelper;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
@@ -45,7 +45,7 @@ public class DownloadRaidFileTask implements IPieTask, HashingDoneCallback {
 	private PieRaidFile raidFile;
 	private RandomAccessFile file;
 
-	private Provider<StreamCallbackHelper> streamCallbackHelperProvider;
+	private Provider<HashingStreamCallbackHelper> streamCallbackHelperProvider;
 	private Provider<DownloadChunkTask> downloadChunkProvider;
 	private Provider<PhysicalChunkCallbackId> physicalChunkCallbackIdProvider;
 
@@ -79,7 +79,7 @@ public class DownloadRaidFileTask implements IPieTask, HashingDoneCallback {
 			id.setChunk(chunk);
 			id.setPhysicalChunk(physicalChunk);
 			
-			StreamCallbackHelper cb = this.streamCallbackHelperProvider.get();
+			HashingStreamCallbackHelper cb = this.streamCallbackHelperProvider.get();
 			cb.setCallback(this);
 			cb.setCallbackId(id);
 			
@@ -135,7 +135,7 @@ public class DownloadRaidFileTask implements IPieTask, HashingDoneCallback {
 		this.executorService = executorService;
 	}
 
-	public void setStreamCallbackHelperProvider(Provider<StreamCallbackHelper> streamCallbackHelperProvider) {
+	public void setStreamCallbackHelperProvider(Provider<HashingStreamCallbackHelper> streamCallbackHelperProvider) {
 		this.streamCallbackHelperProvider = streamCallbackHelperProvider;
 	}
 

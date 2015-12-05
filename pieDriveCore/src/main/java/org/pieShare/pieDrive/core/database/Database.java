@@ -18,18 +18,13 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author richy
  */
-@Component
 public class Database {
 
-    
-    @Autowired
     private IDatabaseFactory databseFactory;
 
 	public void setDatabseFactory(IDatabaseFactory databseFactory) {

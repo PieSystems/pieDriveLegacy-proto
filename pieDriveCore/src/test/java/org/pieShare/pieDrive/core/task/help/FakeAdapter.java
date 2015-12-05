@@ -26,9 +26,12 @@ public class FakeAdapter implements Adaptor {
 
 	private File parent;
 	private FakeAdapterCallCounter counter;
-	
-	public FakeAdapter(File parentDir, FakeAdapterCallCounter counter) {
-		this.parent = parentDir;
+
+	public void setParent(File parent) {
+		this.parent = parent;
+	}
+
+	public void setCounter(FakeAdapterCallCounter counter) {
 		this.counter = counter;
 	}
 	
