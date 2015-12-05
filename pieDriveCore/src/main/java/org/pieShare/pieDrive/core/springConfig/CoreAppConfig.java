@@ -7,32 +7,26 @@ package org.pieShare.pieDrive.core.springConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Provider;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.AdapterCoreService;
-import org.pieShare.pieDrive.core.PieDriveCore;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
-import org.pieShare.pieDrive.core.stream.util.PhysicalChunkCallbackId;
-import org.pieShare.pieDrive.core.stream.util.HashingStreamCallbackHelper;
 import org.pieShare.pieDrive.core.task.DownloadChunkTask;
 import org.pieShare.pieDrive.core.task.DownloadRaidFileTask;
 import org.pieShare.pieDrive.core.task.UploadChunkTask;
 import org.pieShare.pieDrive.core.task.UploadRaidFileTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -43,10 +37,6 @@ public class CoreAppConfig {
 
 	@Autowired
 	private Provider<DownloadChunkTask> downloadChunkProvider;
-	@Autowired
-	private Provider<PhysicalChunkCallbackId> physicalChunkCallbackIdProvider;
-	@Autowired
-	private Provider<HashingStreamCallbackHelper> streamCallbackHelperProvider;
 	@Autowired
 	private Provider<AdapterChunk> adapterChunkProvider;
 	@Autowired
@@ -127,6 +117,7 @@ public class CoreAppConfig {
 	public UploadChunkTask uploadChunkTask() {
 		UploadChunkTask task = new UploadChunkTask();
 		task.setAdapterCoreService(this.simpleAdapterCoreService());
+		task.setDatabase(this.database());
 		return task;
 	}
 	
@@ -142,8 +133,6 @@ public class CoreAppConfig {
 		
 		task.setAdapterChunkProvider(adapterChunkProvider);
 		task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
-		task.setPhysicalChunkCallbackIdProvider(physicalChunkCallbackIdProvider);
-		task.setStreamCallbackHelperProvider(streamCallbackHelperProvider);
 		return task;
 	}
 	
@@ -165,16 +154,7 @@ public class CoreAppConfig {
 		task.setExecutorService(this.executorService());
 		
 		task.setDownloadChunkProvider(downloadChunkProvider);
-		task.setPhysicalChunkCallbackIdProvider(physicalChunkCallbackIdProvider);
-		task.setStreamCallbackHelperProvider(streamCallbackHelperProvider);
 		return task;
-	}
-	
-	@Bean
-	@Lazy
-	@Scope("prototype")
-	public PhysicalChunkCallbackId physicalChunkCallbackId() {
-		return new PhysicalChunkCallbackId();
 	}
 	
 	@Bean
@@ -183,14 +163,6 @@ public class CoreAppConfig {
 	public AdapterChunk adapterChunk() {
 		AdapterChunk chunk = new AdapterChunk();
 		return chunk;
-	}
-	
-	@Bean
-	@Lazy
-	@Scope("prototype")
-	public HashingStreamCallbackHelper streamCallbackHelper() {
-		HashingStreamCallbackHelper helper = new HashingStreamCallbackHelper();
-		return helper;
 	}
 	
 	@Bean
