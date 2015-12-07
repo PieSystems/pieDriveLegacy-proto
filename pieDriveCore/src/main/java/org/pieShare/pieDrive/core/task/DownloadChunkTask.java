@@ -76,7 +76,10 @@ public class DownloadChunkTask implements IPieTask {
 					AdapterId chunkId = physicalChunk.getChunks().keySet().iterator().next();
 					this.chunk = physicalChunk.getChunks().remove(chunkId);
 				}
-
+				else {
+					//TODO fail task
+					//throw new DownloadChunkException("All adapter chunks are corrupt");
+				}
 			} catch (NoSuchAlgorithmException ex) {
 				Logger.getLogger(DownloadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 				try {
