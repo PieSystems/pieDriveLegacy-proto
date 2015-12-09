@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import junit.framework.Assert;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.adapter.model.PieDriveFile;
 
@@ -25,14 +24,9 @@ import org.pieShare.pieDrive.adapter.model.PieDriveFile;
 public class FakeAdapter implements Adaptor {
 
 	private File parent;
-	private FakeAdapterCallCounter counter;
 
 	public void setParent(File parent) {
 		this.parent = parent;
-	}
-
-	public void setCounter(FakeAdapterCallCounter counter) {
-		this.counter = counter;
 	}
 	
 	@Override
@@ -70,9 +64,6 @@ public class FakeAdapter implements Adaptor {
 
 	@Override
 	public void download(PieDriveFile file, OutputStream stream) {
-		
-		this.counter.increment();
-		
 		FileInputStream fStr = null;
 		try {
 			File realFile = new File(this.parent, file.getUuid());
