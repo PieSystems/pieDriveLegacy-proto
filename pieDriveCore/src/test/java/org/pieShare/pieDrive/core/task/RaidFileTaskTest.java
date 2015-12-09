@@ -245,7 +245,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
-		Assert.assertEquals(5, this.counter.getCount());
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
 
 	@Test
