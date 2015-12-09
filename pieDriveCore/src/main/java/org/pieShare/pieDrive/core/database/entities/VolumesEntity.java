@@ -1,6 +1,7 @@
 package org.pieShare.pieDrive.core.database.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,10 +23,12 @@ public class VolumesEntity implements IBaseEntity {
 
 
     public void addFolder(FolderEntity folder){
+        if(folders == null) folders = new ArrayList<>();
         folders.add(folder);
     }
 
     public void addFile(PieRaidFileEntity file){
+        if(files == null) files = new ArrayList<>();
         files.add(file);
     }
 
