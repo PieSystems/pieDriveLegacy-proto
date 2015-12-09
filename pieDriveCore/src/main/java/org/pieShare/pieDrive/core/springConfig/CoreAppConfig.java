@@ -18,6 +18,8 @@ import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.DatabaseFactory;
+import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryCustom;
+import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryImpl;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.DownloadChunkTask;
@@ -81,10 +83,6 @@ public class CoreAppConfig {
             }
         };
         
-      //  HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-      //  vendorAdapter.setGenerateDdl(true);
-      
-
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("org.pieShare.pieDrive.core.database.entities");
@@ -118,6 +116,13 @@ public class CoreAppConfig {
         return fac;
     }
 
+    @Bean
+    @Lazy
+    public PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom()
+    {
+        return new PieRaidFileRepositoryImpl();
+    }
+    
     @Bean
     @Lazy
     @Scope("prototype")

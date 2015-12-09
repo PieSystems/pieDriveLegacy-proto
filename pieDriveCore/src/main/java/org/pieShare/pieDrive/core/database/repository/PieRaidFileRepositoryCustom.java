@@ -5,8 +5,11 @@
  */
 package org.pieShare.pieDrive.core.database.repository;
 
+import java.util.List;
+import org.pieShare.pieDrive.core.database.entities.PieRaidFileEntity;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
+import org.pieShare.pieDrive.core.model.PieRaidFile;
 
 /**
  *
@@ -14,7 +17,9 @@ import org.pieShare.pieDrive.core.model.PhysicalChunk;
  */
 public interface PieRaidFileRepositoryCustom {
 
-    void updateAdaptorChunk(AdapterChunk chunk);
+    void persistPieRaidFile(PieRaidFile pieRaidFile);
 
-    void updatePhysicalChunk(PhysicalChunk physicalChunk);
+    PieRaidFile findPieRaidFileById(String id);
+
+    List<PieRaidFile> findAllPieRaidFiles();
 }
