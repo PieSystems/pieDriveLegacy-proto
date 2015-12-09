@@ -12,16 +12,22 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 	
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
+	private IExecutorService executorService;
 	private RandomAccessFile file;
 
 	public void setUploadChunkTaskProvider(Provider<UploadChunkTask> uploadChunkTaskProvider) {
 		this.uploadChunkTaskProvider = uploadChunkTaskProvider;
+	}
+	
+	public void setExecutorService(IExecutorService executorService) {
+		this.executorService = executorService;
 	}
 
 	public void setFile(RandomAccessFile file) {
@@ -65,6 +71,7 @@ public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 				task.setChunk(adapterChunk);
 				task.setPhysicalChunk(physicalChunk);
 				task.setFile(file);
+				executorService.execute(task);
 			}
 		}
 	}

@@ -140,4 +140,58 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Broken);
 	}
+	
+	@Test
+	public void testFileIntegrityOneChunkShouldRecoverBrokenChunks() throws Exception {
+		String fileName = "testFileIntegrityOneChunkShouldRecoverBrokenChunks";
+		File expected = this.createFileHelper(this.in, fileName, 15);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
+		uploadTask.setFile(expected);
+		uploadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 1);
+		byte[] expectedBytes = this.generateMd5(expected);
+		Assert.assertEquals(this.generateMd5(uploadedFilesAdapter1[0]), expectedBytes);
+		Assert.assertEquals(this.generateMd5(uploadedFilesAdapter2[0]), expectedBytes);
+		Assert.assertEquals(this.generateMd5(uploadedFilesAdapter3[0]), expectedBytes);
+		
+		corruptFile(uploadedFilesAdapter1[0]);
+		Assert.assertNotEquals(this.generateMd5(uploadedFilesAdapter1[0]), expectedBytes);
+		corruptFile(uploadedFilesAdapter2[0]);
+		Assert.assertNotEquals(this.generateMd5(uploadedFilesAdapter2[0]), expectedBytes);
+
+		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		Assert.assertEquals(raidFile.getChunks().size(), 1);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.NotChecked);
+		
+		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
+		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
+		checkTask.run();
+		
+		Thread.sleep(10000);
+		
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		
+		uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 1);
+		Assert.assertEquals(this.generateMd5(uploadedFilesAdapter1[0]), expectedBytes);
+		Assert.assertEquals(this.generateMd5(uploadedFilesAdapter2[0]), expectedBytes);
+		Assert.assertEquals(this.generateMd5(uploadedFilesAdapter3[0]), expectedBytes);
+	}
 }
