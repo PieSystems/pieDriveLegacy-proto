@@ -91,6 +91,7 @@ public class DatabaseTest extends IntegrationTestBase {
         chunks.add(phChunk2);
 
         file1.setChunks(chunks);
+		file1.setUid("RaidFileUUID1");
         file1.setFileName("FileName1");
         file1.setLastModified(500);
         file1.setRelativeFilePath("Relative");

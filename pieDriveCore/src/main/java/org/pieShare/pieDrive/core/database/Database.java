@@ -45,7 +45,7 @@ public class Database {
     private FolderEntityRepository folderEntityRepository;
     @Autowired
     private BaseEntityRepository baseEntityRepository;
-    
+
     private IDatabaseFactory databseFactory;
 
     public void setDatabseFactory(IDatabaseFactory databseFactory) {
@@ -66,29 +66,14 @@ public class Database {
 
     public void persistPieRaidFile(PieRaidFile pieRaidFile) {
         pieRaidFileRepositoryCustom.persistPieRaidFile(pieRaidFile);
-		pieRaidFileEntity.setUid(pieRaidFile.getUid());
     }
 
     public PieRaidFile findPieRaidFileById(String id) {
         return pieRaidFileRepositoryCustom.findPieRaidFileById(id);
-	 * @param name
-	 * @return 
-	 */
-    }
-	
-	public PieRaidFile findPieRaidFileById(String uid) {
-
-        PieRaidFile piePieRaidFile = new PieRaidFile();
-
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        PieRaidFileEntity pieRaidFileEntity = em.find(PieRaidFileEntity.class, uid);
-
-        return convertPieRaidFileEntityToObject(pieRaidFileEntity);
     }
 
     public List<PieRaidFile> findAllPieRaidFiles() {
         return pieRaidFileRepositoryCustom.findAllPieRaidFiles();
-		piePieRaidFile.setUid(pieRaidFileEntity.getUid());
     }
 
     public void updateAdaptorChunk(AdapterChunk chunk) {

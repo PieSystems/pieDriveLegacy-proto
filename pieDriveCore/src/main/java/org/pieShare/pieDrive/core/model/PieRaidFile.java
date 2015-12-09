@@ -25,14 +25,14 @@ public class PieRaidFile {
         uid = UUID.randomUUID().toString();
     }
 
-	public String getUid() {
-		return uid;
-	}
+    public String getUid() {
+        return uid;
+    }
 
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
-	
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     public String getRelativeFilePath() {
         return relativeFilePath;
     }
@@ -71,13 +71,5 @@ public class PieRaidFile {
 
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 }

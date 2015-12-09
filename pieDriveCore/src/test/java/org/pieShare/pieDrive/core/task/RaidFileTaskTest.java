@@ -12,7 +12,6 @@ import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
@@ -42,8 +41,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1() throws Exception {
 		String fileName = "testOneChunkFile";
 		File expected = this.createFileHelper(this.in, fileName, 15);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
 
@@ -58,7 +59,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
 		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
 
-		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
@@ -78,8 +79,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1OneCorruptChunkOnServer() throws Exception {
 		String fileName = "testOneChunkFileOneCorruptChunkOnServer";
 		File expected = this.createFileHelper(this.in, fileName, 15);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
 		Thread.sleep(2000);
@@ -98,7 +101,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		corruptFile(uploadedFilesAdapter1[0]);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
 
-		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
@@ -117,7 +120,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
 		
-		raidFile = this.db.findPieRaidFileByName(fileName);
+		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
@@ -134,9 +137,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1TwoCorruptChunksOnServer() throws Exception {
 		String fileName = "testOneChunkFileTwoCorruptChunksOnServer";
 		File expected = this.createFileHelper(this.in, fileName, 15);
-		PieLogger.trace(RaidFileTaskTest.class, "Filename: {}", expected.getName());
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
 		Thread.sleep(2000);
@@ -157,7 +161,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		corruptFile(uploadedFilesAdapter2[0]);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
 
-		PieRaidFile raidFile = this.db.findPieRaidFileById(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
@@ -176,7 +180,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
 		
-		raidFile = this.db.findPieRaidFileByName(fileName);
+		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
@@ -193,8 +197,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1ThreeCorruptChunksOnServer() throws Exception {
 		String fileName = "testOneChunkFileThreeCorruptChunksOnServer";
 		File expected = this.createFileHelper(this.in, fileName, 15);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
 		Thread.sleep(2000);
@@ -217,7 +223,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		corruptFile(uploadedFilesAdapter3[0]);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
 
-		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
@@ -233,7 +239,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		
 		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
 		
-		raidFile = this.db.findPieRaidFileByName(fileName);
+		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
@@ -250,8 +256,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1WithMultiChunks() throws Exception {
 		String fileName = "testMultiChunkFile";
 		File expected = this.createFileHelper(this.in, fileName, 96);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
 		Thread.sleep(2000);
@@ -263,7 +271,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(uploadedFilesAdapter2.length, 5);
 		Assert.assertEquals(uploadedFilesAdapter3.length, 5);
 
-		PieRaidFile raidFile = this.db.findPieRaidFileById(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
@@ -271,7 +279,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
 
-		Thread.sleep(2000);
+		Thread.sleep(4000);
 
 		byte[] expectedBytes = this.generateMd5(expected);
 		File[] downloadedFiles = this.out.listFiles();
@@ -284,8 +292,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1WithMultiChunksRecoverableCorruption() throws Exception {
 		String fileName = "testMultiChunkFileRecoverableCorruption";
 		File expected = this.createFileHelper(this.in, fileName, 96);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
 		Thread.sleep(2000);
@@ -301,7 +311,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 			corruptFile(file);
 		}
 
-		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
@@ -337,7 +347,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
 		
-		raidFile = this.db.findPieRaidFileByName(fileName);
+		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
@@ -354,8 +364,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1WithMultiChunksIrrecoverableCorruption() throws Exception {
 		String fileName = "testMultiChunkFileIrrecoverableCorruption";
 		File expected = this.createFileHelper(this.in, fileName, 96);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
 		Thread.sleep(2000);
@@ -377,7 +389,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 			corruptFile(file);
 		}
 
-		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
@@ -394,7 +406,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 
 		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
 		
-		raidFile = this.db.findPieRaidFileByName(fileName);
+		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
