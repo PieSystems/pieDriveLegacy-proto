@@ -7,17 +7,18 @@ package org.pieShare.pieDrive.core.task;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.stream.BoundedOutputStream;
 import org.pieShare.pieDrive.core.stream.NioOutputStream;
@@ -30,13 +31,13 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
  */
 public class DownloadChunkTask implements IPieTask {
 
-	private AdapterChunk chunk;
 	private AdapterCoreService adapterCoreService;
 	private PhysicalChunk physicalChunk;
 	private RandomAccessFile file;
+	private int adapterIndex;
 
-	public void setChunk(AdapterChunk chunk) {
-		this.chunk = chunk;
+	public void setAdapterIndex(int adapterIndex) {
+		this.adapterIndex = adapterIndex;
 	}
 
 	public void setAdapterCoreService(AdapterCoreService adapterCoreService) {
@@ -53,33 +54,28 @@ public class DownloadChunkTask implements IPieTask {
 
 	@Override
 	public void run() {
+		ArrayList<AdapterId> adatperIds = new ArrayList<>(adapterCoreService.getAdaptersKey());
+		int size = adatperIds.size();
 
-		while (this.chunk != null) {
-
+		for (int i = 0; i < size; i++) {
 			DigestOutputStream hStr = null;
 			try {
 				NioOutputStream nioStream = StreamFactory.getNioOutputStream(file, physicalChunk.getOffset());
 				BufferedOutputStream bufferedStream = StreamFactory.getBufferedOutputStream(nioStream, 65536); //64kB
-				BoundedOutputStream boudedStream = StreamFactory.getBoundedOutputStream(bufferedStream, physicalChunk.getSize());
-				hStr = StreamFactory.getDigestOutputStream(boudedStream, MessageDigest.getInstance("MD5"));
+				BoundedOutputStream boundedStream = StreamFactory.getBoundedOutputStream(bufferedStream, physicalChunk.getSize());
+				hStr = StreamFactory.getDigestOutputStream(boundedStream, MessageDigest.getInstance("MD5"));
 
+				AdapterChunk chunk = this.physicalChunk.getChunks().get(adatperIds.get(this.adapterIndex));
 				adapterCoreService.getAdapter(chunk.getAdapterId()).download(chunk, hStr);
 				byte[] hash = hStr.getMessageDigest().digest();
 
 				if (Arrays.equals(physicalChunk.getHash(), hash)) {
+					chunk.setState(ChunkHealthState.Healthy);
 					return;
 				}
 
-				this.chunk = null;
-
-				if (physicalChunk.getChunks().size() > 0) {
-					AdapterId chunkId = physicalChunk.getChunks().keySet().iterator().next();
-					this.chunk = physicalChunk.getChunks().remove(chunkId);
-				}
-				else {
-					//TODO fail task
-					//throw new DownloadChunkException("All adapter chunks are corrupt");
-				}
+				chunk.setState(ChunkHealthState.Broken);
+				this.adapterIndex = this.adapterCoreService.calculateNextAdapter(this.adapterIndex);
 			} catch (NoSuchAlgorithmException ex) {
 				Logger.getLogger(DownloadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 				try {
@@ -89,6 +85,9 @@ public class DownloadChunkTask implements IPieTask {
 				}
 			}
 		}
+		
+		//TODO fail task
+		//throw new DownloadChunkException("All adapter chunks are corrupt");
 	}
 
 }
