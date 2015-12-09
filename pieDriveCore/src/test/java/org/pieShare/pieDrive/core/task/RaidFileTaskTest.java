@@ -6,34 +6,11 @@
 package org.pieShare.pieDrive.core.task;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Random;
-import javax.inject.Provider;
-import org.apache.commons.io.FileUtils;
-import org.pieShare.pieDrive.core.AdapterCoreService;
-import org.pieShare.pieDrive.core.IntegrationTestBase;
-import org.pieShare.pieDrive.core.PieDriveCoreService;
-import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.DatabaseFactory;
-import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
-import org.pieShare.pieDrive.core.task.help.FakeAdapter;
-import org.pieShare.pieDrive.core.task.help.FakeAdapterCallCounter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -42,111 +19,7 @@ import org.testng.annotations.Test;
  */
 @DirtiesContext
 @ContextConfiguration(classes = CoreTestConfig.class)
-public class RaidFileTaskTest extends IntegrationTestBase {
-
-	@Autowired
-	private Provider<UploadRaidFileTask> uploadRaidFileProvider;
-	@Autowired
-	private Provider<DownloadRaidFileTask> downloadRaidFileProvider;
-
-	@Autowired
-	private FakeAdapterCallCounter counter;
-	@Autowired
-	private Database db;
-	@Autowired
-	private DatabaseFactory fac;
-	@Autowired
-	private AdapterCoreService adapterCoreService;
-
-	private File testFolder;
-	private File uploadBase;
-	private File uploadAdapter1;
-	private File uploadAdapter2;
-	private File uploadAdapter3;
-	private File in;
-	private File out;
-
-	@Override
-	@BeforeClass
-	public void setUpIt() throws IOException, Exception {
-		super.setUpIt();
-		this.testFolder = new File(this.integrationTestFolder, "test");
-
-		//init new DB
-		File dbFile = new File(super.integrationTestFolder, "databaseTaskTest.odb");
-		fac.setDatabaseName(dbFile.getPath());
-		fac.init();
-	}
-
-	@BeforeMethod
-	public void setUp() throws IOException {
-		if (testFolder.exists()) {
-			FileUtils.deleteDirectory(testFolder);
-		}
-
-		this.testFolder.mkdirs();
-		this.uploadBase = new File(this.testFolder, "upload");
-		this.uploadBase.mkdirs();
-		this.uploadAdapter1 = new File(this.uploadBase, "adapter1");
-		this.uploadAdapter1.mkdirs();
-		this.uploadAdapter2 = new File(this.uploadBase, "adapter2");
-		this.uploadAdapter2.mkdirs();
-		this.uploadAdapter3 = new File(this.uploadBase, "adapter3");
-		this.uploadAdapter3.mkdirs();
-		this.in = new File(this.testFolder, "in");
-		this.in.mkdirs();
-		this.out = new File(this.testFolder, "out");
-		this.out.mkdirs();
-
-		Object[] adapterKeys = adapterCoreService.getAdaptersKey().toArray();
-		FakeAdapter adapter = (FakeAdapter)adapterCoreService.getAdapter((AdapterId)adapterKeys[0]);
-		adapter.setParent(this.uploadAdapter1);
-		adapter = (FakeAdapter)adapterCoreService.getAdapter((AdapterId)adapterKeys[1]);
-		adapter.setParent(this.uploadAdapter2);
-		adapter = (FakeAdapter)adapterCoreService.getAdapter((AdapterId)adapterKeys[2]);
-		adapter.setParent(this.uploadAdapter3);
-
-		//reset download counter
-		this.counter.setCounter(0);
-
-		//set chunk size for tests
-		PieDriveCoreService pCore = super.applicationContext.getBean(PieDriveCoreService.class);
-		pCore.setChunkSize(20); //20 byte
-	}
-
-	private File createFileHelper(File parent, String fileName, int size) throws IOException {
-		File file = new File(parent, fileName);
-		FileOutputStream fstr = new FileOutputStream(file);
-		byte[] bytes = new byte[size];
-		Random r = new Random();
-		r.nextBytes(bytes);
-		fstr.write(bytes);
-		fstr.flush();
-		fstr.close();
-		return file;
-	}
-
-	private void corruptFile(File file) throws IOException {
-		FileOutputStream fstr = new FileOutputStream(file, false);
-		byte[] bytes = new byte[(int) file.length()];
-		Random r = new Random();
-		r.nextBytes(bytes);
-		fstr.write(bytes);
-		fstr.flush();
-		fstr.close();
-	}
-
-	private byte[] generateMd5(File file) throws FileNotFoundException, NoSuchAlgorithmException, IOException {
-		FileInputStream fio = new FileInputStream(file);
-		DigestInputStream dio = new DigestInputStream(fio, MessageDigest.getInstance("MD5"));
-		while (dio.read() != -1) {
-		}
-		return dio.getMessageDigest().digest();
-	}
-
-	/**
-	 * Test of run method, of class RaidFileTask.
-	 */
+public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testUpAndDownLoadFileRaid1() throws Exception {
 		String fileName = "testOneChunkFile";
@@ -259,7 +132,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 		Assert.assertEquals(3, this.counter.getCount());
 	}
-	
+
 	//@Test
 	public void testUpAndDownLoadFileRaid1ThreeCorruptChunksOnServer() throws Exception {
 		String fileName = "testOneChunkFileThreeCorruptChunksOnServer";
@@ -293,7 +166,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
-		
+
 		Thread.sleep(2000);
 
 		Assert.fail("Download task should fail");
@@ -330,7 +203,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 		Assert.assertEquals(5, this.counter.getCount());
 	}
-	
+
 	@Test
 	public void testUpAndDownLoadFileRaid1WithMultiChunksRecoverableCorruption() throws Exception {
 		String fileName = "testMultiChunkFileRecoverableCorruption";
@@ -347,8 +220,8 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		Assert.assertEquals(uploadedFilesAdapter1.length, 5);
 		Assert.assertEquals(uploadedFilesAdapter2.length, 5);
 		Assert.assertEquals(uploadedFilesAdapter3.length, 5);
-		
-		for(File file : uploadedFilesAdapter1) {
+
+		for (File file : uploadedFilesAdapter1) {
 			corruptFile(file);
 		}
 
@@ -366,7 +239,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 		Assert.assertEquals(7, this.counter.getCount());
 	}
-	
+
 	//@Test
 	public void testUpAndDownLoadFileRaid1WithMultiChunksIrrecoverableCorruption() throws Exception {
 		String fileName = "testMultiChunkFileIrrecoverableCorruption";
@@ -383,7 +256,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		Assert.assertEquals(uploadedFilesAdapter1.length, 5);
 		Assert.assertEquals(uploadedFilesAdapter2.length, 5);
 		Assert.assertEquals(uploadedFilesAdapter3.length, 5);
-		
+
 		corruptFile(uploadedFilesAdapter1[3]);
 		corruptFile(uploadedFilesAdapter2[3]);
 		corruptFile(uploadedFilesAdapter3[3]);
@@ -395,7 +268,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		downloadTask.run();
 
 		Thread.sleep(2000);
-		
+
 		Assert.fail("Download task should fail");
 	}
 }
