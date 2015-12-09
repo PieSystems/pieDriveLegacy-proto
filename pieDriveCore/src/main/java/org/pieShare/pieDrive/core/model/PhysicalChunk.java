@@ -27,6 +27,10 @@ public class PhysicalChunk {
         this.chunks.put(chunk.getAdapterId(), chunk);
         return this;
     }
+	
+	public void removeAdapterChunk(AdapterId id) {
+		this.chunks.remove(id);
+	}
 
 	public Map<AdapterId, AdapterChunk> getChunks() {
 		return chunks;
