@@ -18,7 +18,6 @@ import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityReposit
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryCustom;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
-import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.springframework.beans.factory.annotation.Autowired;
