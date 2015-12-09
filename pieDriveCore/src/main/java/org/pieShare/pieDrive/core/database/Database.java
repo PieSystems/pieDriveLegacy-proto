@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
 import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.BaseEntityRepository;
@@ -45,12 +44,6 @@ public class Database {
     private FolderEntityRepository folderEntityRepository;
     @Autowired
     private BaseEntityRepository baseEntityRepository;
-
-    private IDatabaseFactory databseFactory;
-
-    public void setDatabseFactory(IDatabaseFactory databseFactory) {
-        this.databseFactory = databseFactory;
-    }
 
     public void persist(BaseEntity entity) {
         baseEntityRepository.save(entity);
