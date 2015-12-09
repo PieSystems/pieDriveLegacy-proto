@@ -11,7 +11,7 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
-import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
+import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,7 +23,7 @@ import org.testng.annotations.Test;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 @DirtiesContext
-@ContextConfiguration(classes = CoreTestConfig.class)
+@ContextConfiguration(classes = FakeAdapterCoreTestConfig.class)
 public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	
 	private void assertRaidFile(PieRaidFile file, ChunkHealthState state) {
@@ -310,7 +310,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
 
-		Thread.sleep(2000);
+		Thread.sleep(4000);
 
 		byte[] expectedBytes = this.generateMd5(expected);
 		File[] downloadedFiles = this.out.listFiles();
