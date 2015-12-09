@@ -23,6 +23,7 @@ import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -44,7 +45,8 @@ public class UploadRaidFileTask implements IPieTask {
 
 	public void run() {
 		try {
-			raidedFile = driveCoreService.calculateRaidFile(file);
+			PieLogger.debug(this.getClass(), "Starting file upload for {}", this.file.getName());
+			
 			RandomAccessFile rFile = new RandomAccessFile(file, "r");
 			
 			//we need to iterate twice so we can guarante that the object 
@@ -78,6 +80,10 @@ public class UploadRaidFileTask implements IPieTask {
 
 	public void setFile(File file) {
 		this.file = file;
+	}
+
+	public void setRaidedFile(PieRaidFile raidedFile) {
+		this.raidedFile = raidedFile;
 	}
 
 	public void setExecutorService(IExecutorService executorService) {

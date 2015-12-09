@@ -8,17 +8,15 @@ package org.pieShare.pieDrive.core.task;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
 import org.pieShare.pieDrive.core.AdapterCoreService;
-import org.pieShare.pieDrive.core.model.AdapterChunk;
-import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -38,7 +36,7 @@ public class DownloadRaidFileTask implements IPieTask {
 	@Override
 	public void run() {
 		try {
-			ArrayList<AdapterId> adatperIds = new ArrayList<>(adapterCoreService.getAdaptersKey());
+			PieLogger.debug(this.getClass(), "Starting download for {}", this.raidFile.getFileName());
 			int adapterCounter = -1;
 
 			File ffile = new File(this.outputDir, raidFile.getFileName());
@@ -47,12 +45,10 @@ public class DownloadRaidFileTask implements IPieTask {
 			this.file.setLength(this.raidFile.getFileSize());
 
 			for (PhysicalChunk physicalChunk : raidFile.getChunks()) {
-				adapterCounter = (++adapterCounter) % adatperIds.size();
-				AdapterId next = adatperIds.get(adapterCounter);
-				AdapterChunk chunk = physicalChunk.getChunks().remove(next);
+				adapterCounter = this.adapterCoreService.calculateNextAdapter(adapterCounter);
 
 				DownloadChunkTask task = downloadChunkProvider.get();
-				task.setChunk(chunk);
+				task.setAdapterIndex(adapterCounter);
 				task.setPhysicalChunk(physicalChunk);
 				task.setFile(file);
 				executorService.execute(task);

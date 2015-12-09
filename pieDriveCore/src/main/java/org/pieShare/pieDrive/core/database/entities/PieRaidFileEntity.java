@@ -19,6 +19,7 @@ import javax.persistence.OneToMany;
 @Entity
 public class PieRaidFileEntity {
 
+	private String uid;
     private String fileName;
     private long lastModified;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pieRaidFileEntity")
@@ -38,6 +39,14 @@ public class PieRaidFileEntity {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
 
     public long getLastModified() {
         return lastModified;

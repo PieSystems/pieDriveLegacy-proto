@@ -21,6 +21,7 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.DownloadChunkTask;
 import org.pieShare.pieDrive.core.task.DownloadRaidFileTask;
+import org.pieShare.pieDrive.core.task.IntegrityCheckTask;
 import org.pieShare.pieDrive.core.task.UploadChunkTask;
 import org.pieShare.pieDrive.core.task.UploadRaidFileTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
@@ -53,6 +54,8 @@ public class CoreAppConfig {
     private Provider<AdapterChunk> adapterChunkProvider;
     @Autowired
     private Provider<UploadChunkTask> uploadChunkTaskProvider;
+	@Autowired
+	private Provider<IntegrityCheckTask> integrityCheckTaskProvider;
 
     @Bean
     public EmbeddedDatabase dataSource() {
@@ -192,6 +195,8 @@ public class CoreAppConfig {
     public DownloadChunkTask downloadChunkTask() {
         DownloadChunkTask task = new DownloadChunkTask();
         task.setAdapterCoreService(this.simpleAdapterCoreService());
+		task.setExecutor(this.executorService());
+		task.setTask(this.integrityCheckTask());
         return task;
     }
 
@@ -204,6 +209,17 @@ public class CoreAppConfig {
         task.setExecutorService(this.executorService());
 
         task.setDownloadChunkProvider(downloadChunkProvider);
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope("prototype")
+	public IntegrityCheckTask integrityCheckTask() {
+		IntegrityCheckTask task = new IntegrityCheckTask();
+		task.setAdapterCoreService(this.simpleAdapterCoreService());
+		task.setExecutorService(this.executorService());
+		task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
         return task;
     }
 

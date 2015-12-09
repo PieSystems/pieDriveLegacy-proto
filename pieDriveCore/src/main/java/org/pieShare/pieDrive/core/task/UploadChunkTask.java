@@ -23,6 +23,7 @@ import org.pieShare.pieDrive.core.stream.BoundedInputStream;
 import org.pieShare.pieDrive.core.stream.NioInputStream;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -58,7 +59,8 @@ public class UploadChunkTask implements IPieTask {
 
 	@Override
 	public void run() {
-
+		PieLogger.debug(this.getClass(), "Starting chunk upload for "
+				+ "{} with adapter {}", this.chunk.getUuid(), this.chunk.getAdapterId().getId());
 		DigestInputStream hStr = null;
 		try {
 			NioInputStream nioStream = StreamFactory.getNioInputStream(file, physicalChunk.getOffset());
@@ -69,6 +71,7 @@ public class UploadChunkTask implements IPieTask {
 			adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, hStr);
 			byte[] hash = hStr.getMessageDigest().digest();
 			
+			boolean updateChunk = (chunk.getHash() == null || chunk.getHash().length == 0);
 			chunk.setHash(hash);
 			//if we are the first and the physical chunk has not yet a hash value
 			//has to be synchronized for the adapters of the same physical chunk
@@ -84,7 +87,7 @@ public class UploadChunkTask implements IPieTask {
 				}
 			}	//todo: remove synchronizations after @richy fixes threading in DB
 			//otherwise do an sanity check and persist hashes
-			if (Arrays.equals(physicalChunk.getHash(), hash)) {
+			if (updateChunk && Arrays.equals(physicalChunk.getHash(), hash)) {
 				synchronized (database) {
 					this.database.updateAdaptorChunk(chunk);
 					return;
