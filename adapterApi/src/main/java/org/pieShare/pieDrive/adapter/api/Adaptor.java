@@ -5,17 +5,14 @@
  */
 package org.pieShare.pieDrive.adapter.api;
 
+import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.adapter.model.PieDriveFile;
 
-/**
- *
- * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
- */
 public interface Adaptor {
 
-    void delte(PieDriveFile file);
+    void delte(PieDriveFile file) throws AdaptorException;
 
-    void upload(PieDriveFile file);
+    void upload(PieDriveFile file) throws AdaptorException;
 
-    void download(PieDriveFile file);
+    void download(PieDriveFile file) throws AdaptorException;
 }
