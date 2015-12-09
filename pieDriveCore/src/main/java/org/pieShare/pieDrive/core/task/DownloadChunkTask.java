@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
@@ -77,7 +78,7 @@ public class DownloadChunkTask implements IPieTask {
 					this.chunk = physicalChunk.getChunks().remove(chunkId);
 				}
 
-			} catch (NoSuchAlgorithmException ex) {
+			} catch (NoSuchAlgorithmException | AdaptorException ex) {
 				Logger.getLogger(DownloadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 				try {
 					hStr.close();
