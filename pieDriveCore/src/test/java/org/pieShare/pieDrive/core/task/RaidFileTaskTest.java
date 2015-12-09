@@ -47,6 +47,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.run();
 
+		Thread.sleep(2000);
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
