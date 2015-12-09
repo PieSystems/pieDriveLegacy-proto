@@ -68,7 +68,7 @@ public class UploadChunkTask implements IPieTask {
 			adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, hStr);
 			byte[] hash = hStr.getMessageDigest().digest();
 			
-			boolean updateChunk = (chunk.getHash().length > 0);
+			boolean updateChunk = (chunk.getHash() == null || chunk.getHash().length == 0);
 			chunk.setHash(hash);
 			//if we are the first and the physical chunk has not yet a hash value
 			//has to be synchronized for the adapters of the same physical chunk
