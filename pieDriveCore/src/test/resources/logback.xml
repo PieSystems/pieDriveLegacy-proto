@@ -22,6 +22,12 @@
 	  <ReconnectionDelay>170</ReconnectionDelay>
 	  <IncludeCallerData>true</IncludeCallerData>
 	</appender>
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+		  <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
   
   <logger name="javax.management.mbeanserver" level="ERROR"/>
   <logger name="javax.management.misc" level="ERROR"/>
@@ -35,5 +41,6 @@
   <root level="TRACE">
 	<appender-ref ref="lilithFile"/>
 	<appender-ref ref="LogbackClassic"/>
+	<appender-ref ref="STDOUT"/>
   </root>
 </configuration>
