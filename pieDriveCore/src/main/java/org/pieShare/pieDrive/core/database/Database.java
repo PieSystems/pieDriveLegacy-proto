@@ -14,9 +14,11 @@ import javax.persistence.Query;
 import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
 import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
+import org.pieShare.pieDrive.core.database.repository.FolderEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryCustom;
+import org.pieShare.pieDrive.core.database.repository.VolumesEntityRepository;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
@@ -36,6 +38,10 @@ public class Database {
     private PhysicalChunkEntityRepository physicalChunkEntityRepository;
     @Autowired
     private PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom;
+    @Autowired
+    private VolumesEntityRepository volumesEntityRepository;
+    @Autowired
+    private FolderEntityRepository folderEntityRepository;
 
     private IDatabaseFactory databseFactory;
 
@@ -62,15 +68,15 @@ public class Database {
     }
 
     public void persistPieRaidFile(PieRaidFile pieRaidFile) {
-      pieRaidFileRepositoryCustom.persistPieRaidFile(pieRaidFile);
+        pieRaidFileRepositoryCustom.persistPieRaidFile(pieRaidFile);
     }
 
     public PieRaidFile findPieRaidFileById(String id) {
-       return pieRaidFileRepositoryCustom.findPieRaidFileById(id);
+        return pieRaidFileRepositoryCustom.findPieRaidFileById(id);
     }
 
     public List<PieRaidFile> findAllPieRaidFiles() {
-       return pieRaidFileRepositoryCustom.findAllPieRaidFiles();
+        return pieRaidFileRepositoryCustom.findAllPieRaidFiles();
     }
 
     public void updateAdaptorChunk(AdapterChunk chunk) {
@@ -103,10 +109,9 @@ public class Database {
 
         //TODO find solution for empty objectDB problem
         try {
-            EntityManager em = databseFactory.getEntityManger(VolumesEntity.class);
-
-            Query query = em.createQuery("SELECT v from VolumesEntity v");
-            return (Collection<VolumesEntity>) query.getResultList();
+            return volumesEntityRepository.findAll();
+            //Query query = em.createQuery("SELECT v from VolumesEntity v");
+            //return (Collection<VolumesEntity>) query.getResultList();
         } catch (Exception e) {
 
             Collection<VolumesEntity> tmp = new ArrayList<VolumesEntity>();
@@ -116,12 +121,10 @@ public class Database {
     }
 
     public VolumesEntity getVolumeById(long id) {
-        EntityManager em = databseFactory.getEntityManger(VolumesEntity.class);
-        return em.find(VolumesEntity.class, id);
+        return volumesEntityRepository.findOne(id);
     }
 
     public FolderEntity getFolderById(Long id) {
-        EntityManager em = databseFactory.getEntityManger(FolderEntity.class);
-        return em.find(FolderEntity.class, id);
+        return folderEntityRepository.findOne(id);
     }
 }
