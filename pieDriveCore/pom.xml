@@ -26,6 +26,27 @@
             <version>1.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
+		
+		<dependency>
+            <groupId>org.pieShare</groupId>
+            <artifactId>adapterDropbox</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+		
+		<dependency>
+            <groupId>org.pieShare</groupId>
+            <artifactId>adapterBox</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+		
+		<dependency>
+            <groupId>org.pieShare</groupId>
+            <artifactId>adapterS3</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
         
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

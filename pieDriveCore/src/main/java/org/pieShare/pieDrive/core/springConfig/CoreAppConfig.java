@@ -11,6 +11,9 @@ import java.util.Map;
 import javax.inject.Provider;
 import javax.persistence.spi.PersistenceProvider;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
+import org.pieShare.pieDrive.adapter.box.BoxAdapter;
+import org.pieShare.pieDrive.adapter.dropbox.DropboxAdapter;
+import org.pieShare.pieDrive.adapter.s3.S3Adapter;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
@@ -149,19 +152,22 @@ public class CoreAppConfig {
     @Bean
     @Lazy
     public Adaptor dropboxAdapter() {
-        throw new UnsupportedOperationException("Not implemented yet!");
+		DropboxAdapter adapter = new DropboxAdapter();
+		return adapter;
     }
 
     @Bean
     @Lazy
     public Adaptor boxAdapter() {
-        throw new UnsupportedOperationException("Not implemented yet!");
+		BoxAdapter box = new BoxAdapter();
+		return box;
     }
 
     @Bean
     @Lazy
     public Adaptor s3Adapter() {
-        throw new UnsupportedOperationException("Not implemented yet!");
+		S3Adapter s3 = new S3Adapter();
+		return s3;
     }
 
     @Bean
