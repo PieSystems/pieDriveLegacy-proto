@@ -13,6 +13,7 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 	
@@ -59,6 +60,7 @@ public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 			}
 			
 			if(adapterChunk.getState() == ChunkHealthState.Broken) {
+				PieLogger.debug(this.getClass(), "Recovering chunk {} on adapter {}", adapterChunk.getUuid(), adapterChunk.getAdapterId().getId());
 				UploadChunkTask task = this.uploadChunkTaskProvider.get();
 				task.setChunk(adapterChunk);
 				task.setPhysicalChunk(physicalChunk);

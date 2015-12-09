@@ -25,6 +25,7 @@ import org.pieShare.pieDrive.core.stream.NioOutputStream;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -70,6 +71,7 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 				AdapterChunk chunk = this.physicalChunk.getChunks().get(adatperIds.get(this.adapterIndex));
 				
 				if(this.download(chunk, hStr)) {
+					PieLogger.debug(this.getClass(), "Download successfull for chunk {}", chunk.getUuid());
 					this.task.setPhysicalChunk(physicalChunk);
 					this.task.setFile(file);
 					this.executor.execute(task);
@@ -86,6 +88,8 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 				}
 			}
 		}
+		
+		PieLogger.debug(this.getClass(), "Could not find one single uncorrupted chunk!");
 		
 		//TODO fail task
 		//throw new DownloadChunkException("All adapter chunks are corrupt");

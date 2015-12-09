@@ -21,6 +21,7 @@ import org.pieShare.pieDrive.core.stream.BoundedOutputStream;
 import org.pieShare.pieDrive.core.stream.NioOutputStream;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -40,6 +41,7 @@ public abstract class ADownloadChunkTask implements IPieTask {
 	}
 
 	protected boolean download(AdapterChunk chunk, DigestOutputStream stream) {
+		PieLogger.debug(this.getClass(), "Downloading chunk {} from {}", chunk.getUuid(), chunk.getAdapterId().getId());
 		adapterCoreService.getAdapter(chunk.getAdapterId()).download(chunk, stream);
 		byte[] hash = stream.getMessageDigest().digest();
 

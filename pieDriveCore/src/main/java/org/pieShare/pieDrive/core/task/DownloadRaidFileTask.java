@@ -16,6 +16,7 @@ import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -35,7 +36,7 @@ public class DownloadRaidFileTask implements IPieTask {
 	@Override
 	public void run() {
 		try {
-			
+			PieLogger.debug(this.getClass(), "Starting download for {}", this.raidFile.getFileName());
 			int adapterCounter = -1;
 
 			File ffile = new File(this.outputDir, raidFile.getFileName());
