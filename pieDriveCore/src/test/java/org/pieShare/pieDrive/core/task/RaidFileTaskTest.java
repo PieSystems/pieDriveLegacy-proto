@@ -6,6 +6,7 @@
 package org.pieShare.pieDrive.core.task;
 
 import java.io.File;
+import java.util.ArrayList;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
@@ -96,6 +97,11 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
 
 		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.NotChecked);
+		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
@@ -106,7 +112,10 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
-		Assert.assertEquals(2, this.counter.getCount());
+		
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
 	}
 
 	@Test
@@ -136,6 +145,11 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
 
 		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.NotChecked);
+		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
@@ -146,10 +160,13 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
-		Assert.assertEquals(3, this.counter.getCount());
+		
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
 	}
 
-	//@Test
+	@Test
 	public void testUpAndDownLoadFileRaid1ThreeCorruptChunksOnServer() throws Exception {
 		String fileName = "testOneChunkFileThreeCorruptChunksOnServer";
 		File expected = this.createFileHelper(this.in, fileName, 15);
@@ -178,6 +195,11 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
 
 		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.NotChecked);
+		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
@@ -185,7 +207,13 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 
 		Thread.sleep(2000);
 
-		Assert.fail("Download task should fail");
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Broken);
 	}
 
 	@Test
