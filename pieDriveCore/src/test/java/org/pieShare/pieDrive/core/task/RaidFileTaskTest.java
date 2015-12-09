@@ -138,7 +138,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[1]));
 		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[2]));
 		
-		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(fileName);
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
@@ -165,7 +165,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		File[] uploadedFiles = this.upload.listFiles();
 		Assert.assertEquals(15, uploadedFiles.length);
 		
-		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		PieRaidFile raidFile = this.db.findPieRaidFileById(fileName);
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);

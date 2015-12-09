@@ -30,12 +30,12 @@ public class DatabaseFactory implements IDatabaseFactory {
     @Override
     public void init() {
         
-        if(emf != null && emf.isOpen())
+     /*   if(emf != null && emf.isOpen())
         {
             emf.close();
         }
         
-        emf = Persistence.createEntityManagerFactory(databaseName);
+        emf = Persistence.createEntityManagerFactory(databaseName);*/
     }
 
     @Override
@@ -53,6 +53,10 @@ public class DatabaseFactory implements IDatabaseFactory {
     @Override
     public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;
+    }
+
+    public void setEmf(EntityManagerFactory emf) {
+        this.emf = emf;
     }
     
   
