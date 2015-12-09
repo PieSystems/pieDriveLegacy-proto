@@ -116,6 +116,15 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
 
 	@Test
@@ -162,6 +171,15 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
 
 	@Test
@@ -206,6 +224,15 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 		
+		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
 	}
 
@@ -299,6 +326,15 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
 
 	@Test
@@ -335,9 +371,23 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
+		
+		byte[] expectedBytes = this.generateMd5(expected);
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 
 		Thread.sleep(2000);
 
+		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
 	}
 }
