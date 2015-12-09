@@ -24,6 +24,7 @@ import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
 import org.pieShare.pieDrive.core.task.help.FakeAdapterCallCounter;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -125,6 +126,7 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 	public void testUpAndDownLoadFileRaid1() throws Exception {
 		String fileName = "testOneChunkFile";
 		File expected = this.createFileHelper(this.in, fileName, 15);
+		PieLogger.trace(RaidFileTaskTest.class, "Filename: {}", expected.getName());
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.run();
