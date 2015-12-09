@@ -12,6 +12,7 @@ import javax.inject.Provider;
 import javax.persistence.spi.PersistenceProvider;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.adapter.box.BoxAdapter;
+import org.pieShare.pieDrive.adapter.box.BoxAuthentication;
 import org.pieShare.pieDrive.adapter.dropbox.DropboxAdapter;
 import org.pieShare.pieDrive.adapter.s3.S3Adapter;
 import org.pieShare.pieDrive.core.AdapterCoreService;
@@ -161,6 +162,12 @@ public class CoreAppConfig {
     public Adaptor boxAdapter() {
 		BoxAdapter box = new BoxAdapter();
 		return box;
+	}
+	
+	@Bean
+	@Lazy
+	public BoxAuthentication boxAuthentication() {
+		return new BoxAuthentication();
     }
 
     @Bean
