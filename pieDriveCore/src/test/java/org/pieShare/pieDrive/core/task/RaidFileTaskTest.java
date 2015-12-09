@@ -6,6 +6,9 @@
 package org.pieShare.pieDrive.core.task;
 
 import java.io.File;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
+import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
 import org.springframework.test.annotation.DirtiesContext;
@@ -20,6 +23,19 @@ import org.testng.annotations.Test;
 @DirtiesContext
 @ContextConfiguration(classes = CoreTestConfig.class)
 public class RaidFileTaskTest extends FileHandlingTaskTestBase {
+	
+	private void assertRaidFile(PieRaidFile file, ChunkHealthState state) {
+		for(PhysicalChunk chunk: file.getChunks()) {
+			this.assertAllState(chunk, state);
+		}
+	}
+	
+	private void assertAllState(PhysicalChunk chunk, ChunkHealthState state) {
+		for(AdapterChunk aChunk: chunk.getChunks().values()) {
+			Assert.assertEquals(aChunk.getState(), state);
+		}
+	}
+	
 	@Test
 	public void testUpAndDownLoadFileRaid1() throws Exception {
 		String fileName = "testOneChunkFile";
@@ -52,7 +68,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
-		Assert.assertEquals(1, this.counter.getCount());
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
 
 	@Test
