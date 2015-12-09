@@ -18,6 +18,7 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.DownloadChunkTask;
 import org.pieShare.pieDrive.core.task.DownloadRaidFileTask;
+import org.pieShare.pieDrive.core.task.IntegrityCheckTask;
 import org.pieShare.pieDrive.core.task.UploadChunkTask;
 import org.pieShare.pieDrive.core.task.UploadRaidFileTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
@@ -41,6 +42,8 @@ public class CoreAppConfig {
 	private Provider<AdapterChunk> adapterChunkProvider;
 	@Autowired
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
+	@Autowired
+	private Provider<IntegrityCheckTask> integrityCheckTaskProvider;
 
     @Bean
     @Lazy
@@ -154,6 +157,16 @@ public class CoreAppConfig {
 		task.setExecutorService(this.executorService());
 		
 		task.setDownloadChunkProvider(downloadChunkProvider);
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope("prototype")
+	public IntegrityCheckTask integrityCheckTask() {
+		IntegrityCheckTask task = new IntegrityCheckTask();
+		task.setAdapterCoreService(this.simpleAdapterCoreService());
+		
 		return task;
 	}
 	
