@@ -7,14 +7,14 @@ import java.util.Collection;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
-import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
+import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @DirtiesContext
-@ContextConfiguration(classes = CoreTestConfig.class)
+@ContextConfiguration(classes = FakeAdapterCoreTestConfig.class)
 public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testFileIntegrityOneChunkAllValid() throws Exception {

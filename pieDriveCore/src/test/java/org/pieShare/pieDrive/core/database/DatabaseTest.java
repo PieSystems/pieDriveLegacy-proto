@@ -15,7 +15,7 @@ import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
-import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
+import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  * @author richy
  */
 @DirtiesContext
-@ContextConfiguration(classes = CoreTestConfig.class)
+@ContextConfiguration(classes = FakeAdapterCoreTestConfig.class)
 public class DatabaseTest extends IntegrationTestBase {
 
     private String databaseTestFile = "databaseTest.odb";
