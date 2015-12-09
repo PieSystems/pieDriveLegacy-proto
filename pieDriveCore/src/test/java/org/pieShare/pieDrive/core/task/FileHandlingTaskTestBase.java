@@ -18,7 +18,6 @@ import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
-import org.pieShare.pieDrive.core.task.help.FakeAdapterCallCounter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -31,8 +30,6 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	@Autowired
 	protected Provider<IntegrityCheckTask> integrityCheckTaskProvider;
 
-	@Autowired
-	protected FakeAdapterCallCounter counter;
 	@Autowired
 	protected Database db;
 	@Autowired
@@ -87,9 +84,6 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 		adapter.setParent(this.uploadAdapter2);
 		adapter = (FakeAdapter) adapterCoreService.getAdapter((AdapterId) adapterKeys[2]);
 		adapter.setParent(this.uploadAdapter3);
-
-		//reset download counter
-		this.counter.setCounter(0);
 
 		//set chunk size for tests
 		PieDriveCoreService pCore = super.applicationContext.getBean(PieDriveCoreService.class);

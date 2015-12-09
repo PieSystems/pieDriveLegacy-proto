@@ -9,7 +9,6 @@ import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
-import org.pieShare.pieDrive.core.task.help.FakeAdapterCallCounter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -49,16 +48,8 @@ public class CoreTestConfig extends CoreAppConfig {
 		return createFakeAdapter();
 	}
 
-	@Bean
-	@Lazy
-	public FakeAdapterCallCounter counter() {
-		return new FakeAdapterCallCounter();
-	}
-
 	private FakeAdapter createFakeAdapter() {
 		FakeAdapter adapter = new FakeAdapter();
-		adapter.setCounter(counter());
 		return adapter;
 	}
-	
 }
