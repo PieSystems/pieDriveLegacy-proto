@@ -11,16 +11,12 @@ import java.util.List;
  */
 
 @Entity
-public class FolderEntity implements IBaseEntity{
+public class FolderEntity extends BaseEntity{
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<FolderEntity> folders;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PieRaidFileEntity> files;
 
     private String folderName;
@@ -62,7 +58,4 @@ public class FolderEntity implements IBaseEntity{
         this.files = files;
     }
 
-    public Long getId() {
-        return id;
-    }
 }

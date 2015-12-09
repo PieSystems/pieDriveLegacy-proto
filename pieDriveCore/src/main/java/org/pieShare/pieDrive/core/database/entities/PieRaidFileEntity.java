@@ -6,14 +6,11 @@
 package org.pieShare.pieDrive.core.database.entities;
 
 import java.util.List;
-import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import org.pieShare.pieDrive.core.model.PhysicalChunk;
 
 /**
  *
@@ -24,7 +21,7 @@ public class PieRaidFileEntity {
 
     private String fileName;
     private long lastModified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pieRaidFileEntity")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pieRaidFileEntity")
     private List<PhysicalChunkEntity> chunks;
     private String relativeFilePath;
     

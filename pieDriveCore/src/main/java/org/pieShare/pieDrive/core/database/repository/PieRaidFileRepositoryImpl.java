@@ -28,8 +28,10 @@ public class PieRaidFileRepositoryImpl implements PieRaidFileRepositoryCustom {
 
     @Override
     public void persistPieRaidFile(PieRaidFile pieRaidFile) {
+       
+        
         PieRaidFileEntity pieRaidFileEntity = new PieRaidFileEntity();
-
+        
         List<PhysicalChunkEntity> physicalChunkEntities = new ArrayList<>();
 
         for (PhysicalChunk chunk : pieRaidFile.getChunks()) {
@@ -80,6 +82,8 @@ public class PieRaidFileRepositoryImpl implements PieRaidFileRepositoryCustom {
         List<PhysicalChunk> physicalChunks = new ArrayList<>();
 
         for (PhysicalChunkEntity physicalChunkEntity : pieRaidFileEntity.getChunks()) {
+            
+            physicalChunkEntity.getChunks().size();
             PhysicalChunk physicalChunk = new PhysicalChunk();
 
             for (AdapterChunkEntity adapterChunkEntity : physicalChunkEntity.getChunks()) {
@@ -117,8 +121,11 @@ public class PieRaidFileRepositoryImpl implements PieRaidFileRepositoryCustom {
     @Override
     public List<PieRaidFile> findAllPieRaidFiles() {
         List<PieRaidFile> pieRaidFiles = new ArrayList<>();
-        for (PieRaidFileEntity entity : pieRaidFileEntityRepository.findAll())//(List<PieRaidFileEntity>) em.createQuery("Select t from " + PieRaidFileEntity.class.getSimpleName() + " t").getResultList()) {
+        List<PieRaidFileEntity> ff = pieRaidFileEntityRepository.findAll();
+        
+        for (PieRaidFileEntity entity : ff)//(List<PieRaidFileEntity>) em.createQuery("Select t from " + PieRaidFileEntity.class.getSimpleName() + " t").getResultList()) {
         {
+            entity.getChunks().size();
             PieRaidFile file = convertPieRaidFileEntityToObject(entity);
             if (file != null) {
                 pieRaidFiles.add(file);

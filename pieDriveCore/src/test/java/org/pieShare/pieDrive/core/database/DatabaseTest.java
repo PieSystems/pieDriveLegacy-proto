@@ -33,15 +33,10 @@ public class DatabaseTest extends IntegrationTestBase {
 
     @Autowired
     private Database database;
-    @Autowired
-    private DatabaseFactory databaseFactory;
 
     @BeforeClass
     public void beforeTest() throws Exception {
 		super.setUpIt();
-		File dbFile = new File(super.integrationTestFolder, databaseTestFile);
-        databaseFactory.setDatabaseName(dbFile.getPath());
-        databaseFactory.init();
     }
 
     @Test

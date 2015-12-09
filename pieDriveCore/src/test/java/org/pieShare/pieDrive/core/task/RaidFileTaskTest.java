@@ -19,7 +19,6 @@ import org.apache.commons.io.FileUtils;
 import org.pieShare.pieDrive.core.IntegrationTestBase;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
@@ -49,8 +48,6 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 	private FakeAdapterCallCounter counter;
 	@Autowired
 	private Database db;
-	@Autowired
-	private DatabaseFactory fac;
 	
 	private File testFolder;
 	private File upload;
@@ -63,10 +60,6 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		super.setUpIt();
 		this.testFolder = new File(this.integrationTestFolder, "test");
 		
-		//init new DB
-		File dbFile = new File(super.integrationTestFolder, "databaseTaskTest.odb");
-		fac.setDatabaseName(dbFile.getPath());
-		fac.init();		
 	}
 
 	@BeforeMethod

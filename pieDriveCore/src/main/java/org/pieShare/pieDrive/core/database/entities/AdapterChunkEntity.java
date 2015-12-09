@@ -7,6 +7,7 @@ package org.pieShare.pieDrive.core.database.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
@@ -33,7 +34,7 @@ public class AdapterChunkEntity {
     @Id
     private String UUID;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private PhysicalChunkEntity physicalChunkEntity;
     
     public String getAdapterId() {

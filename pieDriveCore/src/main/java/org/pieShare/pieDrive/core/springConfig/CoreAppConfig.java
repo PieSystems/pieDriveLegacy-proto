@@ -8,16 +8,13 @@ package org.pieShare.pieDrive.core.springConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.activation.DataSource;
 import javax.inject.Provider;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryCustom;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryImpl;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
@@ -38,18 +35,14 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  *
  * @author richy
  */
-@EnableTransactionManagement
 @Configuration
 @EnableJpaRepositories("org.pieShare.pieDrive.core.database.repository")
 public class CoreAppConfig {
@@ -68,9 +61,9 @@ public class CoreAppConfig {
     }
 
     @Bean
-    public EntityManagerFactory entityManagerFactory() {
-        
-        JpaVendorAdapter vendorAdapter = new AbstractJpaVendorAdapter() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+
+           AbstractJpaVendorAdapter vendorAdapter = new AbstractJpaVendorAdapter() {
             @Override
             public PersistenceProvider getPersistenceProvider() {
                 return new com.objectdb.jpa.Provider();
@@ -82,47 +75,39 @@ public class CoreAppConfig {
                     "javax.persistence.jdbc.url", "database.odb");
             }
         };
-        
+        //HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("org.pieShare.pieDrive.core.database.entities");
+        factory.setPackagesToScan("org.pieShare.pieDrive.core", "org.pieShare.pieDrive.core.database.entities", "org.pieShare.pieDrive.core.database.repository");
         factory.setDataSource(dataSource());
         factory.afterPropertiesSet();
 
-        return factory.getObject();
+        return factory; 
     }
 
     @Bean
+    
     public PlatformTransactionManager transactionManager() {
         JpaTransactionManager txManager = new JpaTransactionManager();
-        txManager.setEntityManagerFactory(entityManagerFactory());
+        txManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return txManager;
     }
-
+     
     @Bean
     @Lazy
     public Database database() {
         Database db = new Database();
-        db.setDatabseFactory(this.databaseFactory());
         return db;
     }
 
     @Bean
     @Lazy
-    public DatabaseFactory databaseFactory() {
-        DatabaseFactory fac = new DatabaseFactory();
-        fac.init();
-        fac.setEmf(entityManagerFactory());
-        return fac;
-    }
-
-    @Bean
-    @Lazy
-    public PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom()
-    {
+    public PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom() {
         return new PieRaidFileRepositoryImpl();
     }
-    
+
     @Bean
     @Lazy
     @Scope("prototype")

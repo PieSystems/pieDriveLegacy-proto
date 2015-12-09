@@ -14,6 +14,7 @@ import javax.persistence.Query;
 import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
 import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
+import org.pieShare.pieDrive.core.database.repository.BaseEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.FolderEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
@@ -42,25 +43,21 @@ public class Database {
     private VolumesEntityRepository volumesEntityRepository;
     @Autowired
     private FolderEntityRepository folderEntityRepository;
-
+    @Autowired
+    private BaseEntityRepository baseEntityRepository;
+    
     private IDatabaseFactory databseFactory;
 
     public void setDatabseFactory(IDatabaseFactory databseFactory) {
         this.databseFactory = databseFactory;
     }
 
-    public void persist(IBaseEntity entity) {
-        EntityManager em = databseFactory.getEntityManger(entity.getClass());
-        em.getTransaction().begin();
-        em.persist(entity);
-        em.getTransaction().commit();
+    public void persist(BaseEntity entity) {
+        baseEntityRepository.save(entity);
     }
 
-    public void remove(IBaseEntity entity) {
-        EntityManager em = databseFactory.getEntityManger(entity.getClass());
-        em.getTransaction().begin();
-        em.remove(entity);
-        em.getTransaction().commit();
+    public void remove(BaseEntity entity) {
+        baseEntityRepository.delete(entity);
     }
 
     public void removePieRaidFile(PieRaidFile file) {
