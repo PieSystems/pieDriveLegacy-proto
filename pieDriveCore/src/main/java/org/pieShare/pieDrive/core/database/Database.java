@@ -8,6 +8,7 @@ package org.pieShare.pieDrive.core.database;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -213,5 +214,15 @@ public class Database {
         }
 
 
+    }
+
+    public VolumesEntity getVolumeById(long id){
+        EntityManager em = databseFactory.getEntityManger(VolumesEntity.class);
+        return em.find(VolumesEntity.class, id);
+    }
+
+    public FolderEntity getFolderById(Long id){
+        EntityManager em = databseFactory.getEntityManger(FolderEntity.class);
+        return em.find(FolderEntity.class, id);
     }
 }

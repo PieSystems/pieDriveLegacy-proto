@@ -4,46 +4,32 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * Created by Roland on 08.12.2015.
+ * Created by Roland on 09.12.2015.
  */
+
 @Entity
-public class VolumesEntity implements IBaseEntity {
+public class FolderEntity {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String volumeName;
-
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FolderEntity> folders;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PieRaidFileEntity> files;
 
+    private String folderName;
 
-    public void addFolder(FolderEntity folder){
-        folders.add(folder);
+
+    public String getFolderName() {
+        return folderName;
     }
 
-    public void addFile(PieRaidFileEntity file){
-        files.add(file);
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
     }
-
-
-    //TODO change to enum
-    private String raidLevel;
-
-    public Long getId(){ return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public String getVolumeName() { return volumeName; }
-
-    public void setVolumeName(String volumeName) { this.volumeName = volumeName; }
-
-    public String getRaidLevel() { return raidLevel; }
-
-    public void setRaidLevel(String raidLevel) { this.raidLevel = raidLevel; }
 
     public List<FolderEntity> getFolders() {
         return folders;
