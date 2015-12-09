@@ -13,6 +13,7 @@ import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.IntegrationTestBase;
+import org.pieShare.pieDrive.core.PieDriveCore;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.DatabaseFactory;
@@ -36,6 +37,8 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected DatabaseFactory fac;
 	@Autowired
 	protected AdapterCoreService adapterCoreService;
+	@Autowired
+	protected PieDriveCore pieDriveCore;
 
 	protected File testFolder;
 	protected File uploadBase;
@@ -86,8 +89,7 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 		adapter.setParent(this.uploadAdapter3);
 
 		//set chunk size for tests
-		PieDriveCoreService pCore = super.applicationContext.getBean(PieDriveCoreService.class);
-		pCore.setChunkSize(20); //20 byte
+		((PieDriveCoreService)pieDriveCore).setChunkSize(20);
 	}
 
 	protected File createFileHelper(File parent, String fileName, int size) throws IOException {

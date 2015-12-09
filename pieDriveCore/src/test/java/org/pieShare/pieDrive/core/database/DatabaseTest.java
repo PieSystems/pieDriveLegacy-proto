@@ -115,13 +115,14 @@ public class DatabaseTest extends IntegrationTestBase {
         chunks.add(phChunk2);
 
         file1.setChunks(chunks);
+		file1.setUid("RaidFileUUID1");
         file1.setFileName("FileName1");
         file1.setLastModified(500);
         file1.setRelativeFilePath("Relative");
 
         database.persistPieRaidFile(file1);
 
-        PieRaidFile fromDB = database.findPieRaidFileByName("FileName1");
+        PieRaidFile fromDB = database.findPieRaidFileById("RaidFileUUID1");
         Assert.notNull(fromDB);
 
         for (PhysicalChunk physicalChunk : fromDB.getChunks()) {
@@ -142,7 +143,7 @@ public class DatabaseTest extends IntegrationTestBase {
         adChunk1.setHash("VALUE".getBytes());
         database.updateAdaptorChunk(adChunk1);
 
-        PieRaidFile fromDBNew = database.findPieRaidFileByName("FileName1");
+        PieRaidFile fromDBNew = database.findPieRaidFileById("RaidFileUUID1");
         Assert.notNull(fromDB);
 
         for (PhysicalChunk physicalChunk : fromDBNew.getChunks()) {
@@ -169,7 +170,7 @@ public class DatabaseTest extends IntegrationTestBase {
         database.updatePhysicalChunk(phChunk1);
         database.updatePhysicalChunk(phChunk2);
 
-        PieRaidFile fromDBNewPhysical = database.findPieRaidFileByName("FileName1");
+        PieRaidFile fromDBNewPhysical = database.findPieRaidFileById("RaidFileUUID1");
         Assert.notNull(fromDBNewPhysical);
 
         for (PhysicalChunk physicalChunk : fromDBNewPhysical.getChunks()) {
