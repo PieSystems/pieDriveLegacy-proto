@@ -4,6 +4,7 @@ package org.pieShare.pieDrive.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 

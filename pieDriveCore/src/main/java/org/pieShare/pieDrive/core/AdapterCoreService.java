@@ -18,4 +18,5 @@ public interface AdapterCoreService {
 	Collection<AdapterId> getAdaptersKey();
 	Adaptor getAdapter(AdapterId id);
 	void registerAdapter(AdapterId id, Adaptor adapter);
+	int calculateNextAdapter(int lastAdapter);
 }
