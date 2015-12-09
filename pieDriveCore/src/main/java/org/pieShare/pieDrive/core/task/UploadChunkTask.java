@@ -68,6 +68,7 @@ public class UploadChunkTask implements IPieTask {
 			adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, hStr);
 			byte[] hash = hStr.getMessageDigest().digest();
 			
+			boolean updateChunk = (chunk.getHash().length > 0);
 			chunk.setHash(hash);
 			//if we are the first and the physical chunk has not yet a hash value
 			//has to be synchronized for the adapters of the same physical chunk
@@ -83,7 +84,7 @@ public class UploadChunkTask implements IPieTask {
 				}
 			}	//todo: remove synchronizations after @richy fixes threading in DB
 			//otherwise do an sanity check and persist hashes
-			if (Arrays.equals(physicalChunk.getHash(), hash)) {
+			if (updateChunk && Arrays.equals(physicalChunk.getHash(), hash)) {
 				synchronized (database) {
 					this.database.updateAdaptorChunk(chunk);
 					return;

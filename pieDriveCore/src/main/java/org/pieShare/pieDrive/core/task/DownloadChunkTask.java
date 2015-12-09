@@ -71,6 +71,7 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 				
 				if(this.download(chunk, hStr)) {
 					this.task.setPhysicalChunk(physicalChunk);
+					this.task.setFile(file);
 					this.executor.execute(task);
 					return;
 				}

@@ -168,7 +168,7 @@ public class CoreAppConfig {
 	public IntegrityCheckTask integrityCheckTask() {
 		IntegrityCheckTask task = new IntegrityCheckTask();
 		task.setAdapterCoreService(this.simpleAdapterCoreService());
-		
+		task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
 		return task;
 	}
 	
