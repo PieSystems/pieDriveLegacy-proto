@@ -1,0 +1,34 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.pieShare.pieDrive.core.model;
+
+import org.pieShare.pieDrive.adapter.model.PieDriveFile;
+
+/**
+ *
+ * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
+ */
+public class AdapterChunk extends PieDriveFile {
+	private AdapterId adapterId;
+	private byte[] hash;
+
+	public AdapterId getAdapterId() {
+		return adapterId;
+	}
+
+	public AdapterChunk setAdapterId(AdapterId adapterId) {
+		this.adapterId = adapterId;
+		return this;
+	}
+	
+	public byte[] getHash() {
+		return hash;
+	}
+
+	public void setHash(byte[] hash) {
+		this.hash = hash;
+	}
+}
