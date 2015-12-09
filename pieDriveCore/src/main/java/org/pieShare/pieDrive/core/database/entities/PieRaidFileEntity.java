@@ -22,6 +22,7 @@ import org.pieShare.pieDrive.core.model.PhysicalChunk;
 public class PieRaidFileEntity {
 
     @Id
+	private String uid;
     private String fileName;
     private long lastModified;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pieRaidFileEntity") 
@@ -35,6 +36,14 @@ public class PieRaidFileEntity {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
 
     public long getLastModified() {
         return lastModified;

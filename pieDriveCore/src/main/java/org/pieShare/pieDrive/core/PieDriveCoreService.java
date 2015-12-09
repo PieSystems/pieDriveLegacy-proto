@@ -4,6 +4,7 @@ package org.pieShare.pieDrive.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
@@ -39,6 +40,7 @@ public class PieDriveCoreService implements PieDriveCore {
 	@Override
 	public PieRaidFile calculateRaidFile(File file) {
 		PieRaidFile raidFile = new PieRaidFile();
+		raidFile.setUid(UUID.randomUUID().toString());
 		raidFile.setFileName(file.getName());
 		raidFile.setLastModified(file.lastModified());
 		raidFile.setRelativeFilePath(file.getPath());

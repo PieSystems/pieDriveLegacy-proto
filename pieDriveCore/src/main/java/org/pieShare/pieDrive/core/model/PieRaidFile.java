@@ -12,12 +12,21 @@ import java.util.List;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class PieRaidFile {
+	private String uid;
 	private String relativeFilePath;
 	private String fileName;
 	private long lastModified;
 	private List<PhysicalChunk> chunks;
 	private long fileSize;
 
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	
 	public String getRelativeFilePath() {
 		return relativeFilePath;
 	}

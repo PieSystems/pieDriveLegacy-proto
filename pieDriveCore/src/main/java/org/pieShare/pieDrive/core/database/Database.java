@@ -94,6 +94,7 @@ public class Database {
         pieRaidFileEntity.setFileName(pieRaidFile.getFileName());
         pieRaidFileEntity.setLastModified(pieRaidFile.getLastModified());
         pieRaidFileEntity.setRelativeFilePath(pieRaidFile.getRelativeFilePath());
+		pieRaidFileEntity.setUid(pieRaidFile.getUid());
 
         EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
         em.getTransaction().begin();
@@ -101,12 +102,27 @@ public class Database {
         em.getTransaction().commit();
     }
 
+	/**
+	 * DEPRECATED!!!!
+	 * @param name
+	 * @return 
+	 */
     public PieRaidFile findPieRaidFileByName(String name) {
 
         PieRaidFile piePieRaidFile = new PieRaidFile();
 
         EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
         PieRaidFileEntity pieRaidFileEntity = em.find(PieRaidFileEntity.class, name);
+
+        return convertPieRaidFileEntityToObject(pieRaidFileEntity);
+    }
+	
+	public PieRaidFile findPieRaidFileById(String uid) {
+
+        PieRaidFile piePieRaidFile = new PieRaidFile();
+
+        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+        PieRaidFileEntity pieRaidFileEntity = em.find(PieRaidFileEntity.class, uid);
 
         return convertPieRaidFileEntityToObject(pieRaidFileEntity);
     }
@@ -159,6 +175,7 @@ public class Database {
         piePieRaidFile.setFileName(pieRaidFileEntity.getFileName());
         piePieRaidFile.setLastModified(pieRaidFileEntity.getLastModified());
         piePieRaidFile.setRelativeFilePath(pieRaidFileEntity.getRelativeFilePath());
+		piePieRaidFile.setUid(pieRaidFileEntity.getUid());
 
         return piePieRaidFile;
     }
