@@ -6,14 +6,13 @@
 package org.pieShare.pieDrive.core.database;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
-import org.pieShare.pieDrive.core.database.entities.AdapterChunkEntity;
-import org.pieShare.pieDrive.core.database.entities.FileEntity;
-import org.pieShare.pieDrive.core.database.entities.IBaseEntity;
-import org.pieShare.pieDrive.core.database.entities.PhysicalChunkEntity;
-import org.pieShare.pieDrive.core.database.entities.PieRaidFileEntity;
+import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
@@ -198,5 +197,21 @@ public class Database {
         em.merge(physicalChunkEntity);
         em.getTransaction().commit();
     }
-    
+
+    public Collection<VolumesEntity> getAllVolumes(){
+
+        //TODO find solution for empty objectDB problem
+        try{
+            EntityManager em = databseFactory.getEntityManger(VolumesEntity.class);
+
+            Query query = em.createQuery("SELECT v from VolumesEntity v");
+            return (Collection<VolumesEntity>) query.getResultList();
+        } catch (Exception e){
+
+            Collection<VolumesEntity> tmp = new ArrayList<VolumesEntity>();
+            return tmp;
+        }
+
+
+    }
 }
