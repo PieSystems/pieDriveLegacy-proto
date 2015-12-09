@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
@@ -96,7 +97,7 @@ public class UploadChunkTask implements IPieTask {
 			//this should never happen!!! if this happens two adapters
 			//produced different hashes while reading the samephysical chunk
 			//todo: log! eventually pass on to user
-		} catch (NoSuchAlgorithmException ex) {
+		} catch (NoSuchAlgorithmException  | AdaptorException ex) {
 			Logger.getLogger(UploadChunkTask.class.getName()).log(Level.SEVERE, null, ex);
 			try {
 				hStr.close();

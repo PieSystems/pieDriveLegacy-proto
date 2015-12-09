@@ -12,6 +12,7 @@ import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
@@ -121,6 +122,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
@@ -131,6 +135,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	public void testUpAndDownLoadFileRaid1TwoCorruptChunksOnServer() throws Exception {
 		String fileName = "testOneChunkFileTwoCorruptChunksOnServer";
 		File expected = this.createFileHelper(this.in, fileName, 15);
+		PieLogger.trace(RaidFileTaskTest.class, "Filename: {}", expected.getName());
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.run();
@@ -176,6 +181,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
@@ -230,6 +238,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
@@ -331,6 +342,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
@@ -385,6 +399,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));

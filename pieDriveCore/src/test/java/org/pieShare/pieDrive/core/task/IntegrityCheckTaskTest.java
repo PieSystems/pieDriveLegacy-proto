@@ -1,6 +1,7 @@
 package org.pieShare.pieDrive.core.task;
 
 import java.io.File;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
@@ -45,6 +46,7 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
+		checkTask.setFile(new RandomAccessFile(expected, "r"));
 		checkTask.run();
 		
 		Thread.sleep(2000);
@@ -90,6 +92,7 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
+		checkTask.setFile(new RandomAccessFile(expected, "r"));
 		checkTask.run();
 		
 		Thread.sleep(2000);
@@ -133,6 +136,7 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
+		checkTask.setFile(new RandomAccessFile(expected, "r"));
 		checkTask.run();
 		
 		Thread.sleep(2000);
@@ -176,9 +180,10 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
+		checkTask.setFile(new RandomAccessFile(expected, "r"));
 		checkTask.run();
 		
-		Thread.sleep(10000);
+		Thread.sleep(2000);
 		
 		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);

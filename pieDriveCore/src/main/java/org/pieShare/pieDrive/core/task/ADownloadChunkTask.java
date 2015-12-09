@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
@@ -40,7 +41,7 @@ public abstract class ADownloadChunkTask implements IPieTask {
 		this.physicalChunk = physicalChunk;
 	}
 
-	protected boolean download(AdapterChunk chunk, DigestOutputStream stream) {
+	protected boolean download(AdapterChunk chunk, DigestOutputStream stream) throws AdaptorException {
 		PieLogger.debug(this.getClass(), "Downloading chunk {} from {}", chunk.getUuid(), chunk.getAdapterId().getId());
 		adapterCoreService.getAdapter(chunk.getAdapterId()).download(chunk, stream);
 		byte[] hash = stream.getMessageDigest().digest();

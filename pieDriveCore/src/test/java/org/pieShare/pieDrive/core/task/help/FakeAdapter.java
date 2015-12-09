@@ -53,12 +53,6 @@ public class FakeAdapter implements Adaptor {
 			Logger.getLogger(FakeAdapter.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (IOException ex) {
 			Logger.getLogger(FakeAdapter.class.getName()).log(Level.SEVERE, null, ex);
-		} finally {
-			try {
-				fStr.close();
-			} catch (IOException ex) {
-				Logger.getLogger(FakeAdapter.class.getName()).log(Level.SEVERE, null, ex);
-			}
 		}
 	}
 
@@ -81,12 +75,6 @@ public class FakeAdapter implements Adaptor {
 			Logger.getLogger(FakeAdapter.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (IOException ex) {
 			Logger.getLogger(FakeAdapter.class.getName()).log(Level.SEVERE, null, ex);
-		} finally {
-			try {
-				fStr.close();
-			} catch (IOException ex) {
-				Logger.getLogger(FakeAdapter.class.getName()).log(Level.SEVERE, null, ex);
-			}
 		}
 	}
 	

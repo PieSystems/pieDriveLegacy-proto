@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
 import org.apache.commons.io.output.NullOutputStream;
+import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
@@ -53,7 +54,7 @@ public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 					digestStream = StreamFactory.getDigestOutputStream(nullStream, MessageDigest.getInstance("MD5"));
 
 					this.download(adapterChunk, digestStream);
-				} catch (NoSuchAlgorithmException ex) {
+				} catch (NoSuchAlgorithmException | AdaptorException ex) {
 					Logger.getLogger(IntegrityCheckTask.class.getName()).log(Level.SEVERE, null, ex);
 					if (digestStream != null) {
 						try {
