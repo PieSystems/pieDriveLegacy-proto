@@ -50,4 +50,8 @@ public class SimpleAdapterCoreService implements AdapterCoreService {
 		return this.adapters.keySet();
 	}
 	
+	@Override
+	public int calculateNextAdapter(int lastChunk) {
+		return (++lastChunk) % this.adapters.size();
+	}	
 }

@@ -3,20 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.adapter.model;
+package org.pieShare.pieDrive.core.model;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class PieDriveFile {
-	private String uuid;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+public enum ChunkHealthState {
+	Healthy,
+	Broken,
+	NotChecked
 }

@@ -6,31 +6,16 @@
 package org.pieShare.pieDrive.core.task;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Random;
-import javax.inject.Provider;
-import org.apache.commons.io.FileUtils;
-import org.pieShare.pieDrive.core.IntegrationTestBase;
-import org.pieShare.pieDrive.core.PieDriveCoreService;
-import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.DatabaseFactory;
+import java.util.ArrayList;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
+import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.CoreTestConfig;
-import org.pieShare.pieDrive.core.task.help.FakeAdapter;
-import org.pieShare.pieDrive.core.task.help.FakeAdapterCallCounter;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 /**
@@ -39,88 +24,20 @@ import org.testng.annotations.Test;
  */
 @DirtiesContext
 @ContextConfiguration(classes = CoreTestConfig.class)
-public class RaidFileTaskTest extends IntegrationTestBase {
-	@Autowired
-	private Provider<UploadRaidFileTask> uploadRaidFileProvider;
-	@Autowired
-	private Provider<DownloadRaidFileTask> downloadRaidFileProvider;
+public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 	
-	@Autowired
-	private FakeAdapterCallCounter counter;
-	@Autowired
-	private Database db;
-	@Autowired
-	private DatabaseFactory fac;
-	
-	private File testFolder;
-	private File upload;
-	private File in;
-	private File out;	
-
-	@Override
-	@BeforeClass
-	public void setUpIt() throws IOException, Exception {
-		super.setUpIt();
-		this.testFolder = new File(this.integrationTestFolder, "test");
-		
-		//init new DB
-		File dbFile = new File(super.integrationTestFolder, "databaseTaskTest.odb");
-		fac.setDatabaseName(dbFile.getPath());
-		fac.init();		
-	}
-
-	@BeforeMethod
-	public void setUp() throws IOException {
-		if (testFolder.exists()) {
-			FileUtils.deleteDirectory(testFolder);
+	private void assertRaidFile(PieRaidFile file, ChunkHealthState state) {
+		for(PhysicalChunk chunk: file.getChunks()) {
+			this.assertAllState(chunk, state);
 		}
-		
-		this.testFolder.mkdirs();
-		this.upload = new File(this.testFolder, "upload");
-		this.upload.mkdirs();
-		this.in = new File(this.testFolder, "in");
-		this.in.mkdirs();
-		this.out = new File(this.testFolder, "out");
-		this.out.mkdirs();
-		
-		FakeAdapter adapter = super.applicationContext.getBean("s3Adapter", FakeAdapter.class);
-		adapter.setParent(this.upload);
-		adapter = super.applicationContext.getBean("boxAdapter", FakeAdapter.class);
-		adapter.setParent(this.upload);
-		adapter = super.applicationContext.getBean("dropboxAdapter", FakeAdapter.class);
-		adapter.setParent(this.upload);
-
-		//reset download counter
-		this.counter.setCounter(0);
-
-		//set chunk size for tests
-		PieDriveCoreService pCore = super.applicationContext.getBean(PieDriveCoreService.class);
-		pCore.setChunkSize(20); //20 byte
-	}
-
-	private File createFileHelper(File parent, String fileName, int size) throws IOException {
-		File file = new File(parent, fileName);
-		FileOutputStream fstr = new FileOutputStream(file);
-		byte[] bytes = new byte[size];
-		Random r = new Random();
-		r.nextBytes(bytes);
-		fstr.write(bytes);
-		fstr.flush();
-		fstr.close();
-		return file;
 	}
 	
-	private byte[] generateMd5(File file) throws FileNotFoundException, NoSuchAlgorithmException, IOException {
-		FileInputStream fio = new FileInputStream(file);
-		DigestInputStream dio = new DigestInputStream(fio, MessageDigest.getInstance("MD5"));
-		while(dio.read() != -1) {
+	private void assertAllState(PhysicalChunk chunk, ChunkHealthState state) {
+		for(AdapterChunk aChunk: chunk.getChunks().values()) {
+			Assert.assertEquals(aChunk.getState(), state);
 		}
-		return dio.getMessageDigest().digest();
 	}
-
-	/**
-	 * Test of run method, of class RaidFileTask.
-	 */
+	
 	@Test
 	public void testUpAndDownLoadFileRaid1() throws Exception {
 		String fileName = "testOneChunkFile";
@@ -128,30 +45,208 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.run();
-		
+
 		Thread.sleep(2000);
-		
-		File[] uploadedFiles = this.upload.listFiles();
-		Assert.assertEquals(uploadedFiles.length, 3);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 1);
 		byte[] expectedBytes = this.generateMd5(expected);
-		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[0]));
-		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[1]));
-		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFiles[2]));
-		
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
+
 		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
+	}
+
+	@Test
+	public void testUpAndDownLoadFileRaid1OneCorruptChunkOnServer() throws Exception {
+		String fileName = "testOneChunkFileOneCorruptChunkOnServer";
+		File expected = this.createFileHelper(this.in, fileName, 15);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
+		uploadTask.setFile(expected);
+		uploadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 1);
+		byte[] expectedBytes = this.generateMd5(expected);
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
+
+		corruptFile(uploadedFilesAdapter1[0]);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+
+		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
+		downloadTask.setOutputDir(this.out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
 		
 		Thread.sleep(2000);
 		
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
+	}
+
+	@Test
+	public void testUpAndDownLoadFileRaid1TwoCorruptChunksOnServer() throws Exception {
+		String fileName = "testOneChunkFileTwoCorruptChunksOnServer";
+		File expected = this.createFileHelper(this.in, fileName, 15);
+		PieLogger.trace(RaidFileTaskTest.class, "Filename: {}", expected.getName());
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
+		uploadTask.setFile(expected);
+		uploadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 1);
+		byte[] expectedBytes = this.generateMd5(expected);
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
+
+		corruptFile(uploadedFilesAdapter1[0]);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+		corruptFile(uploadedFilesAdapter2[0]);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
+
+		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
+		downloadTask.setOutputDir(this.out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+
+		Thread.sleep(2000);
+
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
-		Assert.assertEquals(1, this.counter.getCount());
+		
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
-	
+
+	@Test
+	public void testUpAndDownLoadFileRaid1ThreeCorruptChunksOnServer() throws Exception {
+		String fileName = "testOneChunkFileThreeCorruptChunksOnServer";
+		File expected = this.createFileHelper(this.in, fileName, 15);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
+		uploadTask.setFile(expected);
+		uploadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 1);
+		byte[] expectedBytes = this.generateMd5(expected);
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
+
+		corruptFile(uploadedFilesAdapter1[0]);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+		corruptFile(uploadedFilesAdapter2[0]);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
+		corruptFile(uploadedFilesAdapter3[0]);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
+
+		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
+		downloadTask.setOutputDir(this.out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		
+		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
+	}
+
 	@Test
 	public void testUpAndDownLoadFileRaid1WithMultiChunks() throws Exception {
 		String fileName = "testMultiChunkFile";
@@ -159,24 +254,157 @@ public class RaidFileTaskTest extends IntegrationTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.run();
-		
+
 		Thread.sleep(2000);
-		
-		File[] uploadedFiles = this.upload.listFiles();
-		Assert.assertEquals(15, uploadedFiles.length);
-		
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 5);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 5);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 5);
+
 		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+
+		Thread.sleep(2000);
+
+		byte[] expectedBytes = this.generateMd5(expected);
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
+	}
+
+	@Test
+	public void testUpAndDownLoadFileRaid1WithMultiChunksRecoverableCorruption() throws Exception {
+		String fileName = "testMultiChunkFileRecoverableCorruption";
+		File expected = this.createFileHelper(this.in, fileName, 96);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
+		uploadTask.setFile(expected);
+		uploadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 5);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 5);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 5);
+
+		for (File file : uploadedFilesAdapter1) {
+			corruptFile(file);
+		}
+
+		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
+		downloadTask.setOutputDir(this.out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+
+		Thread.sleep(2000);
+
+		byte[] expectedBytes = this.generateMd5(expected);
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		adapterChunks = new ArrayList<>(raidFile.getChunks().get(1).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		adapterChunks = new ArrayList<>(raidFile.getChunks().get(2).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		adapterChunks = new ArrayList<>(raidFile.getChunks().get(3).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		adapterChunks = new ArrayList<>(raidFile.getChunks().get(4).getChunks().values());
+		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.run();
 		
 		Thread.sleep(2000);
 		
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
+	}
+
+	@Test
+	public void testUpAndDownLoadFileRaid1WithMultiChunksIrrecoverableCorruption() throws Exception {
+		String fileName = "testMultiChunkFileIrrecoverableCorruption";
+		File expected = this.createFileHelper(this.in, fileName, 96);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
+		uploadTask.setFile(expected);
+		uploadTask.run();
+
+		Thread.sleep(2000);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 5);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 5);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 5);
+
+		for (File file : uploadedFilesAdapter1) {
+			corruptFile(file);
+		}
+		for (File file : uploadedFilesAdapter2) {
+			corruptFile(file);
+		}
+		for (File file : uploadedFilesAdapter3) {
+			corruptFile(file);
+		}
+
+		PieRaidFile raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
+		downloadTask.setOutputDir(this.out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		
 		byte[] expectedBytes = this.generateMd5(expected);
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
-		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
-		Assert.assertEquals(5, this.counter.getCount());
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+
+		Thread.sleep(2000);
+
+		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
+		
+		raidFile = this.db.findPieRaidFileByName(fileName);
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.run();
+		
+		Thread.sleep(2000);
+		
+		downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
 	}
 }

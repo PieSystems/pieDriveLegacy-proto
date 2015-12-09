@@ -14,6 +14,11 @@ import org.pieShare.pieDrive.adapter.model.PieDriveFile;
 public class AdapterChunk extends PieDriveFile {
 	private AdapterId adapterId;
 	private byte[] hash;
+	private ChunkHealthState state;
+	
+	public AdapterChunk() {
+		this.state = ChunkHealthState.NotChecked;
+	}
 
 	public AdapterId getAdapterId() {
 		return adapterId;
@@ -30,5 +35,13 @@ public class AdapterChunk extends PieDriveFile {
 
 	public void setHash(byte[] hash) {
 		this.hash = hash;
+	}
+
+	public ChunkHealthState getState() {
+		return state;
+	}
+
+	public void setState(ChunkHealthState state) {
+		this.state = state;
 	}
 }
