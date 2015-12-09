@@ -79,6 +79,7 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 					return;
 				}
 				
+				PieLogger.warn(this.getClass(), "Discovered corrupted chunk {}", chunk.getUuid());
 				this.adapterIndex = this.adapterCoreService.calculateNextAdapter(this.adapterIndex);
 			} catch (NoSuchAlgorithmException | AdaptorException ex) {
 				Logger.getLogger(DownloadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
