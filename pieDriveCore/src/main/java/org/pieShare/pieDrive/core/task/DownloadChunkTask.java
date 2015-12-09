@@ -23,6 +23,7 @@ import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.stream.BoundedOutputStream;
 import org.pieShare.pieDrive.core.stream.NioOutputStream;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
@@ -31,9 +32,20 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
  */
 public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 
+	private PieExecutorService executor;
+	private IntegrityCheckTask task;
+	
 	private RandomAccessFile file;
 	private int adapterIndex;
 
+	public void setExecutor(PieExecutorService executor) {
+		this.executor = executor;
+	}
+
+	public void setTask(IntegrityCheckTask task) {
+		this.task = task;
+	}
+	
 	public void setAdapterIndex(int adapterIndex) {
 		this.adapterIndex = adapterIndex;
 	}
@@ -58,6 +70,8 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 				AdapterChunk chunk = this.physicalChunk.getChunks().get(adatperIds.get(this.adapterIndex));
 				
 				if(this.download(chunk, hStr)) {
+					this.task.setPhysicalChunk(physicalChunk);
+					this.executor.execute(task);
 					return;
 				}
 				
