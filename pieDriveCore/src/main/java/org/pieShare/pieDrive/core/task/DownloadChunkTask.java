@@ -29,23 +29,13 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class DownloadChunkTask implements IPieTask {
+public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 
-	private AdapterCoreService adapterCoreService;
-	private PhysicalChunk physicalChunk;
 	private RandomAccessFile file;
 	private int adapterIndex;
 
 	public void setAdapterIndex(int adapterIndex) {
 		this.adapterIndex = adapterIndex;
-	}
-
-	public void setAdapterCoreService(AdapterCoreService adapterCoreService) {
-		this.adapterCoreService = adapterCoreService;
-	}
-
-	public void setPhysicalChunk(PhysicalChunk physicalChunk) {
-		this.physicalChunk = physicalChunk;
 	}
 
 	public void setFile(RandomAccessFile file) {
@@ -54,7 +44,7 @@ public class DownloadChunkTask implements IPieTask {
 
 	@Override
 	public void run() {
-		ArrayList<AdapterId> adatperIds = new ArrayList<>(adapterCoreService.getAdaptersKey());
+		ArrayList<AdapterId> adatperIds = new ArrayList<>(this.adapterCoreService.getAdaptersKey());
 		int size = adatperIds.size();
 
 		for (int i = 0; i < size; i++) {
@@ -66,15 +56,11 @@ public class DownloadChunkTask implements IPieTask {
 				hStr = StreamFactory.getDigestOutputStream(boundedStream, MessageDigest.getInstance("MD5"));
 
 				AdapterChunk chunk = this.physicalChunk.getChunks().get(adatperIds.get(this.adapterIndex));
-				adapterCoreService.getAdapter(chunk.getAdapterId()).download(chunk, hStr);
-				byte[] hash = hStr.getMessageDigest().digest();
-
-				if (Arrays.equals(physicalChunk.getHash(), hash)) {
-					chunk.setState(ChunkHealthState.Healthy);
+				
+				if(this.download(chunk, hStr)) {
 					return;
 				}
-
-				chunk.setState(ChunkHealthState.Broken);
+				
 				this.adapterIndex = this.adapterCoreService.calculateNextAdapter(this.adapterIndex);
 			} catch (NoSuchAlgorithmException ex) {
 				Logger.getLogger(DownloadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
