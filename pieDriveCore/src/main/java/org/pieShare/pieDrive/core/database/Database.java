@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.databse;
+package org.pieShare.pieDrive.core.database;
 
 import javax.persistence.EntityManager;
-import org.pieShare.pieDrive.core.databse.api.IDatabaseFactory;
-import org.pieShare.pieDrive.core.databse.entities.FileEntity;
-import org.pieShare.pieDrive.core.databse.entities.IBaseEntity;
+import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
+import org.pieShare.pieDrive.core.database.entities.FileEntity;
+import org.pieShare.pieDrive.core.database.entities.IBaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  *
  * @author richy
  */
-@Component
 public class Database {
 
     @Autowired

@@ -5,14 +5,16 @@
  */
 package org.pieShare.pieDrive.adapter.api;
 
+import java.io.InputStream;
 import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
+import java.io.OutputStream;
 import org.pieShare.pieDrive.adapter.model.PieDriveFile;
 
 public interface Adaptor {
 
-    void delte(PieDriveFile file) throws AdaptorException;
+    void delete(PieDriveFile file) throws AdaptorException;
 
-    void upload(PieDriveFile file) throws AdaptorException;
+    void upload(PieDriveFile file, InputStream stream) throws AdaptorException;
 
-    void download(PieDriveFile file) throws AdaptorException;
+    void download(PieDriveFile file, OutputStream stream) throws AdaptorException;
 }

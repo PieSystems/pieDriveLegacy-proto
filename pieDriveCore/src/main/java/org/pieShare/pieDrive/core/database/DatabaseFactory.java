@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieDrive.core.databse;
+package org.pieShare.pieDrive.core.database;
 
 import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import org.pieShare.pieDrive.core.databse.api.IDatabaseFactory;
+import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
 import org.springframework.stereotype.Component;
 
 /**
