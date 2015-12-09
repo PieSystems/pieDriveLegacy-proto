@@ -13,4 +13,7 @@ import javax.persistence.EntityManager;
  */
 public interface IDatabaseFactory {
     EntityManager getEntityManger(Class clazz);
+    void init();
+    void setDatabaseName(String databaseName);
+    
 }
