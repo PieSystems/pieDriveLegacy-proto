@@ -5,11 +5,6 @@
  */
 package org.pieShare.pieDrive.adapter.model;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.UUID;
-
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
