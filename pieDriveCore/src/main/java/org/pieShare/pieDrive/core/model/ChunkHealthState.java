@@ -9,7 +9,7 @@ package org.pieShare.pieDrive.core.model;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public enum ChunkCheckState {
+public enum ChunkHealthState {
 	Healthy,
 	Broken,
 	NotChecked
