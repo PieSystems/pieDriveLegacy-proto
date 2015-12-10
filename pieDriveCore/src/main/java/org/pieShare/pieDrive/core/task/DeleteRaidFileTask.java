@@ -7,11 +7,8 @@ package org.pieShare.pieDrive.core.task;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
-import javax.inject.Provider;
 import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.core.AdapterCoreService;
-import org.pieShare.pieDrive.core.PieDriveCore;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
@@ -34,37 +31,31 @@ public class DeleteRaidFileTask implements IPieTask {
 	}
 
 	public void run() {
+		PieLogger.trace(DeleteRaidFileTask.class, "DeleteRaidFileTask on file {} started", pieRaidFile.toString());
+		
 		//ToDo: Converting to array becuase i want to delete during iteration of the list. 
 		//This is slow. .. Maybe there is something better.
 		for (PhysicalChunk physicalChunk : pieRaidFile.getChunks().toArray(new PhysicalChunk[pieRaidFile.getChunks().size()])) {
-			//for (Entry<AdapterId, AdapterChunk> ff : physicalChunk.getChunks().entrySet()) {
 			for(Iterator<HashMap.Entry<AdapterId,AdapterChunk>> it = physicalChunk.getChunks().entrySet().iterator(); it.hasNext(); ){
 				try {
 					HashMap.Entry<AdapterId,AdapterChunk> chunk = it.next();
+					PieLogger.debug(DeleteRaidFileTask.class, "Starting chunk delete for {} with adapter {}", chunk.getValue().getUuid(), chunk.getKey());
 					adapterCoreService.getAdapter(chunk.getKey()).delete(chunk.getValue());
 					it.remove();
 				} catch (AdaptorException ex) {
-					//Nothing to do here. Because i know afterwards if something went wrong. 
+					PieLogger.error(DeleteRaidFileTask.class, "AdaptorException on deletion of AdapterChunk: {}", ex);
 				}
 			}
 			
-			/*
-			 for(Iterator<Map.Entry<String, String>> it = map.entrySet().iterator(); it.hasNext(); ) {
-				Map.Entry<String, String> entry = it.next();
-				if(entry.getKey().equals("test")) {
-				  it.remove();
-				}
-			  }
-			*/
-						
+			
 			if (physicalChunk.getChunks().isEmpty()) {
 				pieRaidFile.getChunks().remove(physicalChunk);
 			}
 		}
 
 		if (!pieRaidFile.getChunks().isEmpty()) {
-			PieLogger.error(DeleteRaidFileTask.class, "Not all files could have been delted.");
-			throw new Error("Not all files could have been delted.");
+			PieLogger.error(DeleteRaidFileTask.class, "Not all files could be deleted.");
+			throw new Error("Not all files could be deleted.");
 		}
 		
 		database.removePieRaidFile(pieRaidFile);
