@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author richy
  */
-public interface VolumesEntityRepository extends JpaRepository<VolumesEntity, Long>{
+public interface VolumesEntityRepository extends JpaRepository<VolumesEntity, String>{
     
 }

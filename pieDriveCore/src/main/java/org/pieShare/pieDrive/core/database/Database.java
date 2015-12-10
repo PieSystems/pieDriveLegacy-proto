@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieDrive.core.database;
 
+import com.dropbox.core.v1.DbxEntry.Folder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -112,12 +113,19 @@ public class Database {
 
     }
 
-    public VolumesEntity getVolumeById(long id) {
-        return volumesEntityRepository.findOne(id);
+    public Volume getVolumeById(String id) {
+        VolumesEntity entity = volumesEntityRepository.findOne(id);
+        
+        Volume v = new Volume();
+        v.setName(entity.getVolumeName());
+        v.setId(entity.getId());
+        v.setRaidLevel(entity.getRaidLevel());
+        
+        return v;
     }
 
-    public FolderEntity getFolderById(Long id) {
-        return folderEntityRepository.findOne(id);
+    public Folder getFolderById(Long id) {
+        return null;//folderEntityRepository.findOne(id);
     }
 
     public void persistVolume(Volume volume) {
@@ -129,6 +137,7 @@ public class Database {
         entity.setVolumeName(volume.getName());
         entity.setId(volume.getId());
         entity.setRaidLevel(volume.getRaidLevel());
+        
         /*
         for (PieRaidFile raidFile : volume.getFiles()) {
             files.add(pieRaidFileEntityRepository.findOne(raidFile.getUid()));

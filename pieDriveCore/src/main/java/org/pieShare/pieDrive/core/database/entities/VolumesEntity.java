@@ -11,7 +11,7 @@ import java.util.List;
 public class VolumesEntity {
 
     @Id
-    private  String id;
+    private String id;
     private String volumeName;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -22,8 +22,6 @@ public class VolumesEntity {
     //TODO change to enum
     private String raidLevel;
 
-    
-    
     public VolumesEntity() {
         folders = new ArrayList<>();
         files = new ArrayList<>();
@@ -45,6 +43,10 @@ public class VolumesEntity {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getVolumeName() {
