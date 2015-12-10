@@ -41,7 +41,14 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
         List<PieRaidFileEntity> pieRaidFileEntities = new ArrayList<>();
 
         for (PieRaidFile raidFile : volume.getFiles()) {
-            pieRaidFileEntities.add(pieRaidFileEntityRepository.findOne(raidFile.getUid()));
+
+            PieRaidFileEntity d = pieRaidFileEntityRepository.findOne(raidFile.getUid());
+            if (d != null) {
+                pieRaidFileEntities.add(d);
+            } else {
+                pieRaidFileEntities.add(pieRaidFileEntityRepository.persistPieRaidFile(raidFile));
+            }
+
         }
         entity.setFiles(pieRaidFileEntities);
 
@@ -78,11 +85,9 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
 
         List<PieFolder> pieFolders = new ArrayList<>();
 
-       
-
         for (FolderEntity folderEntity : folderEntitys) {
 
-             PieFolder pieFolder = new PieFolder();
+            PieFolder pieFolder = new PieFolder();
             List<PieFolder> returnPieFolders = convertFolderEntityToFolder(folderEntity.getFolders());
 
             List<PieRaidFile> pieRaidFiles = new ArrayList<>();

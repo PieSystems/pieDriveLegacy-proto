@@ -17,7 +17,7 @@ import org.pieShare.pieDrive.core.model.PieRaidFile;
  */
 public interface PieRaidFileEntityRepositoryCustom {
 
-    void persistPieRaidFile(PieRaidFile pieRaidFile);
+    PieRaidFileEntity persistPieRaidFile(PieRaidFile pieRaidFile);
 
     PieRaidFile findPieRaidFileByUId(String id);
 
