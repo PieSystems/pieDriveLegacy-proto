@@ -27,11 +27,10 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
     private PieRaidFileEntityRepository pieRaidFileEntityRepository;
 
     @Override
-    public void persistPieRaidFile(PieRaidFile pieRaidFile) {
-       
-        
+    public PieRaidFileEntity persistPieRaidFile(PieRaidFile pieRaidFile) {
+
         PieRaidFileEntity pieRaidFileEntity = new PieRaidFileEntity();
-        
+
         List<PhysicalChunkEntity> physicalChunkEntities = new ArrayList<>();
 
         for (PhysicalChunk chunk : pieRaidFile.getChunks()) {
@@ -64,7 +63,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
         pieRaidFileEntity.setRelativeFilePath(pieRaidFile.getRelativeFilePath());
         pieRaidFileEntity.setUid(pieRaidFile.getUid());
 
-        pieRaidFileEntityRepository.save(pieRaidFileEntity);
+        return pieRaidFileEntityRepository.save(pieRaidFileEntity);
         /*
         EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
         em.getTransaction().begin();
@@ -82,7 +81,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
         List<PhysicalChunk> physicalChunks = new ArrayList<>();
 
         for (PhysicalChunkEntity physicalChunkEntity : pieRaidFileEntity.getChunks()) {
-            
+
             physicalChunkEntity.getChunks().size();
             PhysicalChunk physicalChunk = new PhysicalChunk();
 
@@ -122,7 +121,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
     public List<PieRaidFile> findAllPieRaidFiles() {
         List<PieRaidFile> pieRaidFiles = new ArrayList<>();
         List<PieRaidFileEntity> ff = pieRaidFileEntityRepository.findAll();
-        
+
         for (PieRaidFileEntity entity : ff)//(List<PieRaidFileEntity>) em.createQuery("Select t from " + PieRaidFileEntity.class.getSimpleName() + " t").getResultList()) {
         {
             entity.getChunks().size();
