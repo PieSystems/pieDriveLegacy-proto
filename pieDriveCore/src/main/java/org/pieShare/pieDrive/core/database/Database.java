@@ -120,7 +120,7 @@ public class Database {
 
 	private Volume convertVolumeEntityToVolume(VolumesEntity entity) {
 		Volume v = new Volume();
-		v.setVolumeName(entity.getVolumeName());
+		v.setName(entity.getVolumeName());
 		v.setId(entity.getId());
 		v.setRaidLevel(entity.getRaidLevel());
 		return v;
@@ -136,7 +136,7 @@ public class Database {
 		List<FolderEntity> folderEntitys = new ArrayList<>();
 		List<PieRaidFileEntity> files = new ArrayList<>();
 
-		entity.setVolumeName(volume.getVolumeName());
+		entity.setVolumeName(volume.getName());
 		entity.setId(volume.getId());
 		entity.setRaidLevel(volume.getRaidLevel());
 
