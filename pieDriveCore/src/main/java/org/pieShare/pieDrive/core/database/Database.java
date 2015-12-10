@@ -7,6 +7,7 @@ package org.pieShare.pieDrive.core.database;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
@@ -98,11 +99,12 @@ public class Database {
     }
 
     public void persistVolume(Volume volume) {
+        volume.setId(UUID.randomUUID().toString());
         volumesEntityRepository.persistVolume(volume);
-
     }
 
     public void persistFolder(PieFolder folder) {
+        folder.setId(UUID.randomUUID().toString());
         folderEntityRepository.persistFolder(folder);
     }
 }

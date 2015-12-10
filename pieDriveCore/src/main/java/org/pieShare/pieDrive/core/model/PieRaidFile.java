@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieDrive.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ public class PieRaidFile {
     private String relativeFilePath;
     private String fileName;
     private long lastModified;
+	//todo: will need fixing!!! due to the map in the physical chunk it can not be easily de/serialized
+	@JsonIgnore
     private List<PhysicalChunk> chunks;
     private long fileSize;
     private String uid;
