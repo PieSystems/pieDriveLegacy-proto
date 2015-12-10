@@ -32,7 +32,7 @@ public abstract class ADownloadChunkTask implements IPieTask {
 
 	protected AdapterCoreService adapterCoreService;
 	protected PhysicalChunk physicalChunk;
-	
+
 	public void setAdapterCoreService(AdapterCoreService adapterCoreService) {
 		this.adapterCoreService = adapterCoreService;
 	}
@@ -44,8 +44,9 @@ public abstract class ADownloadChunkTask implements IPieTask {
 	protected boolean download(AdapterChunk chunk, DigestOutputStream stream) throws AdaptorException {
 		PieLogger.debug(this.getClass(), "Downloading chunk {} from {}", chunk.getUuid(), chunk.getAdapterId().getId());
 		try {
-		adapterCoreService.getAdapter(chunk.getAdapterId()).download(chunk, stream);
-		} catch(Exception e) { // catch everything because adapter might not wrap own exceptions in AdaptorExceptions
+			adapterCoreService.getAdapter(chunk.getAdapterId()).download(chunk, stream);
+		} catch (Exception e) { // catch everything because adapter might not wrap own exceptions in AdaptorExceptions
+			chunk.setState(ChunkHealthState.NotChecked);
 			return false;
 		}
 		byte[] hash = stream.getMessageDigest().digest();
