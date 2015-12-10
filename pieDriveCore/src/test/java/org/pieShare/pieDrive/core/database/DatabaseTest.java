@@ -64,6 +64,7 @@ public class DatabaseTest extends IntegrationTestBase {
         phChunk1.addAdapterChunk(adChunk2);
         phChunk1.setOffset(10);
         phChunk1.setSize(10);
+        phChunk1.setHash(null);
 
         PhysicalChunk phChunk2 = new PhysicalChunk();
 
@@ -85,6 +86,7 @@ public class DatabaseTest extends IntegrationTestBase {
         phChunk2.addAdapterChunk(adChunk4);
         phChunk2.setOffset(20);
         phChunk2.setSize(20);
+        phChunk2.setHash(null);
 
         List<PhysicalChunk> chunks = new ArrayList<>();
         chunks.add(phChunk1);

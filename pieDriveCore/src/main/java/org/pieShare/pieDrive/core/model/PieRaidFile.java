@@ -19,8 +19,8 @@ public class PieRaidFile {
     private String relativeFilePath;
     private String fileName;
     private long lastModified;
-	//todo: will need fixing!!! due to the map in the physical chunk it can not be easily de/serialized
-	@JsonIgnore
+    //todo: will need fixing!!! due to the map in the physical chunk it can not be easily de/serialized
+    @JsonIgnore
     private List<PhysicalChunk> chunks;
     private long fileSize;
     private String uid;
@@ -77,4 +77,22 @@ public class PieRaidFile {
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof PieRaidFile)) {
+            return false;
+        }
+
+        PieRaidFile rr = (PieRaidFile)obj;
+        
+        return rr.getUid().equals(this.uid);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.uid.hashCode();
+    }
+
 }

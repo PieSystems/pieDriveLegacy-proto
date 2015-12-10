@@ -94,7 +94,11 @@ public class FolderEntityRepositoryImpl implements FolderEntityRepositoryCustom 
             List<PieRaidFile> pieRaidFiles = new ArrayList<>();
 
             for (PieRaidFileEntity raidFileEntity : folderEntity.getFiles()) {
-                pieRaidFiles.add(pieRaidFileEntityRepository.findPieRaidFileByUId(raidFileEntity.getUid()));
+                PieRaidFile ff = pieRaidFileEntityRepository.findPieRaidFileByUId(raidFileEntity.getUid());
+
+                if (ff != null) {
+                    pieRaidFiles.add(ff);
+                }
             }
 
             pieFolder.setFiles(pieRaidFiles);
@@ -117,7 +121,11 @@ public class FolderEntityRepositoryImpl implements FolderEntityRepositoryCustom 
         List<PieRaidFile> pieRaidFiles = new ArrayList<>();
 
         for (PieRaidFileEntity raidFileEntity : entity.getFiles()) {
-            pieRaidFiles.add(pieRaidFileEntityRepository.findPieRaidFileByUId(raidFileEntity.getUid()));
+            PieRaidFile ff = pieRaidFileEntityRepository.findPieRaidFileByUId(raidFileEntity.getUid());
+
+            if (ff != null) {
+                pieRaidFiles.add(ff);
+            }
         }
 
         folder.setFiles(pieRaidFiles);

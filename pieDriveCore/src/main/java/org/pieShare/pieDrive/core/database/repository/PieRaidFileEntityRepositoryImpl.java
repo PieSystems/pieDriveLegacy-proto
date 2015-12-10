@@ -28,10 +28,10 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
 
     @Autowired
     private PhysicalChunkEntityRepository physicalChunkEntityRepository;
-    
+
     @Autowired
     private AdapterChunkEntityRepository adapterChunkEntityRepository;
-    
+
     @Override
     public PieRaidFileEntity persistPieRaidFile(PieRaidFile pieRaidFile) {
 
@@ -120,7 +120,12 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
 
     @Override
     public PieRaidFile findPieRaidFileByUId(String id) {
-        return convertPieRaidFileEntityToObject(pieRaidFileEntityRepository.findOne(id));
+        PieRaidFileEntity ent = pieRaidFileEntityRepository.findOne(id);
+        if (ent != null) {
+            return convertPieRaidFileEntityToObject(ent);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -138,19 +143,16 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
         }
         return pieRaidFiles;
     }
-    
+
     @Override
-    public void removePieRaidFileWithAllChunks(String id)
-    {
+    public void removePieRaidFileWithAllChunks(String id) {
         PieRaidFileEntity entity = pieRaidFileEntityRepository.findOne(id);
-        
-        for(PhysicalChunkEntity pp : entity.getChunks())
-        {
-            for(AdapterChunkEntity aa : pp.getChunks())
-            {
+
+        for (PhysicalChunkEntity pp : entity.getChunks()) {
+            for (AdapterChunkEntity aa : pp.getChunks()) {
                 adapterChunkEntityRepository.delete(aa.getUUID());
             }
-            
+
             physicalChunkEntityRepository.delete(pp.getId());
         }
         pieRaidFileEntityRepository.delete(id);
