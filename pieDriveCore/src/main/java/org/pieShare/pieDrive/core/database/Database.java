@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
-import org.pieShare.pieDrive.core.database.repository.BaseEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.FolderEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
