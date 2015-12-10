@@ -33,110 +33,114 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class Database {
 
-    @Autowired
-    private PieRaidFileEntityRepository pieRaidFileEntityRepository;
-    @Autowired
-    private AdapterChunkEntityRepository adapterChunkEntityRepository;
-    @Autowired
-    private PhysicalChunkEntityRepository physicalChunkEntityRepository;
-    @Autowired
-    private PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom;
-    @Autowired
-    private VolumesEntityRepository volumesEntityRepository;
-    @Autowired
-    private FolderEntityRepository folderEntityRepository;
-    @Autowired
-    private BaseEntityRepository baseEntityRepository;
+	@Autowired
+	private PieRaidFileEntityRepository pieRaidFileEntityRepository;
+	@Autowired
+	private AdapterChunkEntityRepository adapterChunkEntityRepository;
+	@Autowired
+	private PhysicalChunkEntityRepository physicalChunkEntityRepository;
+	@Autowired
+	private PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom;
+	@Autowired
+	private VolumesEntityRepository volumesEntityRepository;
+	@Autowired
+	private FolderEntityRepository folderEntityRepository;
+	@Autowired
+	private BaseEntityRepository baseEntityRepository;
 
-    public void persist(BaseEntity entity) {
-        baseEntityRepository.save(entity);
-    }
+	public void persist(BaseEntity entity) {
+		baseEntityRepository.save(entity);
+	}
 
-    public void remove(BaseEntity entity) {
-        baseEntityRepository.delete(entity);
-    }
+	public void remove(BaseEntity entity) {
+		baseEntityRepository.delete(entity);
+	}
 
-    public void removePieRaidFile(PieRaidFile file) {
-        pieRaidFileEntityRepository.delete(file.getUid());
-    }
+	public void removePieRaidFile(PieRaidFile file) {
+		pieRaidFileEntityRepository.delete(file.getUid());
+	}
 
-    public void persistPieRaidFile(PieRaidFile pieRaidFile) {
-        pieRaidFileRepositoryCustom.persistPieRaidFile(pieRaidFile);
-    }
+	public void persistPieRaidFile(PieRaidFile pieRaidFile) {
+		pieRaidFileRepositoryCustom.persistPieRaidFile(pieRaidFile);
+	}
 
-    public PieRaidFile findPieRaidFileById(String id) {
-        return pieRaidFileRepositoryCustom.findPieRaidFileById(id);
-    }
+	public PieRaidFile findPieRaidFileById(String id) {
+		return pieRaidFileRepositoryCustom.findPieRaidFileById(id);
+	}
 
-    public List<PieRaidFile> findAllPieRaidFiles() {
-        return pieRaidFileRepositoryCustom.findAllPieRaidFiles();
-    }
+	public List<PieRaidFile> findAllPieRaidFiles() {
+		return pieRaidFileRepositoryCustom.findAllPieRaidFiles();
+	}
 
-    public void updateAdaptorChunk(AdapterChunk chunk) {
-        AdapterChunkEntity entity = adapterChunkEntityRepository.findOne(chunk.getUuid());
+	public void updateAdaptorChunk(AdapterChunk chunk) {
+		AdapterChunkEntity entity = adapterChunkEntityRepository.findOne(chunk.getUuid());
 
-        if (entity == null) {
-            return;
-        }
+		if (entity == null) {
+			return;
+		}
 
-        entity.setAdapterId(chunk.getAdapterId().getId());
-        entity.setHash(chunk.getHash());
+		entity.setAdapterId(chunk.getAdapterId().getId());
+		entity.setHash(chunk.getHash());
 
-        adapterChunkEntityRepository.save(entity);
-    }
+		adapterChunkEntityRepository.save(entity);
+	}
 
-    public void updatePhysicalChunk(PhysicalChunk physicalChunk) {
-        if (physicalChunk.getChunks().isEmpty()) {
-            return;
-        }
-        String id = physicalChunk.getChunks().entrySet().stream().findFirst().get().getValue().getUuid();
-        AdapterChunkEntity entity = adapterChunkEntityRepository.findOne(id);
+	public void updatePhysicalChunk(PhysicalChunk physicalChunk) {
+		if (physicalChunk.getChunks().isEmpty()) {
+			return;
+		}
+		String id = physicalChunk.getChunks().entrySet().stream().findFirst().get().getValue().getUuid();
+		AdapterChunkEntity entity = adapterChunkEntityRepository.findOne(id);
 
-        PhysicalChunkEntity physicalChunkEntity = entity.getPhysicalChunkEntity();
+		PhysicalChunkEntity physicalChunkEntity = entity.getPhysicalChunkEntity();
 
-        physicalChunkEntity.setHashValues(physicalChunk.getHash());
-        physicalChunkEntityRepository.save(physicalChunkEntity);
-    }
+		physicalChunkEntity.setHashValues(physicalChunk.getHash());
+		physicalChunkEntityRepository.save(physicalChunkEntity);
+	}
 
-    public Collection<Volume> getAllVolumes() {
+	public Collection<Volume> getAllVolumes() {
 
-        List<Volume> volumes = new ArrayList<>();
+		List<Volume> volumes = new ArrayList<>();
 
-        for (VolumesEntity entity : volumesEntityRepository.findAll()) {
-            volumes.add(convertVolumeEntityToVolume(entity));
-        }
+		try {
+			for (VolumesEntity entity : volumesEntityRepository.findAll()) {
+				volumes.add(convertVolumeEntityToVolume(entity));
+			}
+		} catch (Exception ex) {
+			//when the table does not exist
+		}
 
-        return volumes;
-    }
+		return volumes;
+	}
 
-    public Volume getVolumeById(String id) {
-        VolumesEntity entity = volumesEntityRepository.findOne(id);
-        return convertVolumeEntityToVolume(entity);
-    }
+	public Volume getVolumeById(String id) {
+		VolumesEntity entity = volumesEntityRepository.findOne(id);
+		return convertVolumeEntityToVolume(entity);
+	}
 
-    private Volume convertVolumeEntityToVolume(VolumesEntity entity) {
-        Volume v = new Volume();
-        v.setName(entity.getVolumeName());
-        v.setId(entity.getId());
-        v.setRaidLevel(entity.getRaidLevel());
-        return v;
-    }
+	private Volume convertVolumeEntityToVolume(VolumesEntity entity) {
+		Volume v = new Volume();
+		v.setVolumeName(entity.getVolumeName());
+		v.setId(entity.getId());
+		v.setRaidLevel(entity.getRaidLevel());
+		return v;
+	}
 
-    public Folder getFolderById(Long id) {
-        return null;//folderEntityRepository.findOne(id);
-    }
+	public Folder getFolderById(Long id) {
+		return null;//folderEntityRepository.findOne(id);
+	}
 
-    public void persistVolume(Volume volume) {
-        VolumesEntity entity = new VolumesEntity();
+	public void persistVolume(Volume volume) {
+		VolumesEntity entity = new VolumesEntity();
 
-        List<FolderEntity> folderEntitys = new ArrayList<>();
-        List<PieRaidFileEntity> files = new ArrayList<>();
+		List<FolderEntity> folderEntitys = new ArrayList<>();
+		List<PieRaidFileEntity> files = new ArrayList<>();
 
-        entity.setVolumeName(volume.getName());
-        entity.setId(volume.getId());
-        entity.setRaidLevel(volume.getRaidLevel());
+		entity.setVolumeName(volume.getVolumeName());
+		entity.setId(volume.getId());
+		entity.setRaidLevel(volume.getRaidLevel());
 
-        /*
+		/*
         for (PieRaidFile raidFile : volume.getFiles()) {
             files.add(pieRaidFileEntityRepository.findOne(raidFile.getUid()));
         }
@@ -150,8 +154,8 @@ public class Database {
 
         entity.setFiles(volume.getFiles());
         entity.setFolders(volume.getFolders());*/
-        volumesEntityRepository.save(entity);
+		volumesEntityRepository.save(entity);
 
-    }
+	}
 
 }
