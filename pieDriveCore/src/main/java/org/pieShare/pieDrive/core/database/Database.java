@@ -98,29 +98,27 @@ public class Database {
         physicalChunkEntityRepository.save(physicalChunkEntity);
     }
 
-    public Collection<VolumesEntity> getAllVolumes() {
+    public Collection<Volume> getAllVolumes() {
 
-        //TODO find solution for empty objectDB problem
-        try {
-            return volumesEntityRepository.findAll();
-            //Query query = em.createQuery("SELECT v from VolumesEntity v");
-            //return (Collection<VolumesEntity>) query.getResultList();
-        } catch (Exception e) {
+        List<Volume> volumes = new ArrayList<>();
 
-            Collection<VolumesEntity> tmp = new ArrayList<VolumesEntity>();
-            return tmp;
+        for (VolumesEntity entity : volumesEntityRepository.findAll()) {
+            volumes.add(convertVolumeEntityToVolume(entity));
         }
 
+        return volumes;
     }
 
     public Volume getVolumeById(String id) {
         VolumesEntity entity = volumesEntityRepository.findOne(id);
-        
+        return convertVolumeEntityToVolume(entity);
+    }
+
+    private Volume convertVolumeEntityToVolume(VolumesEntity entity) {
         Volume v = new Volume();
         v.setName(entity.getVolumeName());
         v.setId(entity.getId());
         v.setRaidLevel(entity.getRaidLevel());
-        
         return v;
     }
 
@@ -137,7 +135,7 @@ public class Database {
         entity.setVolumeName(volume.getName());
         entity.setId(volume.getId());
         entity.setRaidLevel(volume.getRaidLevel());
-        
+
         /*
         for (PieRaidFile raidFile : volume.getFiles()) {
             files.add(pieRaidFileEntityRepository.findOne(raidFile.getUid()));
@@ -152,7 +150,6 @@ public class Database {
 
         entity.setFiles(volume.getFiles());
         entity.setFolders(volume.getFolders());*/
-        
         volumesEntityRepository.save(entity);
 
     }
