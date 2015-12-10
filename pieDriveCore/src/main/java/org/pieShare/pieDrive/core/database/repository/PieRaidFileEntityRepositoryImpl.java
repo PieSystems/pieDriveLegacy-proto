@@ -26,6 +26,12 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
     @Autowired
     private PieRaidFileEntityRepository pieRaidFileEntityRepository;
 
+    @Autowired
+    private PhysicalChunkEntityRepository physicalChunkEntityRepository;
+    
+    @Autowired
+    private AdapterChunkEntityRepository adapterChunkEntityRepository;
+    
     @Override
     public PieRaidFileEntity persistPieRaidFile(PieRaidFile pieRaidFile) {
 
@@ -131,5 +137,22 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
             }
         }
         return pieRaidFiles;
+    }
+    
+    @Override
+    public void removePieRaidFileWithAllChunks(String id)
+    {
+        PieRaidFileEntity entity = pieRaidFileEntityRepository.findOne(id);
+        
+        for(PhysicalChunkEntity pp : entity.getChunks())
+        {
+            for(AdapterChunkEntity aa : pp.getChunks())
+            {
+                adapterChunkEntityRepository.delete(aa.getUUID());
+            }
+            
+            physicalChunkEntityRepository.delete(pp.getId());
+        }
+        pieRaidFileEntityRepository.delete(id);
     }
 }
