@@ -38,8 +38,6 @@ public class Database {
     private VolumeEntityRepository volumesEntityRepository;
     @Autowired
     private FolderEntityRepository folderEntityRepository;
-    @Autowired
-    private BaseEntityRepository baseEntityRepository;
 
     public void removePieRaidFile(PieRaidFile file) {
         pieRaidFileEntityRepository.delete(file.getUid());
@@ -94,8 +92,8 @@ public class Database {
     public PieFolder getFolderById(String id) {
         return folderEntityRepository.findFolderByUid(id);
     }
-    
-    public List<PieFolder> findAllFoldera() {
+
+    public List<PieFolder> findAllFolders() {
         return folderEntityRepository.findAllFolders();
     }
 
@@ -103,6 +101,7 @@ public class Database {
         volumesEntityRepository.persistVolume(volume);
 
     }
+
     public void persistFolder(PieFolder folder) {
         folderEntityRepository.persistFolder(folder);
     }

@@ -5,6 +5,13 @@
  */
 package org.pieShare.pieDrive.core.model.ui;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import java.io.Serializable;
+import java.util.List;
+import org.pieShare.pieDrive.core.database.entities.FolderEntity;
+import org.pieShare.pieDrive.core.model.PieRaidFile;
+
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>

@@ -5,6 +5,9 @@
  */
 package org.pieShare.pieDrive.core.model.ui;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import java.io.Serializable;
 import java.util.List;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 
@@ -12,11 +15,19 @@ import org.pieShare.pieDrive.core.model.PieRaidFile;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class PieFolder {
+public class PieFolder implements Serializable {
 	private String id;
 	private String name;
 	private List<PieRaidFile> files;
 	private List<PieFolder> folders;
+	
+	public void addFolder(PieFolder folder) {
+		this.folders.add(folder);
+	}
+	
+	public void addFile(PieRaidFile file) {
+		this.files.add(file);
+	}
 
 	public String getId() {
 		return id;
