@@ -43,7 +43,11 @@ public abstract class ADownloadChunkTask implements IPieTask {
 
 	protected boolean download(AdapterChunk chunk, DigestOutputStream stream) throws AdaptorException {
 		PieLogger.debug(this.getClass(), "Downloading chunk {} from {}", chunk.getUuid(), chunk.getAdapterId().getId());
+		try {
 		adapterCoreService.getAdapter(chunk.getAdapterId()).download(chunk, stream);
+		} catch(Exception e) { // catch everything because adapter might not wrap own exceptions in AdaptorExceptions
+			return false;
+		}
 		byte[] hash = stream.getMessageDigest().digest();
 
 		if (Arrays.equals(physicalChunk.getHash(), hash)) {
