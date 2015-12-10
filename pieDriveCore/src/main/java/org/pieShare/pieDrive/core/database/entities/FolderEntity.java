@@ -11,8 +11,11 @@ import java.util.List;
  */
 
 @Entity
-public class FolderEntity extends BaseEntity{
+public class FolderEntity{
 
+    @Id
+    private String uid;
+    
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<FolderEntity> folders;
 
@@ -33,6 +36,13 @@ public class FolderEntity extends BaseEntity{
         files.add(file);
     }
 
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getFolderName() {
         return folderName;

@@ -19,6 +19,8 @@ import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
+import org.pieShare.pieDrive.core.database.repository.FolderEntityRepositoryCustom;
+import org.pieShare.pieDrive.core.database.repository.FolderEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryCustom;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryImpl;
@@ -61,8 +63,8 @@ public class CoreAppConfig {
     private Provider<AdapterChunk> adapterChunkProvider;
     @Autowired
     private Provider<UploadChunkTask> uploadChunkTaskProvider;
-	@Autowired
-	private Provider<IntegrityCheckTask> integrityCheckTaskProvider;
+    @Autowired
+    private Provider<IntegrityCheckTask> integrityCheckTaskProvider;
 
     @Bean
     public EmbeddedDatabase dataSource() {
@@ -73,16 +75,16 @@ public class CoreAppConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
-           AbstractJpaVendorAdapter vendorAdapter = new AbstractJpaVendorAdapter() {
+        AbstractJpaVendorAdapter vendorAdapter = new AbstractJpaVendorAdapter() {
             @Override
             public PersistenceProvider getPersistenceProvider() {
                 return new com.objectdb.jpa.Provider();
             }
- 
+
             @Override
-            public Map<String,?> getJpaPropertyMap() {
+            public Map<String, ?> getJpaPropertyMap() {
                 return Collections.singletonMap(
-                    "javax.persistence.jdbc.url", "database.odb");
+                        "javax.persistence.jdbc.url", "database.odb");
             }
         };
         //HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -94,17 +96,17 @@ public class CoreAppConfig {
         factory.setDataSource(dataSource());
         factory.afterPropertiesSet();
 
-        return factory; 
+        return factory;
     }
 
     @Bean
-    
+
     public PlatformTransactionManager transactionManager() {
         JpaTransactionManager txManager = new JpaTransactionManager();
         txManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return txManager;
     }
-     
+
     @Bean
     @Lazy
     public Database database() {
@@ -117,11 +119,17 @@ public class CoreAppConfig {
     public PieRaidFileEntityRepositoryCustom pieRaidFileRepositoryCustom() {
         return new PieRaidFileEntityRepositoryImpl();
     }
-    
+
     @Bean
     @Lazy
     public VolumeEntityRepositoryCustom volumeEntityRepositoryCustom() {
         return new VolumeEntityRepositoryImpl();
+    }
+
+    @Bean
+    @Lazy
+    public FolderEntityRepositoryCustom folderEntityRepositoryCustom() {
+        return new FolderEntityRepositoryImpl();
     }
 
     @Bean
@@ -162,28 +170,28 @@ public class CoreAppConfig {
     @Bean
     @Lazy
     public Adaptor dropboxAdapter() {
-		DropboxAdapter adapter = new DropboxAdapter();
-		return adapter;
+        DropboxAdapter adapter = new DropboxAdapter();
+        return adapter;
     }
 
     @Bean
     @Lazy
     public Adaptor boxAdapter() {
-		BoxAdapter box = new BoxAdapter();
-		return box;
-	}
-	
-	@Bean
-	@Lazy
-	public BoxAuthentication boxAuthentication() {
-		return new BoxAuthentication();
+        BoxAdapter box = new BoxAdapter();
+        return box;
+    }
+
+    @Bean
+    @Lazy
+    public BoxAuthentication boxAuthentication() {
+        return new BoxAuthentication();
     }
 
     @Bean
     @Lazy
     public Adaptor s3Adapter() {
-		S3Adapter s3 = new S3Adapter();
-		return s3;
+        S3Adapter s3 = new S3Adapter();
+        return s3;
     }
 
     @Bean
@@ -217,8 +225,8 @@ public class CoreAppConfig {
     public DownloadChunkTask downloadChunkTask() {
         DownloadChunkTask task = new DownloadChunkTask();
         task.setAdapterCoreService(this.simpleAdapterCoreService());
-		task.setExecutor(this.executorService());
-		task.setTask(this.integrityCheckTask());
+        task.setExecutor(this.executorService());
+        task.setTask(this.integrityCheckTask());
         return task;
     }
 
@@ -231,17 +239,17 @@ public class CoreAppConfig {
         task.setExecutorService(this.executorService());
 
         task.setDownloadChunkProvider(downloadChunkProvider);
-		return task;
-	}
-	
-	@Bean
-	@Lazy
-	@Scope("prototype")
-	public IntegrityCheckTask integrityCheckTask() {
-		IntegrityCheckTask task = new IntegrityCheckTask();
-		task.setAdapterCoreService(this.simpleAdapterCoreService());
-		task.setExecutorService(this.executorService());
-		task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
+        return task;
+    }
+
+    @Bean
+    @Lazy
+    @Scope("prototype")
+    public IntegrityCheckTask integrityCheckTask() {
+        IntegrityCheckTask task = new IntegrityCheckTask();
+        task.setAdapterCoreService(this.simpleAdapterCoreService());
+        task.setExecutorService(this.executorService());
+        task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
         return task;
     }
 
@@ -266,15 +274,15 @@ public class CoreAppConfig {
     public PieExecutorTaskFactory executorFactory() {
         PieExecutorTaskFactory fac = new PieExecutorTaskFactory();
         return fac;
-	}
-	
-	@Bean
-	@Lazy
-	@Scope("prototype")
-	public DeleteRaidFileTask deleteRaidFileTask() {
-		DeleteRaidFileTask task = new DeleteRaidFileTask();
-		task.setDatabase(this.database());
-		task.setAdapterCoreService(this.simpleAdapterCoreService());
-		return task;
+    }
+
+    @Bean
+    @Lazy
+    @Scope("prototype")
+    public DeleteRaidFileTask deleteRaidFileTask() {
+        DeleteRaidFileTask task = new DeleteRaidFileTask();
+        task.setDatabase(this.database());
+        task.setAdapterCoreService(this.simpleAdapterCoreService());
+        return task;
     }
 }

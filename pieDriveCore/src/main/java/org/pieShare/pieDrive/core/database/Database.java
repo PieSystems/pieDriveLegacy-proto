@@ -5,12 +5,8 @@
  */
 package org.pieShare.pieDrive.core.database;
 
-import com.dropbox.core.v1.DbxEntry.Folder;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
@@ -25,7 +21,6 @@ import org.pieShare.pieDrive.core.model.ui.PieFolder;
 import org.pieShare.pieDrive.core.model.ui.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepository;
-import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
 
 /**
  *
@@ -45,14 +40,6 @@ public class Database {
     private FolderEntityRepository folderEntityRepository;
     @Autowired
     private BaseEntityRepository baseEntityRepository;
-
-    public void persist(BaseEntity entity) {
-        baseEntityRepository.save(entity);
-    }
-
-    public void remove(BaseEntity entity) {
-        baseEntityRepository.delete(entity);
-    }
 
     public void removePieRaidFile(PieRaidFile file) {
         pieRaidFileEntityRepository.delete(file.getUid());
@@ -104,13 +91,19 @@ public class Database {
         return volumesEntityRepository.getVolumeByUId(id);
     }
 
-    public Folder getFolderById(Long id) {
-        return null;//folderEntityRepository.findOne(id);
+    public PieFolder getFolderById(String id) {
+        return folderEntityRepository.findFolderByUid(id);
+    }
+    
+    public List<PieFolder> findAllFoldera() {
+        return folderEntityRepository.findAllFolders();
     }
 
     public void persistVolume(Volume volume) {
         volumesEntityRepository.persistVolume(volume);
 
     }
-
+    public void persistFolder(PieFolder folder) {
+        folderEntityRepository.persistFolder(folder);
+    }
 }

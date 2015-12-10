@@ -5,13 +5,18 @@
  */
 package org.pieShare.pieDrive.core.database.repository;
 
-import org.pieShare.pieDrive.core.database.entities.FolderEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import org.pieShare.pieDrive.core.model.ui.PieFolder;
 
 /**
  *
  * @author richy
  */
-public interface FolderEntityRepository extends JpaRepository<FolderEntity, String>, FolderEntityRepositoryCustom {
+public interface FolderEntityRepositoryCustom {
 
+    void persistFolder(PieFolder folder);
+
+    PieFolder findFolderByUid(String uid);
+
+    List<PieFolder> findAllFolders();
 }
