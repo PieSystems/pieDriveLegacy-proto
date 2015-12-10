@@ -52,10 +52,9 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
 
         List<FolderEntity> folderEntities = new ArrayList<>();
 
-        FolderEntity folderEntity = new FolderEntity();
-
         for (PieFolder folder : pieFoldes) {
 
+            FolderEntity folderEntity = new FolderEntity();
             List<FolderEntity> returnFolderEntitys = convertFolderToFolderEntities(folder.getFolders());
 
             List<PieRaidFileEntity> pieRaidFileEntities = new ArrayList<>();
@@ -67,6 +66,7 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
             folderEntity.setFiles(pieRaidFileEntities);
             folderEntity.setFolderName(folder.getName());
             folderEntity.setFolders(returnFolderEntitys);
+            folderEntity.setUid(folder.getId());
 
             folderEntities.add(folderEntity);
 
@@ -78,10 +78,11 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
 
         List<PieFolder> pieFolders = new ArrayList<>();
 
-        PieFolder pieFolder = new PieFolder();
+       
 
         for (FolderEntity folderEntity : folderEntitys) {
 
+             PieFolder pieFolder = new PieFolder();
             List<PieFolder> returnPieFolders = convertFolderEntityToFolder(folderEntity.getFolders());
 
             List<PieRaidFile> pieRaidFiles = new ArrayList<>();
@@ -93,7 +94,7 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
             pieFolder.setFiles(pieRaidFiles);
             pieFolder.setName(folderEntity.getFolderName());
             pieFolder.setFolders(returnPieFolders);
-
+            pieFolder.setId(folderEntity.getUid());
             pieFolders.add(pieFolder);
 
         }
