@@ -98,12 +98,10 @@ public class Database {
     }
 
     public void persistVolume(Volume volume) {
-        volume.setId(UUID.randomUUID().toString());
         volumesEntityRepository.persistVolume(volume);
     }
 
     public void persistFolder(PieFolder folder) {
-        folder.setId(UUID.randomUUID().toString());
         folderEntityRepository.persistFolder(folder);
     }
 }
