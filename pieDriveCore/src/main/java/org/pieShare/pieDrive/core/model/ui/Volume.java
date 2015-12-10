@@ -10,4 +10,13 @@ package org.pieShare.pieDrive.core.model.ui;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class Volume extends PieFolder {
+	private String raidLevel;
+
+	public String getRaidLevel() {
+		return raidLevel;
+	}
+
+	public void setRaidLevel(String raidLevel) {
+		this.raidLevel = raidLevel;
+	}
 }
