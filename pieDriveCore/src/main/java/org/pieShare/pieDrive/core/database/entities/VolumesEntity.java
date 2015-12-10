@@ -8,8 +8,10 @@ import java.util.List;
  * Created by Roland on 08.12.2015.
  */
 @Entity
-public class VolumesEntity extends BaseEntity {
+public class VolumesEntity {
 
+    @Id
+    private  String id;
     private String volumeName;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -17,6 +19,11 @@ public class VolumesEntity extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PieRaidFileEntity> files;
 
+    //TODO change to enum
+    private String raidLevel;
+
+    
+    
     public VolumesEntity() {
         folders = new ArrayList<>();
         files = new ArrayList<>();
@@ -36,10 +43,7 @@ public class VolumesEntity extends BaseEntity {
         files.add(file);
     }
 
-    //TODO change to enum
-    private String raidLevel;
-
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

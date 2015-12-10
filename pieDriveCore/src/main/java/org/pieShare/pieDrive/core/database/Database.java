@@ -22,6 +22,8 @@ import org.pieShare.pieDrive.core.database.repository.VolumesEntityRepository;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.model.ui.PieFolder;
+import org.pieShare.pieDrive.core.model.ui.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -117,4 +119,33 @@ public class Database {
     public FolderEntity getFolderById(Long id) {
         return folderEntityRepository.findOne(id);
     }
+
+    public void persistVolume(Volume volume) {
+        VolumesEntity entity = new VolumesEntity();
+
+        List<FolderEntity> folderEntitys = new ArrayList<>();
+        List<PieRaidFileEntity> files = new ArrayList<>();
+
+        entity.setVolumeName(volume.getName());
+        entity.setId(volume.getId());
+        
+        /*
+        for (PieRaidFile raidFile : volume.getFiles()) {
+            files.add(pieRaidFileEntityRepository.findOne(raidFile.getUid()));
+        }
+        
+        FolderEntity entity1 = new FolderEntity();
+        
+        for(PieFolder folder : volume.getFolders())
+        {
+            folder.get
+        }
+
+        entity.setFiles(volume.getFiles());
+        entity.setFolders(volume.getFolders());*/
+        
+        volumesEntityRepository.save(entity);
+
+    }
+
 }
