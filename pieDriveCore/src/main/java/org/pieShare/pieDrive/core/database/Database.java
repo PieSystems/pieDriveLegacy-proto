@@ -9,6 +9,7 @@ import com.dropbox.core.v1.DbxEntry.Folder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -136,6 +137,7 @@ public class Database {
 		List<FolderEntity> folderEntitys = new ArrayList<>();
 		List<PieRaidFileEntity> files = new ArrayList<>();
 
+		volume.setId(UUID.randomUUID().toString());
 		entity.setVolumeName(volume.getName());
 		entity.setId(volume.getId());
 		entity.setRaidLevel(volume.getRaidLevel());
