@@ -18,14 +18,14 @@ import org.pieShare.pieDrive.core.database.repository.BaseEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.FolderEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
-import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryCustom;
-import org.pieShare.pieDrive.core.database.repository.VolumesEntityRepository;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.model.ui.PieFolder;
 import org.pieShare.pieDrive.core.model.ui.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepository;
+import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
 
 /**
  *
@@ -40,9 +40,7 @@ public class Database {
     @Autowired
     private PhysicalChunkEntityRepository physicalChunkEntityRepository;
     @Autowired
-    private PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom;
-    @Autowired
-    private VolumesEntityRepository volumesEntityRepository;
+    private VolumeEntityRepository volumesEntityRepository;
     @Autowired
     private FolderEntityRepository folderEntityRepository;
     @Autowired
@@ -61,15 +59,15 @@ public class Database {
     }
 
     public void persistPieRaidFile(PieRaidFile pieRaidFile) {
-        pieRaidFileRepositoryCustom.persistPieRaidFile(pieRaidFile);
+        pieRaidFileEntityRepository.persistPieRaidFile(pieRaidFile);
     }
 
     public PieRaidFile findPieRaidFileById(String id) {
-        return pieRaidFileRepositoryCustom.findPieRaidFileById(id);
+        return pieRaidFileEntityRepository.findPieRaidFileByUId(id);
     }
 
     public List<PieRaidFile> findAllPieRaidFiles() {
-        return pieRaidFileRepositoryCustom.findAllPieRaidFiles();
+        return pieRaidFileEntityRepository.findAllPieRaidFiles();
     }
 
     public void updateAdaptorChunk(AdapterChunk chunk) {
@@ -99,27 +97,11 @@ public class Database {
     }
 
     public Collection<Volume> getAllVolumes() {
-
-        List<Volume> volumes = new ArrayList<>();
-
-        for (VolumesEntity entity : volumesEntityRepository.findAll()) {
-            volumes.add(convertVolumeEntityToVolume(entity));
-        }
-
-        return volumes;
+        return volumesEntityRepository.getAllVolumes();
     }
 
     public Volume getVolumeById(String id) {
-        VolumesEntity entity = volumesEntityRepository.findOne(id);
-        return convertVolumeEntityToVolume(entity);
-    }
-
-    private Volume convertVolumeEntityToVolume(VolumesEntity entity) {
-        Volume v = new Volume();
-        v.setName(entity.getVolumeName());
-        v.setId(entity.getId());
-        v.setRaidLevel(entity.getRaidLevel());
-        return v;
+        return volumesEntityRepository.getVolumeByUId(id);
     }
 
     public Folder getFolderById(Long id) {
@@ -127,30 +109,7 @@ public class Database {
     }
 
     public void persistVolume(Volume volume) {
-        VolumesEntity entity = new VolumesEntity();
-
-        List<FolderEntity> folderEntitys = new ArrayList<>();
-        List<PieRaidFileEntity> files = new ArrayList<>();
-
-        entity.setVolumeName(volume.getName());
-        entity.setId(volume.getId());
-        entity.setRaidLevel(volume.getRaidLevel());
-
-        /*
-        for (PieRaidFile raidFile : volume.getFiles()) {
-            files.add(pieRaidFileEntityRepository.findOne(raidFile.getUid()));
-        }
-        
-        FolderEntity entity1 = new FolderEntity();
-        
-        for(PieFolder folder : volume.getFolders())
-        {
-            folder.get
-        }
-
-        entity.setFiles(volume.getFiles());
-        entity.setFolders(volume.getFolders());*/
-        volumesEntityRepository.save(entity);
+        volumesEntityRepository.persistVolume(volume);
 
     }
 

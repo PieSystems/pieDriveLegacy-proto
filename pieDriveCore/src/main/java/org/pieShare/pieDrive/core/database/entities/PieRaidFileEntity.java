@@ -70,5 +70,13 @@ public class PieRaidFileEntity {
     public void setUid(String uid) {
         this.uid = uid;
     }
+    
+     public String getId() {
+        return uid;
+    }
+
+    public void setId(String uid) {
+        this.uid = uid;
+    }
 
 }

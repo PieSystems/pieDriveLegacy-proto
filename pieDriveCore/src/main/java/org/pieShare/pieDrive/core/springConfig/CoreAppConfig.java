@@ -19,8 +19,9 @@ import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryCustom;
-import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryImpl;
+import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryImpl;
+import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryCustom;
+import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.DeleteRaidFileTask;
@@ -44,6 +45,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
 
 /**
  *
@@ -112,8 +114,14 @@ public class CoreAppConfig {
 
     @Bean
     @Lazy
-    public PieRaidFileRepositoryCustom pieRaidFileRepositoryCustom() {
-        return new PieRaidFileRepositoryImpl();
+    public PieRaidFileEntityRepositoryCustom pieRaidFileRepositoryCustom() {
+        return new PieRaidFileEntityRepositoryImpl();
+    }
+    
+    @Bean
+    @Lazy
+    public VolumeEntityRepositoryCustom volumeEntityRepositoryCustom() {
+        return new VolumeEntityRepositoryImpl();
     }
 
     @Bean

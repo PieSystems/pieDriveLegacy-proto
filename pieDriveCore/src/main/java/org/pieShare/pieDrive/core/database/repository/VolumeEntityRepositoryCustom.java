@@ -5,13 +5,18 @@
  */
 package org.pieShare.pieDrive.core.database.repository;
 
-import org.pieShare.pieDrive.core.database.entities.VolumesEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Collection;
+import org.pieShare.pieDrive.core.model.ui.Volume;
 
 /**
  *
  * @author richy
  */
-public interface VolumesEntityRepository extends JpaRepository<VolumesEntity, String>{
-    
+public interface VolumeEntityRepositoryCustom {
+
+    void persistVolume(Volume volume);
+
+    Collection<Volume> getAllVolumes();
+
+    Volume getVolumeByUId(String id);
 }

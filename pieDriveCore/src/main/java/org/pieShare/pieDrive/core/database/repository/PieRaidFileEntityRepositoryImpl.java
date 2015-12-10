@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author richy
  */
-public class PieRaidFileRepositoryImpl implements PieRaidFileRepositoryCustom {
+public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityRepositoryCustom {
 
     @Autowired
     private PieRaidFileEntityRepository pieRaidFileEntityRepository;
@@ -114,7 +114,7 @@ public class PieRaidFileRepositoryImpl implements PieRaidFileRepositoryCustom {
     }
 
     @Override
-    public PieRaidFile findPieRaidFileById(String id) {
+    public PieRaidFile findPieRaidFileByUId(String id) {
         return convertPieRaidFileEntityToObject(pieRaidFileEntityRepository.findOne(id));
     }
 
