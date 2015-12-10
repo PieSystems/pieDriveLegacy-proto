@@ -455,5 +455,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Thread.sleep(2000);
 
 		assertFalse(this.db.findAllPieRaidFiles().contains(raidFile));
+		Assert.assertNull(this.db.findPieRaidFileById(expectedRaidFile.getUid()));
 	}
 }
