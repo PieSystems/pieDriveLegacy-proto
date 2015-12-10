@@ -40,7 +40,7 @@ public class Database {
     private FolderEntityRepository folderEntityRepository;
 
     public void removePieRaidFile(PieRaidFile file) {
-        pieRaidFileEntityRepository.delete(file.getUid());
+        pieRaidFileEntityRepository.removePieRaidFileWithAllChunks(file.getUid());
     }
 
     public void persistPieRaidFile(PieRaidFile pieRaidFile) {

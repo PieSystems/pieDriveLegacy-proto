@@ -22,4 +22,6 @@ public interface PieRaidFileEntityRepositoryCustom {
     PieRaidFile findPieRaidFileByUId(String id);
 
     List<PieRaidFile> findAllPieRaidFiles();
+    
+    void removePieRaidFileWithAllChunks(String id);
 }
