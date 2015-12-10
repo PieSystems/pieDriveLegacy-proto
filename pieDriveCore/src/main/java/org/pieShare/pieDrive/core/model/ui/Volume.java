@@ -9,5 +9,5 @@ package org.pieShare.pieDrive.core.model.ui;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class Volumn extends PieFolder {
+public class Volume extends PieFolder {
 }
