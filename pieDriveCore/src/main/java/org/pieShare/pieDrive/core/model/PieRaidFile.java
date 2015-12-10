@@ -6,6 +6,7 @@
 package org.pieShare.pieDrive.core.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ public class PieRaidFile {
 
     public PieRaidFile() {
         uid = UUID.randomUUID().toString();
+        chunks = new ArrayList<>();
     }
 
     public String getUid() {
