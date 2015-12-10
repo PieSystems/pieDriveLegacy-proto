@@ -128,7 +128,7 @@ public class Database {
 
         entity.setVolumeName(volume.getName());
         entity.setId(volume.getId());
-        
+        entity.setRaidLevel(volume.getRaidLevel());
         /*
         for (PieRaidFile raidFile : volume.getFiles()) {
             files.add(pieRaidFileEntityRepository.findOne(raidFile.getUid()));
