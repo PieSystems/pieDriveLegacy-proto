@@ -8,6 +8,7 @@ package org.pieShare.pieDrive.core.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
@@ -19,9 +20,11 @@ public class PhysicalChunk {
     private long offset;
     private long size;
     private byte[] hash;
+    public String uuid;
 
     public PhysicalChunk() {
         chunks = new HashMap<>();
+        uuid = UUID.randomUUID().toString();
     }
 
     public PhysicalChunk addAdapterChunk(AdapterChunk chunk) {
@@ -60,4 +63,30 @@ public class PhysicalChunk {
     public void setHash(byte[] hash) {
         this.hash = hash;
     }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof PhysicalChunk)) {
+            return false;
+        }
+
+        PhysicalChunk rr = (PhysicalChunk) obj;
+
+        return rr.getUuid().equals(this.getUuid());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getUuid().hashCode();
+    }
+
 }

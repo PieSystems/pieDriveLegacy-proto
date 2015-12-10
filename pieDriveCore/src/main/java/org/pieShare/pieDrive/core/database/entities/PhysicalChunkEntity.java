@@ -27,8 +27,7 @@ import org.pieShare.pieDrive.core.model.AdapterId;
 public class PhysicalChunkEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected Long id;
+    protected String UUId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,  mappedBy = "physicalChunkEntity")
     private List<AdapterChunkEntity> chunks;
@@ -74,8 +73,12 @@ public class PhysicalChunkEntity {
         this.pieRaidFileEntity = pieRaidFileEntity;
     }
 
-    public Long getId() {
-        return id;
+    public String getUUId() {
+        return UUId;
+    }
+
+    public void setUUId(String UUId) {
+        this.UUId = UUId;
     }
 
     public byte[] getHashValues() {

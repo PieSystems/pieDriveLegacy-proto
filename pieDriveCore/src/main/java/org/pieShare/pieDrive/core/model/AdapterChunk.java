@@ -44,4 +44,23 @@ public class AdapterChunk extends PieDriveFile {
 	public void setState(ChunkHealthState state) {
 		this.state = state;
 	}
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof AdapterChunk)) {
+            return false;
+        }
+
+        AdapterChunk rr = (AdapterChunk)obj;
+        
+        return rr.getUuid().equals(this.getUuid());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getUuid().hashCode();
+    }
+        
+        
 }

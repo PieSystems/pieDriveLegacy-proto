@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author richy
  */
-public interface PhysicalChunkEntityRepository  extends JpaRepository<PhysicalChunkEntity, Long>{
+public interface PhysicalChunkEntityRepository  extends JpaRepository<PhysicalChunkEntity, String>{
     
 }

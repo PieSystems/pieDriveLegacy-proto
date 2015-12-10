@@ -60,6 +60,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
             physicalChunkEntity.setSize(chunk.getSize());
             physicalChunkEntity.setPieRaidFileEntity(pieRaidFileEntity);
             physicalChunkEntity.setHashValues(chunk.getHash());
+            physicalChunkEntity.setUUId(chunk.getUuid());
             physicalChunkEntities.add(physicalChunkEntity);
         }
 
@@ -105,7 +106,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
             physicalChunk.setOffset(physicalChunkEntity.getOffset());
             physicalChunk.setSize(physicalChunkEntity.getSize());
             physicalChunk.setHash(physicalChunkEntity.getHashValues());
-
+            physicalChunk.setUuid(physicalChunkEntity.getUUId());
             physicalChunks.add(physicalChunk);
         }
 
@@ -153,7 +154,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
                 adapterChunkEntityRepository.delete(aa.getUUID());
             }
 
-            physicalChunkEntityRepository.delete(pp.getId());
+            physicalChunkEntityRepository.delete(pp.getUUId());
         }
         pieRaidFileEntityRepository.delete(id);
     }
