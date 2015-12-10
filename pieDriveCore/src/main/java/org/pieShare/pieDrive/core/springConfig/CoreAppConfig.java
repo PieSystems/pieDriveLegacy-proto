@@ -23,6 +23,7 @@ import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryCusto
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileRepositoryImpl;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.task.DeleteRaidFileTask;
 import org.pieShare.pieDrive.core.task.DownloadChunkTask;
 import org.pieShare.pieDrive.core.task.DownloadRaidFileTask;
 import org.pieShare.pieDrive.core.task.IntegrityCheckTask;
@@ -257,5 +258,15 @@ public class CoreAppConfig {
     public PieExecutorTaskFactory executorFactory() {
         PieExecutorTaskFactory fac = new PieExecutorTaskFactory();
         return fac;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope("prototype")
+	public DeleteRaidFileTask deleteRaidFileTask() {
+		DeleteRaidFileTask task = new DeleteRaidFileTask();
+		task.setDatabase(this.database());
+		task.setAdapterCoreService(this.simpleAdapterCoreService());
+		return task;
     }
 }

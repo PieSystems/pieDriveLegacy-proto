@@ -15,6 +15,7 @@ import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
+import static org.testng.Assert.assertFalse;
 import org.testng.annotations.Test;
 
 /**
@@ -418,5 +419,41 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
+	}
+	
+	@Test
+	public void testUpAndDelete() throws Exception {
+		String fileName = "testUpAndDelete";
+		File expected = this.createFileHelper(this.in, fileName, 15);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
+		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
+		uploadTask.setFile(expected);
+		uploadTask.setRaidedFile(expectedRaidFile);
+		uploadTask.run();
+                
+		Thread.sleep(2000);
+
+		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
+		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
+		File[] uploadedFilesAdapter3 = this.uploadAdapter3.listFiles();
+		Assert.assertEquals(uploadedFilesAdapter1.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter2.length, 1);
+		Assert.assertEquals(uploadedFilesAdapter3.length, 1);
+		byte[] expectedBytes = this.generateMd5(expected);
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter1[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter2[0]));
+		Assert.assertEquals(expectedBytes, this.generateMd5(uploadedFilesAdapter3[0]));
+
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		
+		DeleteRaidFileTask deleteTask = this.deleteRaidFileTaskProvider.get();
+		deleteTask.setPieRaidFile(raidFile);
+		deleteTask.run();
+		
+		Thread.sleep(2000);
+
+		assertFalse(this.db.findAllPieRaidFiles().contains(raidFile));
 	}
 }
