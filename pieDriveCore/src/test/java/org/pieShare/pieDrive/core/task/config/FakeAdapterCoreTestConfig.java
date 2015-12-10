@@ -6,7 +6,6 @@
 package org.pieShare.pieDrive.core.task.config;
 
 import org.pieShare.pieDrive.adapter.api.Adaptor;
-import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
 import org.springframework.context.annotation.Bean;
@@ -20,13 +19,6 @@ import org.springframework.context.annotation.Lazy;
 @Configuration
 public class FakeAdapterCoreTestConfig extends CoreAppConfig {
 
-	@Bean
-	@Lazy
-	@Override
-	public DatabaseFactory databaseFactory() {
-		return new DatabaseFactory();
-	}
-	
 	@Bean
 	@Lazy
 	@Override

@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,7 +30,7 @@ public class PhysicalChunkEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "physicalChunkEntity")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,  mappedBy = "physicalChunkEntity")
     private List<AdapterChunkEntity> chunks;
 
     private long offset;
@@ -38,7 +39,7 @@ public class PhysicalChunkEntity {
     @Column(nullable = true)
     private byte[] hashValues;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private PieRaidFileEntity pieRaidFileEntity;
 
     public List<AdapterChunkEntity> getChunks() {

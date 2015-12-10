@@ -5,65 +5,76 @@
  */
 package org.pieShare.pieDrive.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class PieRaidFile {
-	private String uid;
-	private String relativeFilePath;
-	private String fileName;
-	private long lastModified;
-	private List<PhysicalChunk> chunks;
-	private long fileSize;
 
-	public String getUid() {
-		return uid;
-	}
+    private String relativeFilePath;
+    private String fileName;
+    private long lastModified;
+	//todo: will need fixing!!! due to the map in the physical chunk it can not be easily de/serialized
+	@JsonIgnore
+    private List<PhysicalChunk> chunks;
+    private long fileSize;
+    private String uid;
 
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
-	
-	public String getRelativeFilePath() {
-		return relativeFilePath;
-	}
+    public PieRaidFile() {
+        uid = UUID.randomUUID().toString();
+        chunks = new ArrayList<>();
+    }
 
-	public void setRelativeFilePath(String relativeFilePath) {
-		this.relativeFilePath = relativeFilePath;
-	}
+    public String getUid() {
+        return uid;
+    }
 
-	public String getFileName() {
-		return fileName;
-	}
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    public String getRelativeFilePath() {
+        return relativeFilePath;
+    }
 
-	public long getLastModified() {
-		return lastModified;
-	}
+    public void setRelativeFilePath(String relativeFilePath) {
+        this.relativeFilePath = relativeFilePath;
+    }
 
-	public void setLastModified(long lastModified) {
-		this.lastModified = lastModified;
-	}
+    public String getFileName() {
+        return fileName;
+    }
 
-	public List<PhysicalChunk> getChunks() {
-		return chunks;
-	}
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
-	public void setChunks(List<PhysicalChunk> chunks) {
-		this.chunks = chunks;
-	}
+    public long getLastModified() {
+        return lastModified;
+    }
 
-	public long getFileSize() {
-		return fileSize;
-	}
+    public void setLastModified(long lastModified) {
+        this.lastModified = lastModified;
+    }
 
-	public void setFileSize(long fileSize) {
-		this.fileSize = fileSize;
-	}
+    public List<PhysicalChunk> getChunks() {
+        return chunks;
+    }
+
+    public void setChunks(List<PhysicalChunk> chunks) {
+        this.chunks = chunks;
+    }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
 }

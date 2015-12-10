@@ -5,6 +5,10 @@
  */
 package org.pieShare.pieDrive.core.model.ui;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 
@@ -12,41 +16,55 @@ import org.pieShare.pieDrive.core.model.PieRaidFile;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class PieFolder {
-	private String id;
-	private String name;
-	private List<PieRaidFile> files;
-	private List<PieFolder> folders;
+public class PieFolder implements Serializable {
 
-	public String getId() {
-		return id;
-	}
+    private String id;
+    private String name;
+    private List<PieRaidFile> files;
+    private List<PieFolder> folders;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public PieFolder() {
+        files = new ArrayList<>();
+        folders = new ArrayList();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void addFolder(PieFolder folder) {
+        this.folders.add(folder);
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void addFile(PieRaidFile file) {
+        this.files.add(file);
+    }
 
-	public List<PieRaidFile> getFiles() {
-		return files;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setFiles(List<PieRaidFile> files) {
-		this.files = files;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public List<PieFolder> getFolders() {
-		return folders;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setFolders(List<PieFolder> folders) {
-		this.folders = folders;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<PieRaidFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<PieRaidFile> files) {
+        this.files = files;
+    }
+
+    public List<PieFolder> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(List<PieFolder> folders) {
+        this.folders = folders;
+    }
 }

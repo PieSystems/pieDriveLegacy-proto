@@ -16,7 +16,6 @@ import org.pieShare.pieDrive.core.IntegrationTestBase;
 import org.pieShare.pieDrive.core.PieDriveCore;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.DatabaseFactory;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +29,11 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected Provider<DownloadRaidFileTask> downloadRaidFileProvider;
 	@Autowired
 	protected Provider<IntegrityCheckTask> integrityCheckTaskProvider;
+	@Autowired
+	protected Provider<DeleteRaidFileTask> deleteRaidFileTaskProvider;
 
 	@Autowired
 	protected Database db;
-	@Autowired
-	protected DatabaseFactory fac;
 	@Autowired
 	protected AdapterCoreService adapterCoreService;
 	@Autowired
@@ -53,11 +52,6 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	public void setUpIt() throws IOException, Exception {
 		super.setUpIt();
 		this.testFolder = new File(this.integrationTestFolder, "test");
-
-		//init new DB
-		File dbFile = new File(super.integrationTestFolder, "databaseTaskTest.odb");
-		fac.setDatabaseName(dbFile.getPath());
-		fac.init();
 	}
 
 	@BeforeMethod

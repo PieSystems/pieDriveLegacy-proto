@@ -8,12 +8,10 @@ import java.util.List;
  * Created by Roland on 08.12.2015.
  */
 @Entity
-public class VolumesEntity implements IBaseEntity {
+public class VolumesEntity {
 
     @Id
-    @GeneratedValue
-    private Long id;
-
+    private String id;
     private String volumeName;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -21,32 +19,51 @@ public class VolumesEntity implements IBaseEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PieRaidFileEntity> files;
 
-
-    public void addFolder(FolderEntity folder){
-        if(folders == null) folders = new ArrayList<>();
-        folders.add(folder);
-    }
-
-    public void addFile(PieRaidFileEntity file){
-        if(files == null) files = new ArrayList<>();
-        files.add(file);
-    }
-
-
     //TODO change to enum
     private String raidLevel;
 
-    public Long getId(){ return id; }
+    public VolumesEntity() {
+        folders = new ArrayList<>();
+        files = new ArrayList<>();
+    }
 
-    public void setId(Long id) { this.id = id; }
+    public void addFolder(FolderEntity folder) {
+        if (folders == null) {
+            folders = new ArrayList<>();
+        }
+        folders.add(folder);
+    }
 
-    public String getVolumeName() { return volumeName; }
+    public void addFile(PieRaidFileEntity file) {
+        if (files == null) {
+            files = new ArrayList<>();
+        }
+        files.add(file);
+    }
 
-    public void setVolumeName(String volumeName) { this.volumeName = volumeName; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getRaidLevel() { return raidLevel; }
+    public String getId() {
+        return id;
+    }
 
-    public void setRaidLevel(String raidLevel) { this.raidLevel = raidLevel; }
+    public String getVolumeName() {
+        return volumeName;
+    }
+
+    public void setVolumeName(String volumeName) {
+        this.volumeName = volumeName;
+    }
+
+    public String getRaidLevel() {
+        return raidLevel;
+    }
+
+    public void setRaidLevel(String raidLevel) {
+        this.raidLevel = raidLevel;
+    }
 
     public List<FolderEntity> getFolders() {
         return folders;

@@ -56,7 +56,7 @@ public class UploadRaidFileTask implements IPieTask {
 					AdapterChunk chunk = adapterChunkProvider.get();
 					chunk.setAdapterId(id);
 					chunk.setUuid(UUID.randomUUID().toString());
-
+					chunk.setSize(physicalChunk.getSize());
 					physicalChunk.addAdapterChunk(chunk);
 				}
 			}

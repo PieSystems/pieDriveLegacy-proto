@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieDrive.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class PhysicalChunk {
     private Map<AdapterId, AdapterChunk> chunks;
     private long offset;
     private long size;
-	private byte[] hash;
+    private byte[] hash;
 
     public PhysicalChunk() {
         chunks = new HashMap<>();
@@ -28,9 +29,13 @@ public class PhysicalChunk {
         return this;
     }
 
-	public Map<AdapterId, AdapterChunk> getChunks() {
-		return chunks;
-	}
+    public void removeAdapterChunk(AdapterId id) {
+        this.chunks.remove(id);
+    }
+
+    public Map<AdapterId, AdapterChunk> getChunks() {
+        return chunks;
+    }
 
     public long getOffset() {
         return offset;
@@ -47,12 +52,12 @@ public class PhysicalChunk {
     public void setSize(long size) {
         this.size = size;
     }
-	
-	public byte[] getHash() {
-		return hash;
-	}
 
-	public void setHash(byte[] hash) {
-		this.hash = hash;
-	}
+    public byte[] getHash() {
+        return hash;
+    }
+
+    public void setHash(byte[] hash) {
+        this.hash = hash;
+    }
 }
