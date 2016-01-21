@@ -7,9 +7,7 @@ package org.pieShare.pieDrive.core.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -23,13 +21,13 @@ public class PieRaidFile {
     private long lastModified;
     //todo: will need fixing!!! due to the map in the physical chunk it can not be easily de/serialized
     @JsonIgnore
-    private Map<Long,PhysicalChunk> chunks;
+    private List<PhysicalChunk> chunks;
     private long fileSize;
     private String uid;
 
     public PieRaidFile() {
         uid = UUID.randomUUID().toString();
-        chunks = new HashMap<>();
+        chunks = new ArrayList<>();
     }
 
     public String getUid() {
@@ -65,7 +63,7 @@ public class PieRaidFile {
     }
 
     public List<PhysicalChunk> getChunks() {
-        return new ArrayList(chunks.values());
+        return chunks;
     }
 
     public void setChunks(List<PhysicalChunk> chunks) {
