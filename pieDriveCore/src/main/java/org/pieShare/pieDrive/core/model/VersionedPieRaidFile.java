@@ -6,6 +6,7 @@
 
 package org.pieShare.pieDrive.core.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -27,6 +28,11 @@ public class VersionedPieRaidFile {
         this.uid = uid;
     }
 	
+	public void add(Long version, PieRaidFile file){
+		versions.put(version, file);
+	}
+	
+	@JsonAnyGetter
 	public Map<Long,PieRaidFile> getVersions(){
 		return this.versions;
 	}
