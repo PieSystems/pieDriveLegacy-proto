@@ -36,11 +36,11 @@ public class DeleteRaidFileTask implements IPieTask {
 		//ToDo: Converting to array becuase i want to delete during iteration of the list. 
 		//This is slow. .. Maybe there is something better.
 		for (PhysicalChunk physicalChunk : pieRaidFile.getChunks().toArray(new PhysicalChunk[pieRaidFile.getChunks().size()])) {
-			for(Iterator<HashMap.Entry<AdapterId,AdapterChunk>> it = physicalChunk.getChunks().entrySet().iterator(); it.hasNext(); ){
+			for(Iterator<AdapterChunk> it = physicalChunk.getChunks().iterator(); it.hasNext(); ){
 				try {
-					HashMap.Entry<AdapterId,AdapterChunk> chunk = it.next();
-					PieLogger.debug(DeleteRaidFileTask.class, "Starting chunk delete for {} with adapter {}", chunk.getValue().getUuid(), chunk.getKey());
-					adapterCoreService.getAdapter(chunk.getKey()).delete(chunk.getValue());
+					AdapterChunk chunk = it.next();
+					PieLogger.debug(DeleteRaidFileTask.class, "Starting chunk delete for {} with adapter {}", chunk.getUuid(), chunk.getAdapterId());
+					adapterCoreService.getAdapter(chunk.getAdapterId()).delete(chunk);
 					it.remove();
 				} catch (AdaptorException ex) {
 					PieLogger.error(DeleteRaidFileTask.class, "AdaptorException on deletion of AdapterChunk: {}", ex);

@@ -64,7 +64,7 @@ public class UploadRaidFileTask implements IPieTask {
 			this.database.persistPieRaidFile(raidedFile);
 
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-				for (AdapterChunk chunk: physicalChunk.getChunks().values()) {
+				for (AdapterChunk chunk: physicalChunk.getChunks()) {
 					UploadChunkTask task = uploadChunkTaskProvider.get();
 					task.setChunk(chunk);
 					task.setFile(rFile);

@@ -45,7 +45,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
 
             List<AdapterChunkEntity> ace = new ArrayList<>();
 
-            for (AdapterChunk adapterChunk : chunk.getChunks().values()) {
+            for (AdapterChunk adapterChunk : chunk.getChunks()) {
                 AdapterChunkEntity adc = new AdapterChunkEntity();
                 adc.setAdapterId(adapterChunk.getAdapterId().getId());
                 adc.setHash(adapterChunk.getHash());

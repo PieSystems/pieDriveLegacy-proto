@@ -107,7 +107,7 @@ public class DatabaseTest extends IntegrationTestBase {
             Assert.isNull(physicalChunk.getHash());
             Assert.notNull(physicalChunk);
 
-            for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+            for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
                 Assert.notNull(physicalChunk);
 
                 if (adapterChunk.getUuid().equals("UUID1")) {
@@ -127,7 +127,7 @@ public class DatabaseTest extends IntegrationTestBase {
         for (PhysicalChunk physicalChunk : fromDBNew.getChunks()) {
             Assert.notNull(physicalChunk);
 
-            for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+            for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
                 Assert.notNull(physicalChunk);
 
                 if (adapterChunk.getUuid().equals("UUID1")) {

@@ -40,14 +40,14 @@ public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 		
 		AdapterChunk healtyChunk = null;
 		
-		for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+		for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
 			if(adapterChunk != null && adapterChunk.getState() == ChunkHealthState.Healthy) {
 				PieLogger.debug(this.getClass(), "Found healthy chunk on {}", adapterChunk.getAdapterId().getId());
 				healtyChunk = adapterChunk;
 			}
 		}
 		
-		for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+		for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
 			if (adapterChunk.getState() == ChunkHealthState.NotChecked) {
 				DigestOutputStream digestStream = null;
 				try {

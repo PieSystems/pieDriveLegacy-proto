@@ -3,7 +3,6 @@ package org.pieShare.pieDrive.core.task;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Collection;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
@@ -41,10 +40,10 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 
 		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		Assert.assertEquals(raidFile.getChunks().size(), 1);
-		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.NotChecked);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.NotChecked);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks());
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.NotChecked);
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
@@ -52,9 +51,9 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		checkTask.run();
 		
 		Thread.sleep(2000);
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Healthy);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Healthy);
 	}
 	
 	@Test
@@ -89,10 +88,10 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 
 		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		Assert.assertEquals(raidFile.getChunks().size(), 1);
-		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.NotChecked);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.NotChecked);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks());
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.NotChecked);
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
@@ -100,9 +99,9 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		checkTask.run();
 		
 		Thread.sleep(2000);
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Broken);
 	}
 	
 	@Test
@@ -133,12 +132,12 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 
 		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		Assert.assertEquals(raidFile.getChunks().size(), 1);
-		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
-		adapterChunks.get(0).setState(ChunkHealthState.Healthy);
-		adapterChunks.get(2).setState(ChunkHealthState.Broken);
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Healthy);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Broken);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks());
+		getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).setState(ChunkHealthState.Healthy);
+		getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).setState(ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Broken);
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
@@ -146,9 +145,9 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		checkTask.run();
 		
 		Thread.sleep(2000);
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Healthy);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Healthy);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Broken);
 	}
 	
 	@Test
@@ -181,10 +180,10 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 
 		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		Assert.assertEquals(raidFile.getChunks().size(), 1);
-		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks().values());
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.NotChecked);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.NotChecked);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.NotChecked);
+		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks());
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.NotChecked);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.NotChecked);
 		
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
@@ -193,9 +192,9 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		
 		Thread.sleep(2000);
 		
-		Assert.assertEquals(adapterChunks.get(0).getState(), ChunkHealthState.Broken);
-		Assert.assertEquals(adapterChunks.get(1).getState(), ChunkHealthState.Broken);
-		Assert.assertEquals(adapterChunks.get(2).getState(), ChunkHealthState.Healthy);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Healthy);
 		
 		uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
