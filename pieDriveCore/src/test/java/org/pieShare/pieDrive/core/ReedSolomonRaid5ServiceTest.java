@@ -1,7 +1,7 @@
 package org.pieShare.pieDrive.core;
 
 import com.backblaze.erasure.ReedSolomon;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import static org.mockito.Mockito.*;
@@ -143,7 +143,7 @@ public class ReedSolomonRaid5ServiceTest {
 			
 			byte[] inputBuffer = new byte[(int)physicalChunk.getSize()];
 			initializeBuffer(inputBuffer, raidChunkSize);
-			ByteInputStream stream = new ByteInputStream(inputBuffer, inputBuffer.length);
+			ByteArrayInputStream stream = new ByteArrayInputStream(inputBuffer);
 			
 			byte[][] result = service.generateRaidShards(stream, physicalChunk);
 			verifyRaidShards(physicalChunk, result);
