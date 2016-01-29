@@ -147,6 +147,12 @@
 			<artifactId>jcl-over-slf4j</artifactId>    
 			<version>1.7.7</version>  
 		</dependency>
+		
+		<dependency>
+			<groupId>com.github</groupId>
+			<artifactId>JavaReedSolomon</artifactId>
+			<version>1.0</version>
+		</dependency>
     </dependencies>
     
     <properties>

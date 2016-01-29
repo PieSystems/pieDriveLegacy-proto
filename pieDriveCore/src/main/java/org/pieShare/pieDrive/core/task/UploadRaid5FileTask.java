@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.pieShare.pieDrive.core.task;
 
+import com.backblaze.erasure.ReedSolomon;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -25,12 +19,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
-/**
- *
- * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
- */
-public class UploadRaidFileTask implements IPieTask {
-
+public class UploadRaid5FileTask implements IPieTask {
 	private File file;
 	private PieRaidFile raidedFile;
 
@@ -41,7 +30,7 @@ public class UploadRaidFileTask implements IPieTask {
 	private Database database;
 
 	private Provider<AdapterChunk> adapterChunkProvider;
-	private Provider<UploadChunkTask> uploadChunkTaskProvider;
+	private Provider<UploadBufferChunkTask> uploadBufferChunkTaskProvider;
 
 	@Override
 	public void run() {
@@ -54,21 +43,31 @@ public class UploadRaidFileTask implements IPieTask {
 			//will be completely initizilised before we start working on it
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
 				for (AdapterId id : adapterCoreService.getAdaptersKey()) {
+					//TODO what if chunk size is not dividable by 2?
+					long raidChunkSize = calculateRaidChunkSize(physicalChunk.getSize());
 					AdapterChunk chunk = adapterChunkProvider.get();
 					chunk.setAdapterId(id);
 					chunk.setUuid(UUID.randomUUID().toString());
-					chunk.setSize(physicalChunk.getSize());
+					chunk.setSize(raidChunkSize);
 					physicalChunk.addAdapterChunk(chunk);
 				}
 			}
 			
 			this.database.persistPieRaidFile(raidedFile);
-
+			
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+				//TODO calculate raid5 chunks
+				long raidChunkSize = calculateRaidChunkSize(physicalChunk.getSize());
+				int adapterCount = adapterCoreService.getAdapters().size();
+				
+				byte[][] raidBuffers = new byte[adapterCount][(int)raidChunkSize];
+				
+				ReedSolomon reedSolomon = ReedSolomon.create(adapterCount - 1, 1);
+				
 				for (AdapterChunk chunk: physicalChunk.getChunks()) {
-					UploadChunkTask task = uploadChunkTaskProvider.get();
+					UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
 					task.setChunk(chunk);
-					task.setFile(rFile);
+					//task.setBuffer(rFile);
 					task.setPhysicalChunk(physicalChunk);
 
 					this.executorService.execute(task);
@@ -107,7 +106,12 @@ public class UploadRaidFileTask implements IPieTask {
 		this.adapterChunkProvider = adapterChunkProvider;
 	}
 
-	public void setUploadChunkTaskProvider(Provider<UploadChunkTask> uploadChunkTaskProvider) {
-		this.uploadChunkTaskProvider = uploadChunkTaskProvider;
+	public void setUploadBufferChunkTaskProvider(Provider<UploadBufferChunkTask> uploadBufferChunkTaskProvider) {
+		this.uploadBufferChunkTaskProvider = uploadBufferChunkTaskProvider;
+	}
+	
+	private long calculateRaidChunkSize(long physicalChunkSize) {
+		//TODO what if chunk size is not dividable by adapter count - 1?
+		return physicalChunkSize / (adapterCoreService.getAdapters().size() - 1);
 	}
 }
