@@ -71,7 +71,7 @@ public class Database {
         if (physicalChunk.getChunks().isEmpty()) {
             return;
         }
-        String id = physicalChunk.getChunks().entrySet().stream().findFirst().get().getValue().getUuid();
+        String id = physicalChunk.getChunks().stream().findFirst().get().getUuid();
         AdapterChunkEntity entity = adapterChunkEntityRepository.findOne(id);
 
         PhysicalChunkEntity physicalChunkEntity = entity.getPhysicalChunkEntity();

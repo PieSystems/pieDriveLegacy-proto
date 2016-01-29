@@ -68,8 +68,8 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 				BufferedOutputStream bufferedStream = StreamFactory.getBufferedOutputStream(nioStream, 65536); //64kB
 				BoundedOutputStream boundedStream = StreamFactory.getBoundedOutputStream(bufferedStream, physicalChunk.getSize());
 				hStr = StreamFactory.getDigestOutputStream(boundedStream, MessageDigest.getInstance("MD5"));
-
-				AdapterChunk chunk = this.physicalChunk.getChunks().get(adatperIds.get(this.adapterIndex));
+				
+				AdapterChunk chunk = physicalChunk.getChunk(adatperIds.get(this.adapterIndex));
 				
 				if(this.download(chunk, hStr)) {
 					PieLogger.debug(this.getClass(), "Download successfull for chunk {}", chunk.getUuid());
@@ -79,6 +79,7 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 					return;
 				}
 				
+				PieLogger.warn(this.getClass(), "Discovered corrupted chunk {}", chunk.getUuid());
 				this.adapterIndex = this.adapterCoreService.calculateNextAdapter(this.adapterIndex);
 			} catch (NoSuchAlgorithmException | AdaptorException ex) {
 				Logger.getLogger(DownloadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);

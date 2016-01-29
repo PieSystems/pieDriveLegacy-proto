@@ -5,9 +5,8 @@
  */
 package org.pieShare.pieDrive.core.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -16,29 +15,35 @@ import java.util.UUID;
  */
 public class PhysicalChunk {
 
-    private Map<AdapterId, AdapterChunk> chunks;
+    private List<AdapterChunk> chunks;
     private long offset;
     private long size;
     private byte[] hash;
     public String uuid;
 
     public PhysicalChunk() {
-        chunks = new HashMap<>();
+        chunks = new ArrayList<>();
         uuid = UUID.randomUUID().toString();
     }
 
     public PhysicalChunk addAdapterChunk(AdapterChunk chunk) {
-        this.chunks.put(chunk.getAdapterId(), chunk);
+        this.chunks.add(chunk);
         return this;
     }
 
-    public void removeAdapterChunk(AdapterId id) {
-        this.chunks.remove(id);
-    }
-
-    public Map<AdapterId, AdapterChunk> getChunks() {
+    public List<AdapterChunk> getChunks() {
         return chunks;
     }
+	
+	public AdapterChunk getChunk(AdapterId adapterId) {
+		for(AdapterChunk chunk : chunks) {
+			if(chunk.getAdapterId().equals(adapterId)) {
+				return chunk;
+			}
+		}
+		
+		return null;
+	}
 
     public long getOffset() {
         return offset;
