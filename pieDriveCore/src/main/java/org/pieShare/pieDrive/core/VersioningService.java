@@ -12,8 +12,6 @@ import org.pieShare.pieDrive.core.model.PieRaidFile;
 
 
 public interface VersioningService {
-	//PieRaidFile -> List of chunks per version, versioning in PieRaidFile
-	
 	List<PhysicalChunk> GetNewest(PieRaidFile file);
 	
 	List<PhysicalChunk> GetSpecificVersion(PieRaidFile file, long version);

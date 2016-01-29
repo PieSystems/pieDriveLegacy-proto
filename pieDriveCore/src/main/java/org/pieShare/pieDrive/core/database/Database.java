@@ -14,6 +14,7 @@ import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityReposito
 import org.pieShare.pieDrive.core.database.repository.FolderEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
+import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepository;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
@@ -21,6 +22,7 @@ import org.pieShare.pieDrive.core.model.ui.PieFolder;
 import org.pieShare.pieDrive.core.model.ui.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepository;
+import org.pieShare.pieDrive.core.model.VersionedPieRaidFile;
 
 /**
  *
@@ -38,6 +40,8 @@ public class Database {
     private VolumeEntityRepository volumesEntityRepository;
     @Autowired
     private FolderEntityRepository folderEntityRepository;
+	@Autowired
+	private VersionedPieRaidFileEntityRepository versionedPieRaidFileEntityRepository;
 
     public void removePieRaidFile(PieRaidFile file) {
         pieRaidFileEntityRepository.delete(file.getUid());
@@ -104,4 +108,20 @@ public class Database {
     public void persistFolder(PieFolder folder) {
         folderEntityRepository.persistFolder(folder);
     }
+	
+	public void removeVersionedPieRaidFile(VersionedPieRaidFile file){
+		versionedPieRaidFileEntityRepository.removeVersionedPieRaidFileWithAllChunks(file.getUid());
+	}
+	
+	public void persistVersionedPieRaidFile(VersionedPieRaidFile file){
+		versionedPieRaidFileEntityRepository.persistVersionedPieRaidFile(file);
+	}
+	
+	public List<VersionedPieRaidFile> getAllVersionedPieRaidFiles(){
+		return versionedPieRaidFileEntityRepository.findAllVersionedPieRaidFiles();
+	}
+	
+	public VersionedPieRaidFile getVersionedPieRaidFileById(String id){
+		return versionedPieRaidFileEntityRepository.findVersionedPieRaidFileByUId(id);
+	}
 }
