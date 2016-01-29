@@ -35,6 +35,7 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 		VersionedPieRaidFileEntity versionedRaidFileEntity = new VersionedPieRaidFileEntity();
 		
 		versionedRaidFileEntity.setUid(versionedPieRaidFile.getUid());
+		HashMap<Long, PieRaidFileEntity> raidFiles = new HashMap<>();
 				
 		for(Entry<Long, PieRaidFile> entry : versionedPieRaidFile.getVersions().entrySet()){
 			
@@ -71,8 +72,9 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 			pieRaidFileEntity.setLastModified(entry.getValue().getLastModified());
 			pieRaidFileEntity.setRelativeFilePath(entry.getValue().getRelativeFilePath());
 			pieRaidFileEntity.setUid(entry.getValue().getUid());
+			raidFiles.put(entry.getKey(),pieRaidFileEntity);
 		}
-		
+		versionedRaidFileEntity.setVersions(raidFiles);
 		return versionedPieRaidFileEntityRepository.save(versionedRaidFileEntity);
 	}
 
