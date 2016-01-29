@@ -9,12 +9,14 @@ package org.pieShare.pieDrive.core.database.entities;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 public class VersionedPieRaidFileEntity {
-	@ManyToMany
+	@OneToMany(fetch=FetchType.EAGER)
 	private Map<Long, PieRaidFileEntity> versions;
 	
 	@Id
