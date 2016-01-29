@@ -33,6 +33,8 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 	@Override
 	public VersionedPieRaidFileEntity persistVersionedPieRaidFile(VersionedPieRaidFile versionedPieRaidFile) {
 		VersionedPieRaidFileEntity versionedRaidFileEntity = new VersionedPieRaidFileEntity();
+		
+		versionedRaidFileEntity.setUid(versionedPieRaidFile.getUid());
 				
 		for(Entry<Long, PieRaidFile> entry : versionedPieRaidFile.getVersions().entrySet()){
 			
@@ -80,7 +82,9 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 		if(versionedPieRaidFileEntity == null){
 			return null;
 		}
-				
+		
+		HashMap<Long, PieRaidFile> versionedFiles = new HashMap<>();
+		
 		for(Entry<Long, PieRaidFileEntity> entry : versionedPieRaidFileEntity.getVersions().entrySet()){
 			PieRaidFile piePieRaidFile = new PieRaidFile();
 			
@@ -115,8 +119,11 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 			piePieRaidFile.setRelativeFilePath(entry.getValue().getRelativeFilePath());
 			piePieRaidFile.setUid(entry.getValue().getUid());
 			
-			versionedPieRaidFile.add(entry.getKey(), piePieRaidFile);
+			versionedFiles.put(entry.getKey(), piePieRaidFile);
 		}
+		
+		versionedPieRaidFile.setVersions(versionedFiles);
+		versionedPieRaidFile.setUid(versionedPieRaidFileEntity.getUid());
 			
 		return versionedPieRaidFile;
 	}

@@ -12,9 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-//all versionedfiles for volume
-//
-
 public class VersionedPieRaidFile {
 	private Map<Long, PieRaidFile> versions;
 	private String uid;
@@ -32,8 +29,13 @@ public class VersionedPieRaidFile {
         this.uid = uid;
     }
 	
-	public void add(Long version, PieRaidFile file){
-		versions.put(version, file);
+	public void add(PieRaidFile file){
+		versions.put((long)this.versions.size(), file);
+	}
+	
+	public void setVersions(Map<Long, PieRaidFile> versions){
+		this.versions.clear();
+		this.versions.putAll(versions);
 	}
 	
 	@JsonAnyGetter
@@ -41,14 +43,13 @@ public class VersionedPieRaidFile {
 		return this.versions;
 	}
 	
-	public void setVersions(Map<Long,PieRaidFile> versions){
-		this.versions.clear();
-		this.versions.putAll(versions);		
-	}
-	
 	public PieRaidFile getLatestVersion(){
 		long max = Collections.max(this.versions.keySet());
 		return this.versions.get(max);
+	}
+	
+	public PieRaidFile getSpecificVersion(long version){
+		return this.versions.get(version);
 	}
 	
 	@Override
