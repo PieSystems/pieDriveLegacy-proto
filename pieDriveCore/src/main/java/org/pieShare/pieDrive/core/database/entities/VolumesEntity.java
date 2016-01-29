@@ -17,7 +17,7 @@ public class VolumesEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FolderEntity> folders;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<PieRaidFileEntity> files;
+    private List<VersionedPieRaidFileEntity> files;
 
     //TODO change to enum
     private String raidLevel;
@@ -34,7 +34,7 @@ public class VolumesEntity {
         folders.add(folder);
     }
 
-    public void addFile(PieRaidFileEntity file) {
+    public void addFile(VersionedPieRaidFileEntity file) {
         if (files == null) {
             files = new ArrayList<>();
         }
@@ -73,11 +73,11 @@ public class VolumesEntity {
         this.folders = folders;
     }
 
-    public List<PieRaidFileEntity> getFiles() {
+    public List<VersionedPieRaidFileEntity> getFiles() {
         return files;
     }
 
-    public void setFiles(List<PieRaidFileEntity> files) {
+    public void setFiles(List<VersionedPieRaidFileEntity> files) {
         this.files = files;
     }
 }

@@ -7,18 +7,15 @@ package org.pieShare.pieDrive.core.database;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.pieShare.pieDrive.core.database.entities.*;
 import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
-import org.pieShare.pieDrive.core.database.repository.FolderEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
 import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepository;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
-import org.pieShare.pieDrive.core.model.ui.PieFolder;
 import org.pieShare.pieDrive.core.model.ui.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepository;
@@ -38,8 +35,6 @@ public class Database {
     private PhysicalChunkEntityRepository physicalChunkEntityRepository;
     @Autowired
     private VolumeEntityRepository volumesEntityRepository;
-    @Autowired
-    private FolderEntityRepository folderEntityRepository;
 	@Autowired
 	private VersionedPieRaidFileEntityRepository versionedPieRaidFileEntityRepository;
 
@@ -93,20 +88,8 @@ public class Database {
         return volumesEntityRepository.getVolumeByUId(id);
     }
 
-    public PieFolder getFolderById(String id) {
-        return folderEntityRepository.findFolderByUid(id);
-    }
-
-    public List<PieFolder> findAllFolders() {
-        return folderEntityRepository.findAllFolders();
-    }
-
     public void persistVolume(Volume volume) {
         volumesEntityRepository.persistVolume(volume);
-    }
-
-    public void persistFolder(PieFolder folder) {
-        folderEntityRepository.persistFolder(folder);
     }
 	
 	public void removeVersionedPieRaidFile(VersionedPieRaidFile file){

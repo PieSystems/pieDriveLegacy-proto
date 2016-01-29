@@ -37,7 +37,7 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
     private AdapterChunkEntityRepository adapterChunkEntityRepository;
 
 	@Override
-	public void persistVersionedPieRaidFile(VersionedPieRaidFile versionedPieRaidFile) {
+	public VersionedPieRaidFileEntity persistVersionedPieRaidFile(VersionedPieRaidFile versionedPieRaidFile) {
 		VersionedPieRaidFileEntity versionedRaidFileEntity = new VersionedPieRaidFileEntity();
 		
 		Map<Long, PieRaidFileEntity> pieRaidFileEntities = new HashMap();
@@ -79,7 +79,7 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 			pieRaidFileEntity.setUid(entry.getValue().getUid());
 		}
 		
-		versionedPieRaidFileEntityRepository.save(versionedRaidFileEntity);
+		return versionedPieRaidFileEntityRepository.save(versionedRaidFileEntity);
 	}
 
 	private VersionedPieRaidFile convertEntityToObject(VersionedPieRaidFileEntity versionedPieRaidFileEntity){

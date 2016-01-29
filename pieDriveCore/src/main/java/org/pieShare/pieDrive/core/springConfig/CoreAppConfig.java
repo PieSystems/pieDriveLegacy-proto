@@ -19,8 +19,6 @@ import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.repository.FolderEntityRepositoryCustom;
-import org.pieShare.pieDrive.core.database.repository.FolderEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryCustom;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryImpl;
@@ -48,6 +46,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
+import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepositoryCustom;
+import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepositoryImpl;
 
 /**
  *
@@ -124,12 +124,6 @@ public class CoreAppConfig {
     @Lazy
     public VolumeEntityRepositoryCustom volumeEntityRepositoryCustom() {
         return new VolumeEntityRepositoryImpl();
-    }
-
-    @Bean
-    @Lazy
-    public FolderEntityRepositoryCustom folderEntityRepositoryCustom() {
-        return new FolderEntityRepositoryImpl();
     }
 
     @Bean
@@ -285,4 +279,10 @@ public class CoreAppConfig {
         task.setAdapterCoreService(this.simpleAdapterCoreService());
         return task;
     }
+	
+	@Bean
+	@Lazy
+	public VersionedPieRaidFileEntityRepositoryCustom versionedPieRaidFileEntityRepository() {
+		return new VersionedPieRaidFileEntityRepositoryImpl();
+	}
 }

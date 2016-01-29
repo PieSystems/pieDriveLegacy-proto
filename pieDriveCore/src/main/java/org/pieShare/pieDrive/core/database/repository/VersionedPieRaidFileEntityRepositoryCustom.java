@@ -12,7 +12,7 @@ import org.pieShare.pieDrive.core.model.VersionedPieRaidFile;
 
 
 public interface VersionedPieRaidFileEntityRepositoryCustom {
-	void persistVersionedPieRaidFile(VersionedPieRaidFile pieRaidFile);
+	VersionedPieRaidFileEntity persistVersionedPieRaidFile(VersionedPieRaidFile pieRaidFile);
 
     VersionedPieRaidFile findVersionedPieRaidFileByUId(String id);
 
