@@ -71,6 +71,8 @@ public class UploadChunkTask implements IPieTask {
 			adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, hStr);
 			byte[] hash = hStr.getMessageDigest().digest();
 			
+			//todo: this boolean is basically only for the recovery to not write a 2nd time to the DB
+			//is this really neccessary?!
 			boolean updateChunk = (chunk.getHash() == null || chunk.getHash().length == 0);
 			chunk.setHash(hash);
 			//if we are the first and the physical chunk has not yet a hash value

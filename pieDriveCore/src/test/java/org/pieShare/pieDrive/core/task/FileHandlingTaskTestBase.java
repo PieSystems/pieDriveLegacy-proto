@@ -35,6 +35,8 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected Provider<IntegrityCheckTask> integrityCheckTaskProvider;
 	@Autowired
 	protected Provider<DeleteRaidFileTask> deleteRaidFileTaskProvider;
+	@Autowired
+	protected Provider<UploadBufferChunkTask> uploadBuffereChunkTaskProvider;
 
 	@Autowired
 	protected Database db;

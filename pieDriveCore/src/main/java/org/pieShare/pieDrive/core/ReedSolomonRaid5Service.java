@@ -44,8 +44,7 @@ public class ReedSolomonRaid5Service implements Raid5Service {
 		int raidChunkSize = calculateRaidChunkSize(physicalChunk);
 		int adapterCount = adapterCoreService.getAdapters().size();
 
-		BufferedInputStream bufferedStream = StreamFactory.getBufferedInputStream(inputStream, 65536); //64kB
-		BoundedInputStream boundedStream = StreamFactory.getLimitingInputStream(bufferedStream, physicalChunk.getSize());
+		BoundedInputStream boundedStream = StreamFactory.getLimitingInputStream(inputStream, physicalChunk.getSize());
 
 		byte[][] raidBuffers = new byte[adapterCount][raidChunkSize];
 		

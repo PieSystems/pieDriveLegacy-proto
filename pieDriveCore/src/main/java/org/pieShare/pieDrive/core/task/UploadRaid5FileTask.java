@@ -95,7 +95,6 @@ public class UploadRaid5FileTask implements IPieTask {
 				UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
 				task.setChunk(chunk);
 				//task.setBuffer(rFile);
-				task.setPhysicalChunk(physicalChunk);
 
 				futures.add((ListenableFuture<Void>) this.listeningExecutorService.submit(task));
 			}

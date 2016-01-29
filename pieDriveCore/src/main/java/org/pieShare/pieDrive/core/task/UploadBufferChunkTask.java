@@ -24,7 +24,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class UploadBufferChunkTask implements IPieTask {
 
 	private AdapterCoreService adapterCoreService;
-	private PhysicalChunk physicalChunk;
 	private AdapterChunk chunk;
 	private Database database;
 	private byte[] buffer;
@@ -41,10 +40,6 @@ public class UploadBufferChunkTask implements IPieTask {
 		this.buffer = buffer;
 	}
 
-	public void setPhysicalChunk(PhysicalChunk physicalChunk) {
-		this.physicalChunk = physicalChunk;
-	}
-
 	public void setDatabase(Database database) {
 		this.database = database;
 	}
@@ -56,39 +51,18 @@ public class UploadBufferChunkTask implements IPieTask {
 		DigestInputStream hStr = null;
 		try {
 			ByteArrayInputStream byteArrayStream = new ByteArrayInputStream(buffer);
-			BoundedInputStream lStr = StreamFactory.getLimitingInputStream(byteArrayStream, chunk.getSize());
-			hStr = StreamFactory.getDigestInputStream(lStr, MessageDigest.getInstance("MD5"));
-			
+			hStr = StreamFactory.getDigestInputStream(byteArrayStream, MessageDigest.getInstance("MD5"));
+
 			adapterCoreService.getAdapter(chunk.getAdapterId()).upload(chunk, hStr);
 			byte[] hash = hStr.getMessageDigest().digest();
-			
-			boolean updateChunk = (chunk.getHash() == null || chunk.getHash().length == 0);
 			chunk.setHash(hash);
-			//if we are the first and the physical chunk has not yet a hash value
-			//has to be synchronized for the adapters of the same physical chunk
-			//after this point they can work in parallel again
-			synchronized (physicalChunk) {
-				if (physicalChunk.getHash() == null
-						|| physicalChunk.getHash().length == 0) {
-					physicalChunk.setHash(hash);
-					synchronized (database) {
-						this.database.updatePhysicalChunk(physicalChunk);
-						return;
-					}
-				}
-			}	//todo: remove synchronizations after @richy fixes threading in DB
-			//otherwise do an sanity check and persist hashes
-			if (updateChunk && Arrays.equals(physicalChunk.getHash(), hash)) {
-				synchronized (database) {
-					this.database.updateAdaptorChunk(chunk);
-					return;
-				}
+
+			//todo: why are we doing this check?
+			synchronized (database) {
+				this.database.updateAdaptorChunk(chunk);
+				return;
 			}
-			
-			//this should never happen!!! if this happens two adapters
-			//produced different hashes while reading the samephysical chunk
-			//todo: log! eventually pass on to user
-		} catch (NoSuchAlgorithmException  | AdaptorException ex) {
+		} catch (NoSuchAlgorithmException | AdaptorException ex) {
 			Logger.getLogger(UploadChunkTask.class.getName()).log(Level.SEVERE, null, ex);
 			try {
 				hStr.close();
