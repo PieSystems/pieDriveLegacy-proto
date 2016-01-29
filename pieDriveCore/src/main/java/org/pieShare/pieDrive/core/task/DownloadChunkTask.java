@@ -68,8 +68,8 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 				BufferedOutputStream bufferedStream = StreamFactory.getBufferedOutputStream(nioStream, 65536); //64kB
 				BoundedOutputStream boundedStream = StreamFactory.getBoundedOutputStream(bufferedStream, physicalChunk.getSize());
 				hStr = StreamFactory.getDigestOutputStream(boundedStream, MessageDigest.getInstance("MD5"));
-
-				AdapterChunk chunk = this.physicalChunk.getChunks().get(adatperIds.get(this.adapterIndex));
+				
+				AdapterChunk chunk = physicalChunk.getChunk(adatperIds.get(this.adapterIndex));
 				
 				if(this.download(chunk, hStr)) {
 					PieLogger.debug(this.getClass(), "Download successfull for chunk {}", chunk.getUuid());

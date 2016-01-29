@@ -9,19 +9,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieDrive.core.IntegrationTestBase;
-import org.pieShare.pieDrive.core.database.entities.FileEntity;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
-import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
 import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 /**
@@ -36,31 +33,10 @@ public class DatabaseTest extends IntegrationTestBase {
 
     @Autowired
     private Database database;
-    @Autowired
-    private DatabaseFactory databaseFactory;
 
     @BeforeClass
     public void beforeTest() throws Exception {
 		super.setUpIt();
-		File dbFile = new File(super.integrationTestFolder, databaseTestFile);
-        databaseFactory.setDatabaseName(dbFile.getPath());
-        databaseFactory.init();
-    }
-
-    @Test
-    public void testDatabse() {
-
-        FileEntity entity = new FileEntity();
-        entity.setFileName("TestFile");
-
-        database.persist(entity);
-
-        FileEntity entity2 = database.findFileById(entity.getId());
-
-        Assert.isTrue(entity.getId().equals(entity2.getId()));
-        Assert.isTrue(entity.getFileName().equals(entity2.getFileName()));
-
-        database.remove(entity);
     }
 
     @Test
@@ -88,6 +64,7 @@ public class DatabaseTest extends IntegrationTestBase {
         phChunk1.addAdapterChunk(adChunk2);
         phChunk1.setOffset(10);
         phChunk1.setSize(10);
+        phChunk1.setHash(null);
 
         PhysicalChunk phChunk2 = new PhysicalChunk();
 
@@ -109,26 +86,28 @@ public class DatabaseTest extends IntegrationTestBase {
         phChunk2.addAdapterChunk(adChunk4);
         phChunk2.setOffset(20);
         phChunk2.setSize(20);
+        phChunk2.setHash(null);
 
         List<PhysicalChunk> chunks = new ArrayList<>();
         chunks.add(phChunk1);
         chunks.add(phChunk2);
 
         file1.setChunks(chunks);
+		file1.setUid("RaidFileUUID1");
         file1.setFileName("FileName1");
         file1.setLastModified(500);
         file1.setRelativeFilePath("Relative");
 
         database.persistPieRaidFile(file1);
 
-        PieRaidFile fromDB = database.findPieRaidFileByName("FileName1");
+        PieRaidFile fromDB = database.findPieRaidFileById(file1.getUid());
         Assert.notNull(fromDB);
 
         for (PhysicalChunk physicalChunk : fromDB.getChunks()) {
             Assert.isNull(physicalChunk.getHash());
             Assert.notNull(physicalChunk);
 
-            for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+            for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
                 Assert.notNull(physicalChunk);
 
                 if (adapterChunk.getUuid().equals("UUID1")) {
@@ -142,13 +121,13 @@ public class DatabaseTest extends IntegrationTestBase {
         adChunk1.setHash("VALUE".getBytes());
         database.updateAdaptorChunk(adChunk1);
 
-        PieRaidFile fromDBNew = database.findPieRaidFileByName("FileName1");
+        PieRaidFile fromDBNew = database.findPieRaidFileById(file1.getUid());
         Assert.notNull(fromDB);
 
         for (PhysicalChunk physicalChunk : fromDBNew.getChunks()) {
             Assert.notNull(physicalChunk);
 
-            for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+            for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
                 Assert.notNull(physicalChunk);
 
                 if (adapterChunk.getUuid().equals("UUID1")) {
@@ -169,14 +148,14 @@ public class DatabaseTest extends IntegrationTestBase {
         database.updatePhysicalChunk(phChunk1);
         database.updatePhysicalChunk(phChunk2);
 
-        PieRaidFile fromDBNewPhysical = database.findPieRaidFileByName("FileName1");
+        PieRaidFile fromDBNewPhysical = database.findPieRaidFileById(file1.getUid());
         Assert.notNull(fromDBNewPhysical);
 
         for (PhysicalChunk physicalChunk : fromDBNewPhysical.getChunks()) {
             Assert.notNull(physicalChunk.getHash());
         }
 
-        database.removePieRadFile(file1);
+        database.removePieRaidFile(file1);
 
     }
 }

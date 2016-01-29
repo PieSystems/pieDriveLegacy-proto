@@ -1,6 +1,9 @@
 package org.pieShare.pieDrive.core.database.entities;
 
+import org.pieShare.pieDrive.core.model.PieRaidFile;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,20 +11,38 @@ import java.util.List;
  */
 
 @Entity
-public class FolderEntity {
+public class FolderEntity{
 
     @Id
-    @GeneratedValue
-    private Long id;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private String uid;
+    
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<FolderEntity> folders;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PieRaidFileEntity> files;
 
     private String folderName;
 
+    public void addFolder(FolderEntity folder){
+        if(folders == null) folders = new ArrayList<>();
+
+        folders.add(folder);
+    }
+
+    public void addFile(PieRaidFileEntity file){
+        if(files == null) files = new ArrayList<>();
+
+        files.add(file);
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getFolderName() {
         return folderName;
@@ -46,4 +67,5 @@ public class FolderEntity {
     public void setFiles(List<PieRaidFileEntity> files) {
         this.files = files;
     }
+
 }

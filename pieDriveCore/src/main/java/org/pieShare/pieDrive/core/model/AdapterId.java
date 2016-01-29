@@ -5,13 +5,14 @@
  */
 package org.pieShare.pieDrive.core.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class AdapterId {
+public class AdapterId implements Serializable {
 	private String id;
 
 	public String getId() {

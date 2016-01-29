@@ -5,8 +5,9 @@
  */
 package org.pieShare.pieDrive.core.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -14,22 +15,34 @@ import java.util.Map;
  */
 public class PhysicalChunk {
 
-    private Map<AdapterId, AdapterChunk> chunks;
+    private List<AdapterChunk> chunks;
     private long offset;
     private long size;
-	private byte[] hash;
+    private byte[] hash;
+    public String uuid;
 
     public PhysicalChunk() {
-        chunks = new HashMap<>();
+        chunks = new ArrayList<>();
+        uuid = UUID.randomUUID().toString();
     }
 
     public PhysicalChunk addAdapterChunk(AdapterChunk chunk) {
-        this.chunks.put(chunk.getAdapterId(), chunk);
+        this.chunks.add(chunk);
         return this;
     }
 
-	public Map<AdapterId, AdapterChunk> getChunks() {
-		return chunks;
+    public List<AdapterChunk> getChunks() {
+        return chunks;
+    }
+	
+	public AdapterChunk getChunk(AdapterId adapterId) {
+		for(AdapterChunk chunk : chunks) {
+			if(chunk.getAdapterId().equals(adapterId)) {
+				return chunk;
+			}
+		}
+		
+		return null;
 	}
 
     public long getOffset() {
@@ -47,12 +60,38 @@ public class PhysicalChunk {
     public void setSize(long size) {
         this.size = size;
     }
-	
-	public byte[] getHash() {
-		return hash;
-	}
 
-	public void setHash(byte[] hash) {
-		this.hash = hash;
-	}
+    public byte[] getHash() {
+        return hash;
+    }
+
+    public void setHash(byte[] hash) {
+        this.hash = hash;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (!(obj instanceof PhysicalChunk)) {
+            return false;
+        }
+
+        PhysicalChunk rr = (PhysicalChunk) obj;
+
+        return rr.getUuid().equals(this.getUuid());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getUuid().hashCode();
+    }
+
 }

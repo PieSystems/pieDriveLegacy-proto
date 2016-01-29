@@ -46,7 +46,7 @@ public class UploadRaidFileTask implements IPieTask {
 	public void run() {
 		try {
 			PieLogger.debug(this.getClass(), "Starting file upload for {}", this.file.getName());
-			raidedFile = driveCoreService.calculateRaidFile(file);
+			
 			RandomAccessFile rFile = new RandomAccessFile(file, "r");
 			
 			//we need to iterate twice so we can guarante that the object 
@@ -56,7 +56,7 @@ public class UploadRaidFileTask implements IPieTask {
 					AdapterChunk chunk = adapterChunkProvider.get();
 					chunk.setAdapterId(id);
 					chunk.setUuid(UUID.randomUUID().toString());
-
+					chunk.setSize(physicalChunk.getSize());
 					physicalChunk.addAdapterChunk(chunk);
 				}
 			}
@@ -64,7 +64,7 @@ public class UploadRaidFileTask implements IPieTask {
 			this.database.persistPieRaidFile(raidedFile);
 
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-				for (AdapterChunk chunk: physicalChunk.getChunks().values()) {
+				for (AdapterChunk chunk: physicalChunk.getChunks()) {
 					UploadChunkTask task = uploadChunkTaskProvider.get();
 					task.setChunk(chunk);
 					task.setFile(rFile);
@@ -80,6 +80,10 @@ public class UploadRaidFileTask implements IPieTask {
 
 	public void setFile(File file) {
 		this.file = file;
+	}
+
+	public void setRaidedFile(PieRaidFile raidedFile) {
+		this.raidedFile = raidedFile;
 	}
 
 	public void setExecutorService(IExecutorService executorService) {

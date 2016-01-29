@@ -40,20 +40,24 @@ public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 		
 		AdapterChunk healtyChunk = null;
 		
-		for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
-			if(adapterChunk == null && adapterChunk.getState() == ChunkHealthState.Healthy) {
+		for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
+			if(adapterChunk != null && adapterChunk.getState() == ChunkHealthState.Healthy) {
+				PieLogger.debug(this.getClass(), "Found healthy chunk on {}", adapterChunk.getAdapterId().getId());
 				healtyChunk = adapterChunk;
 			}
 		}
 		
-		for (AdapterChunk adapterChunk : physicalChunk.getChunks().values()) {
+		for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
 			if (adapterChunk.getState() == ChunkHealthState.NotChecked) {
 				DigestOutputStream digestStream = null;
 				try {
+					PieLogger.debug(this.getClass(), "Checking chunk on {}", adapterChunk.getAdapterId().getId());
 					NullOutputStream nullStream = new NullOutputStream();
 					digestStream = StreamFactory.getDigestOutputStream(nullStream, MessageDigest.getInstance("MD5"));
 
-					this.download(adapterChunk, digestStream);
+					if(!this.download(adapterChunk, digestStream)) {
+						adapterChunk.setState(ChunkHealthState.Broken);
+					}
 				} catch (NoSuchAlgorithmException | AdaptorException ex) {
 					Logger.getLogger(IntegrityCheckTask.class.getName()).log(Level.SEVERE, null, ex);
 					if (digestStream != null) {

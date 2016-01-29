@@ -11,6 +11,7 @@ package org.pieShare.pieDrive.adapter.model;
  */
 public class PieDriveFile {
 	private String uuid;
+	private long size;
 
 	public String getUuid() {
 		return uuid;
@@ -18,5 +19,13 @@ public class PieDriveFile {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	
+	public long getSize() {
+		return size;
+	}
+	
+	public void setSize(long size) {
+		this.size = size;
 	}
 }

@@ -5,19 +5,22 @@
  */
 package org.pieShare.pieDrive.core.database;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.UUID;
 
-import org.pieShare.pieDrive.core.database.api.IDatabaseFactory;
 import org.pieShare.pieDrive.core.database.entities.*;
+import org.pieShare.pieDrive.core.database.repository.AdapterChunkEntityRepository;
+import org.pieShare.pieDrive.core.database.repository.FolderEntityRepository;
+import org.pieShare.pieDrive.core.database.repository.PhysicalChunkEntityRepository;
+import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepository;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
-import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.model.ui.PieFolder;
+import org.pieShare.pieDrive.core.model.ui.Volume;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepository;
 
 /**
  *
@@ -25,204 +28,80 @@ import org.pieShare.pieDrive.core.model.PieRaidFile;
  */
 public class Database {
 
-    private IDatabaseFactory databseFactory;
+    @Autowired
+    private PieRaidFileEntityRepository pieRaidFileEntityRepository;
+    @Autowired
+    private AdapterChunkEntityRepository adapterChunkEntityRepository;
+    @Autowired
+    private PhysicalChunkEntityRepository physicalChunkEntityRepository;
+    @Autowired
+    private VolumeEntityRepository volumesEntityRepository;
+    @Autowired
+    private FolderEntityRepository folderEntityRepository;
 
-	public void setDatabseFactory(IDatabaseFactory databseFactory) {
-		this.databseFactory = databseFactory;
-	}
-
-    public void persist(IBaseEntity entity) {
-        EntityManager em = databseFactory.getEntityManger(entity.getClass());
-        em.getTransaction().begin();
-        em.persist(entity);
-        em.getTransaction().commit();
-    }
-
-    public FileEntity findFileById(long id) {
-        EntityManager em = databseFactory.getEntityManger(FileEntity.class);
-        return em.find(FileEntity.class, id);
-    }
-
-    public void remove(IBaseEntity entity) {
-        EntityManager em = databseFactory.getEntityManger(entity.getClass());
-        em.getTransaction().begin();
-        em.remove(entity);
-        em.getTransaction().commit();
-    }
-
-    public void removePieRadFile(PieRaidFile file) {
-
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        em.getTransaction().begin();
-        PieRaidFileEntity pieRaidFileEntity = em.find(PieRaidFileEntity.class, file.getFileName());
-        if (pieRaidFileEntity != null) {
-            em.remove(em.merge(pieRaidFileEntity));
-        }
-        em.getTransaction().commit();
+    public void removePieRaidFile(PieRaidFile file) {
+        pieRaidFileEntityRepository.delete(file.getUid());
     }
 
     public void persistPieRaidFile(PieRaidFile pieRaidFile) {
-        PieRaidFileEntity pieRaidFileEntity = new PieRaidFileEntity();
-
-        List<PhysicalChunkEntity> physicalChunkEntities = new ArrayList<>();
-
-        for (PhysicalChunk chunk : pieRaidFile.getChunks()) {
-
-            PhysicalChunkEntity physicalChunkEntity = new PhysicalChunkEntity();
-
-            List<AdapterChunkEntity> ace = new ArrayList<>();
-
-            for (AdapterChunk adapterChunk : chunk.getChunks().values()) {
-                AdapterChunkEntity adc = new AdapterChunkEntity();
-                adc.setAdapterId(adapterChunk.getAdapterId().getId());
-                adc.setHash(adapterChunk.getHash());
-                adc.setPhysicalChunkEntity(physicalChunkEntity);
-                adc.setUUID(adapterChunk.getUuid());
-
-                ace.add(adc);
-            }
-
-            physicalChunkEntity.setChunks(ace);
-            physicalChunkEntity.setOffset(chunk.getOffset());
-            physicalChunkEntity.setSize(chunk.getSize());
-            physicalChunkEntity.setPieRaidFileEntity(pieRaidFileEntity);
-            physicalChunkEntity.setHashValues(chunk.getHash());
-            physicalChunkEntities.add(physicalChunkEntity);
-        }
-
-        pieRaidFileEntity.setChunks(physicalChunkEntities);
-        pieRaidFileEntity.setFileName(pieRaidFile.getFileName());
-        pieRaidFileEntity.setLastModified(pieRaidFile.getLastModified());
-        pieRaidFileEntity.setRelativeFilePath(pieRaidFile.getRelativeFilePath());
-
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        em.getTransaction().begin();
-        em.persist(pieRaidFileEntity);
-        em.getTransaction().commit();
+        pieRaidFileEntityRepository.persistPieRaidFile(pieRaidFile);
     }
 
-    public PieRaidFile findPieRaidFileByName(String name) {
-
-        PieRaidFile piePieRaidFile = new PieRaidFile();
-
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        PieRaidFileEntity pieRaidFileEntity = em.find(PieRaidFileEntity.class, name);
-
-        return convertPieRaidFileEntityToObject(pieRaidFileEntity);
+    public PieRaidFile findPieRaidFileById(String id) {
+        return pieRaidFileEntityRepository.findPieRaidFileByUId(id);
     }
 
     public List<PieRaidFile> findAllPieRaidFiles() {
-        List<PieRaidFile> pieRaidFiles = new ArrayList<>();
-
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        for (PieRaidFileEntity entity : (List<PieRaidFileEntity>) em.createQuery("Select t from " + PieRaidFileEntity.class.getSimpleName() + " t").getResultList()) {
-
-            PieRaidFile file = convertPieRaidFileEntityToObject(entity);
-            if (file != null) {
-                pieRaidFiles.add(file);
-            }
-        }
-        return pieRaidFiles;
+        return pieRaidFileEntityRepository.findAllPieRaidFiles();
     }
 
-    private PieRaidFile convertPieRaidFileEntityToObject(PieRaidFileEntity pieRaidFileEntity) {
-        PieRaidFile piePieRaidFile = new PieRaidFile();
+    public void updateAdaptorChunk(AdapterChunk chunk) {
+        AdapterChunkEntity entity = adapterChunkEntityRepository.findOne(chunk.getUuid());
 
-        if (pieRaidFileEntity == null) {
-            return null;
-        }
-
-        List<PhysicalChunk> physicalChunks = new ArrayList<>();
-
-        for (PhysicalChunkEntity physicalChunkEntity : pieRaidFileEntity.getChunks()) {
-            PhysicalChunk physicalChunk = new PhysicalChunk();
-
-            for (AdapterChunkEntity adapterChunkEntity : physicalChunkEntity.getChunks()) {
-                AdapterChunk adapterChunk = new AdapterChunk();
-                AdapterId id = new AdapterId();
-                id.setId(adapterChunkEntity.getAdapterId());
-                adapterChunk.setAdapterId(id);
-                adapterChunk.setHash(adapterChunkEntity.getHash());
-                adapterChunk.setUuid(adapterChunkEntity.getUUID());
-
-                physicalChunk.addAdapterChunk(adapterChunk);
-            }
-
-            physicalChunk.setOffset(physicalChunkEntity.getOffset());
-            physicalChunk.setSize(physicalChunkEntity.getSize());
-            physicalChunk.setHash(physicalChunkEntity.getHashValues());
-
-            physicalChunks.add(physicalChunk);
-        }
-
-        piePieRaidFile.setChunks(physicalChunks);
-        piePieRaidFile.setFileName(pieRaidFileEntity.getFileName());
-        piePieRaidFile.setLastModified(pieRaidFileEntity.getLastModified());
-        piePieRaidFile.setRelativeFilePath(pieRaidFileEntity.getRelativeFilePath());
-
-        return piePieRaidFile;
-    }
-    
-    public void updateAdaptorChunk(AdapterChunk chunk)
-    {
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        AdapterChunkEntity entity = em.find(AdapterChunkEntity.class, chunk.getUuid());
-        
-        if(entity == null)
-        {
+        if (entity == null) {
             return;
         }
-        
+
         entity.setAdapterId(chunk.getAdapterId().getId());
         entity.setHash(chunk.getHash());
-        
-        em.getTransaction().begin();
-        em.merge(entity);
-        em.getTransaction().commit();
+
+        adapterChunkEntityRepository.save(entity);
     }
-    
-    public void updatePhysicalChunk(PhysicalChunk physicalChunk)
-    {
-        if(physicalChunk.getChunks().isEmpty())
+
+    public void updatePhysicalChunk(PhysicalChunk physicalChunk) {
+        if (physicalChunk.getChunks().isEmpty()) {
             return;
-        
-        String id = physicalChunk.getChunks().entrySet().stream().findFirst().get().getValue().getUuid();
-        
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        AdapterChunkEntity entity = em.find(AdapterChunkEntity.class, id);
-        PhysicalChunkEntity physicalChunkEntity = entity.getPhysicalChunkEntity();
-        
-        physicalChunkEntity.setHashValues(physicalChunk.getHash());
-    
-        em.getTransaction().begin();
-        em.merge(physicalChunkEntity);
-        em.getTransaction().commit();
-    }
-
-    public Collection<VolumesEntity> getAllVolumes(){
-
-        //TODO find solution for empty objectDB problem
-        try{
-            EntityManager em = databseFactory.getEntityManger(VolumesEntity.class);
-
-            Query query = em.createQuery("SELECT v from VolumesEntity v");
-            return (Collection<VolumesEntity>) query.getResultList();
-        } catch (Exception e){
-
-            Collection<VolumesEntity> tmp = new ArrayList<VolumesEntity>();
-            return tmp;
         }
+        String id = physicalChunk.getChunks().stream().findFirst().get().getUuid();
+        AdapterChunkEntity entity = adapterChunkEntityRepository.findOne(id);
 
+        PhysicalChunkEntity physicalChunkEntity = entity.getPhysicalChunkEntity();
 
+        physicalChunkEntity.setHashValues(physicalChunk.getHash());
+        physicalChunkEntityRepository.save(physicalChunkEntity);
     }
 
-    public VolumesEntity getVolumeById(long id){
-        EntityManager em = databseFactory.getEntityManger(VolumesEntity.class);
-        return em.find(VolumesEntity.class, id);
+    public Collection<Volume> getAllVolumes() {
+        return volumesEntityRepository.getAllVolumes();
     }
 
-    public FolderEntity getFolderById(Long id){
-        EntityManager em = databseFactory.getEntityManger(FolderEntity.class);
-        return em.find(FolderEntity.class, id);
+    public Volume getVolumeById(String id) {
+        return volumesEntityRepository.getVolumeByUId(id);
+    }
+
+    public PieFolder getFolderById(String id) {
+        return folderEntityRepository.findFolderByUid(id);
+    }
+
+    public List<PieFolder> findAllFolders() {
+        return folderEntityRepository.findAllFolders();
+    }
+
+    public void persistVolume(Volume volume) {
+        volumesEntityRepository.persistVolume(volume);
+    }
+
+    public void persistFolder(PieFolder folder) {
+        folderEntityRepository.persistFolder(folder);
     }
 }

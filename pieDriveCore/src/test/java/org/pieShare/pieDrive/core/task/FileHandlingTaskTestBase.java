@@ -8,14 +8,18 @@ import java.io.IOException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.IntegrationTestBase;
+import org.pieShare.pieDrive.core.PieDriveCore;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.DatabaseFactory;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +33,17 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected Provider<DownloadRaidFileTask> downloadRaidFileProvider;
 	@Autowired
 	protected Provider<IntegrityCheckTask> integrityCheckTaskProvider;
+	@Autowired
+	protected Provider<DeleteRaidFileTask> deleteRaidFileTaskProvider;
 
 	@Autowired
 	protected Database db;
 	@Autowired
-	protected DatabaseFactory fac;
-	@Autowired
 	protected AdapterCoreService adapterCoreService;
+	@Autowired
+	protected PieDriveCore pieDriveCore;
+	
+	protected List<AdapterId> adapterIds;
 
 	protected File testFolder;
 	protected File uploadBase;
@@ -50,11 +58,6 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	public void setUpIt() throws IOException, Exception {
 		super.setUpIt();
 		this.testFolder = new File(this.integrationTestFolder, "test");
-
-		//init new DB
-		File dbFile = new File(super.integrationTestFolder, "databaseTaskTest.odb");
-		fac.setDatabaseName(dbFile.getPath());
-		fac.init();
 	}
 
 	@BeforeMethod
@@ -77,17 +80,16 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 		this.out = new File(this.testFolder, "out");
 		this.out.mkdirs();
 
-		Object[] adapterKeys = adapterCoreService.getAdaptersKey().toArray();
-		FakeAdapter adapter = (FakeAdapter) adapterCoreService.getAdapter((AdapterId) adapterKeys[0]);
+		adapterIds = new ArrayList<>(adapterCoreService.getAdaptersKey());
+		FakeAdapter adapter = (FakeAdapter) adapterCoreService.getAdapter(adapterIds.get(0));
 		adapter.setParent(this.uploadAdapter1);
-		adapter = (FakeAdapter) adapterCoreService.getAdapter((AdapterId) adapterKeys[1]);
+		adapter = (FakeAdapter) adapterCoreService.getAdapter(adapterIds.get(1));
 		adapter.setParent(this.uploadAdapter2);
-		adapter = (FakeAdapter) adapterCoreService.getAdapter((AdapterId) adapterKeys[2]);
+		adapter = (FakeAdapter) adapterCoreService.getAdapter(adapterIds.get(2));
 		adapter.setParent(this.uploadAdapter3);
 
 		//set chunk size for tests
-		PieDriveCoreService pCore = super.applicationContext.getBean(PieDriveCoreService.class);
-		pCore.setChunkSize(20); //20 byte
+		((PieDriveCoreService)pieDriveCore).setChunkSize(20);
 	}
 
 	protected File createFileHelper(File parent, String fileName, int size) throws IOException {
@@ -118,5 +120,15 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 		while (dio.read() != -1) {
 		}
 		return dio.getMessageDigest().digest();
+	}
+	
+	protected AdapterChunk getAdapterChunkForAdapterId(List<AdapterChunk> chunks, AdapterId adapterId) {
+		for(AdapterChunk chunk : chunks) {
+			if(chunk.getAdapterId().equals(adapterId)) {
+				return chunk;
+			}
+		}
+		
+		return null;
 	}
 }
