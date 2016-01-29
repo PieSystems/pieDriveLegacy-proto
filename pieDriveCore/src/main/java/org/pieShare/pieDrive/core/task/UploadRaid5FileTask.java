@@ -1,12 +1,18 @@
 package org.pieShare.pieDrive.core.task;
 
 import com.backblaze.erasure.ReedSolomon;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +33,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class UploadRaid5FileTask implements IPieTask {
+
 	private final int PARITY_SHARD_COUNT = 1;
 	private File file;
 	private PieRaidFile raidedFile;
@@ -41,43 +48,61 @@ public class UploadRaid5FileTask implements IPieTask {
 	private Provider<AdapterChunk> adapterChunkProvider;
 	private Provider<UploadBufferChunkTask> uploadBufferChunkTaskProvider;
 
+	private Iterator<PhysicalChunk> physicalChunksIterator;
+	private RandomAccessFile rFile;
+	private ListeningExecutorService listeningExecutorService;
+
 	@Override
 	public void run() {
 		try {
-			PieLogger.debug(this.getClass(), "Starting file upload for {}", this.file.getName());
-			
-			RandomAccessFile rFile = new RandomAccessFile(file, "r");
-			
-			//we need to iterate twice so we can guarante that the object 
-			//will be completely initizilised before we start working on it
-			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-				for (AdapterId id : adapterCoreService.getAdaptersKey()) {
-					//TODO what if chunk size is not dividable by 2?
-					long raidChunkSize = raid5Service.calculateRaidChunkSize(physicalChunk);
-					AdapterChunk chunk = adapterChunkProvider.get();
-					chunk.setAdapterId(id);
-					chunk.setUuid(UUID.randomUUID().toString());
-					chunk.setSize(raidChunkSize);
-					physicalChunk.addAdapterChunk(chunk);
-				}
-			}
-			
-			this.database.persistPieRaidFile(raidedFile);
-			
-			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-				//TODO calculate raid5 chunks
-				NioInputStream nioStream = StreamFactory.getNioInputStream(rFile, physicalChunk.getOffset());
-				byte[][] raidBuffers = raid5Service.generateRaidShards(nioStream, physicalChunk);
-				
-				for (AdapterChunk chunk: physicalChunk.getChunks()) {
-					UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
-					task.setChunk(chunk);
-					//task.setBuffer(rFile);
-					task.setPhysicalChunk(physicalChunk);
+			if (this.physicalChunksIterator == null) {
+				PieLogger.debug(this.getClass(), "Starting file upload for {}", this.file.getName());
 
-					this.executorService.execute(task);
+				rFile = new RandomAccessFile(file, "r");
+
+				//we need to iterate twice so we can guarante that the object 
+				//will be completely initizilised before we start working on it
+				for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+					for (AdapterId id : adapterCoreService.getAdaptersKey()) {
+						//TODO what if chunk size is not dividable by 2?
+						long raidChunkSize = raid5Service.calculateRaidChunkSize(physicalChunk);
+						AdapterChunk chunk = adapterChunkProvider.get();
+						chunk.setAdapterId(id);
+						chunk.setUuid(UUID.randomUUID().toString());
+						chunk.setSize(raidChunkSize);
+						physicalChunk.addAdapterChunk(chunk);
+					}
 				}
+
+				this.database.persistPieRaidFile(raidedFile);
+
+				this.physicalChunksIterator = this.raidedFile.getChunks().iterator();
 			}
+
+			if (!raidedFile.getChunks().iterator().hasNext()) {
+				return;
+			}
+
+			PhysicalChunk physicalChunk = this.physicalChunksIterator.next();
+
+			//for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+			//TODO calculate raid5 chunks
+			NioInputStream nioStream = StreamFactory.getNioInputStream(rFile, physicalChunk.getOffset());
+			byte[][] raidBuffers = raid5Service.generateRaidShards(nioStream, physicalChunk);
+			List<ListenableFuture<Void>> futures = new ArrayList<>();
+
+			for (AdapterChunk chunk : physicalChunk.getChunks()) {
+				UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
+				task.setChunk(chunk);
+				//task.setBuffer(rFile);
+				task.setPhysicalChunk(physicalChunk);
+
+				futures.add((ListenableFuture<Void>) this.listeningExecutorService.submit(task));
+			}
+
+			ListenableFuture<List<Void>> combinedFuture = Futures.successfulAsList(futures);
+			combinedFuture.addListener(this, listeningExecutorService);
+			//}
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -102,7 +127,7 @@ public class UploadRaid5FileTask implements IPieTask {
 	public void setAdapterCoreService(AdapterCoreService adapterCoreService) {
 		this.adapterCoreService = adapterCoreService;
 	}
-	
+
 	public void setRaid5Service(Raid5Service raid5Service) {
 		this.raid5Service = raid5Service;
 	}
