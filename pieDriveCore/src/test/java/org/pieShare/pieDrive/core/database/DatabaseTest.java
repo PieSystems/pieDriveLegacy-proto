@@ -156,7 +156,7 @@ public class DatabaseTest extends IntegrationTestBase {
 		versiondFile.add(file2);
 		
 		database.persistVersionedPieRaidFile(versiondFile);
-		
+				
 		VersionedPieRaidFile versionedFromDB = database.getVersionedPieRaidFileById(versionedUid);
 
         PieRaidFile fromDB = versionedFromDB.getSpecificVersion(0L);
