@@ -17,6 +17,8 @@ import org.pieShare.pieDrive.adapter.dropbox.DropboxAdapter;
 import org.pieShare.pieDrive.adapter.s3.S3Adapter;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
+import org.pieShare.pieDrive.core.Raid5Service;
+import org.pieShare.pieDrive.core.ReedSolomonRaid5Service;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.repository.FolderEntityRepositoryCustom;
@@ -166,6 +168,15 @@ public class CoreAppConfig {
         service.setChunkSize(5 * 1024 * 1024); // 5MiB
         return service;
     }
+	
+	@Bean
+	@Lazy
+	public Raid5Service raid5Service() {
+		ReedSolomonRaid5Service service = new ReedSolomonRaid5Service();
+		service.setAdapterCoreService(simpleAdapterCoreService());
+		service.setParityShardCount(1);
+		return service;
+	}
 
     @Bean
     @Lazy
