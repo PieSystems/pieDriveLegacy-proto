@@ -13,6 +13,7 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.model.VersionedPieRaidFile;
 import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -41,9 +42,12 @@ public class DatabaseTest extends IntegrationTestBase {
 
     @Test
     public void TestPieRaidFilePersistAndFind() {
+		String versionedUid = "versionedTestUid";
 
+		VersionedPieRaidFile versiondFile = new VersionedPieRaidFile();
+		
         PieRaidFile file1 = new PieRaidFile();
-
+		
         PhysicalChunk phChunk1 = new PhysicalChunk();
 
         AdapterChunk adChunk1 = new AdapterChunk();
@@ -97,10 +101,65 @@ public class DatabaseTest extends IntegrationTestBase {
         file1.setFileName("FileName1");
         file1.setLastModified(500);
         file1.setRelativeFilePath("Relative");
+		
+		PieRaidFile file2 = new PieRaidFile();
+				
+        PhysicalChunk phChunk21 = new PhysicalChunk();
+		
+		AdapterChunk adChunk21 = new AdapterChunk();
+        adChunk21.setAdapterId(id1);
+        adChunk21.setHash("Hash21".getBytes());
+        adChunk21.setUuid("UUID21");
 
-        database.persistPieRaidFile(file1);
+        AdapterChunk adChunk22 = new AdapterChunk();
+        adChunk22.setAdapterId(id2);
+        adChunk22.setHash("Hash22".getBytes());
+        adChunk22.setUuid("UUID22");
 
-        PieRaidFile fromDB = database.findPieRaidFileById(file1.getUid());
+        phChunk21.addAdapterChunk(adChunk21);
+        phChunk21.addAdapterChunk(adChunk22);
+        phChunk21.setOffset(10);
+        phChunk21.setSize(10);
+        phChunk21.setHash(null);
+
+        PhysicalChunk phChunk22 = new PhysicalChunk();
+
+        AdapterChunk adChunk23 = new AdapterChunk();
+        adChunk23.setAdapterId(id3);
+        adChunk23.setHash("Hash23".getBytes());
+        adChunk23.setUuid("UUID23");
+
+        AdapterChunk adChunk24 = new AdapterChunk();
+        adChunk24.setAdapterId(id4);
+        adChunk24.setHash("Hash24".getBytes());
+        adChunk24.setUuid("UUID24");
+
+        phChunk22.addAdapterChunk(adChunk23);
+        phChunk22.addAdapterChunk(adChunk24);
+        phChunk22.setOffset(20);
+        phChunk22.setSize(20);
+        phChunk22.setHash(null);
+
+        List<PhysicalChunk> chunks2 = new ArrayList<>();
+        chunks2.add(phChunk21);
+        chunks2.add(phChunk22);
+
+        file2.setChunks(chunks2);
+		file2.setUid("RaidFileUUID2");
+        file2.setFileName("FileName2");
+        file2.setLastModified(500);
+        file2.setRelativeFilePath("Relative");
+		
+		
+		versiondFile.setUid(versionedUid);
+		versiondFile.add(file1);
+		versiondFile.add(file2);
+		
+		database.persistVersionedPieRaidFile(versiondFile);
+		
+		VersionedPieRaidFile versionedFromDB = database.getVersionedPieRaidFileById(versionedUid);
+
+        PieRaidFile fromDB = versionedFromDB.getSpecificVersion(0L);
         Assert.notNull(fromDB);
 
         for (PhysicalChunk physicalChunk : fromDB.getChunks()) {
@@ -155,7 +214,7 @@ public class DatabaseTest extends IntegrationTestBase {
             Assert.notNull(physicalChunk.getHash());
         }
 
-        database.removePieRaidFile(file1);
+        database.removeVersionedPieRaidFile(versiondFile);
 
     }
 }
