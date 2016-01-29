@@ -7,6 +7,7 @@
 package org.pieShare.pieDrive.core.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +44,11 @@ public class VersionedPieRaidFile {
 	public void setVersions(Map<Long,PieRaidFile> versions){
 		this.versions.clear();
 		this.versions.putAll(versions);		
+	}
+	
+	public PieRaidFile getLatestVersion(){
+		long max = Collections.max(this.versions.keySet());
+		return this.versions.get(max);
 	}
 	
 	@Override
