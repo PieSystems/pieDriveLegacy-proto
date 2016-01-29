@@ -30,18 +30,10 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 	@Autowired
     private PieRaidFileEntityRepository pieRaidFileEntityRepository;
 
-    @Autowired
-    private PhysicalChunkEntityRepository physicalChunkEntityRepository;
-
-    @Autowired
-    private AdapterChunkEntityRepository adapterChunkEntityRepository;
-
 	@Override
 	public VersionedPieRaidFileEntity persistVersionedPieRaidFile(VersionedPieRaidFile versionedPieRaidFile) {
 		VersionedPieRaidFileEntity versionedRaidFileEntity = new VersionedPieRaidFileEntity();
-		
-		Map<Long, PieRaidFileEntity> pieRaidFileEntities = new HashMap();
-		
+				
 		for(Entry<Long, PieRaidFile> entry : versionedPieRaidFile.getVersions().entrySet()){
 			
 			List<PhysicalChunkEntity> physicalChunkEntities = new ArrayList<>();
@@ -53,7 +45,7 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 
 				List<AdapterChunkEntity> ace = new ArrayList<>();
 
-				for (AdapterChunk adapterChunk : chunk.getChunks().values()) {
+				for (AdapterChunk adapterChunk : chunk.getChunks()) {
 					AdapterChunkEntity adc = new AdapterChunkEntity();
 					adc.setAdapterId(adapterChunk.getAdapterId().getId());
 					adc.setHash(adapterChunk.getHash());
