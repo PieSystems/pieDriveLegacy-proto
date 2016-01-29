@@ -6,6 +6,7 @@
 
 package org.pieShare.pieDrive.core.database.entities;
 
+import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,6 +21,7 @@ public class VersionedPieRaidFileEntity {
 	protected String uid;
 	
 	public VersionedPieRaidFileEntity() {
+		this.versions = new HashMap<>();
 	}
 	
 	public String getUid() {
