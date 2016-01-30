@@ -12,6 +12,7 @@ import org.pieShare.pieDrive.core.database.entities.FolderEntity;
 import org.pieShare.pieDrive.core.database.entities.PieRaidFileEntity;
 import org.pieShare.pieDrive.core.database.entities.VolumesEntity;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.model.RaidLevel;
 import org.pieShare.pieDrive.core.model.ui.PieFolder;
 import org.pieShare.pieDrive.core.model.ui.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
 
         entity.setVolumeName(volume.getName());
         entity.setId(volume.getId());
-        entity.setRaidLevel(volume.getRaidLevel());
+        entity.setRaidLevel(volume.getRaidLevel().ordinal());
 
         entity.setFolders(convertFolderToFolderEntities(volume.getFolders()));
 
@@ -119,7 +120,7 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
         Volume v = new Volume();
         v.setName(entity.getVolumeName());
         v.setId(entity.getId());
-        v.setRaidLevel(entity.getRaidLevel());
+        v.setRaidLevel(RaidLevel.values()[entity.getRaidLevel()]);// entity.getRaidLevel());
 
         v.setFolders(convertFolderEntityToFolder(entity.getFolders()));
 
