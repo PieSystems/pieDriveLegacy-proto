@@ -60,7 +60,7 @@ public class UploadBufferChunkTaskNGTest extends FileHandlingTaskTestBase {
 		task.setBufer(bufferExpected);
 		task.setChunk(adapterChunk);
 		
-		task.run();
+		task.compute();
 		
 		Assert.assertEquals(1, this.uploadAdapter1.listFiles().length);
 		Assert.assertEquals(adapterChunk.getHash(), hashExpected);

@@ -8,6 +8,8 @@ package org.pieShare.pieDrive.core.springConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import javax.inject.Provider;
 import javax.persistence.spi.PersistenceProvider;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
@@ -277,10 +279,9 @@ public class CoreAppConfig {
 
     @Bean
     @Lazy
-    public PieExecutorService executorService() {
-        PieExecutorService service = PieExecutorService.newCachedPieExecutorService();
-        service.setExecutorFactory(this.executorFactory());
-        return service;
+    public ExecutorService executorService() {
+        ForkJoinPool pool = new ForkJoinPool(8);
+		return pool;
     }
 
     @Bean

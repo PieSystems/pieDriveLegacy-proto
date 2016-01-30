@@ -5,6 +5,7 @@ import java.io.RandomAccessFile;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
@@ -20,14 +21,14 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 	
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
-	private IExecutorService executorService;
+	private ExecutorService executorService;
 	private RandomAccessFile file;
 
 	public void setUploadChunkTaskProvider(Provider<UploadChunkTask> uploadChunkTaskProvider) {
 		this.uploadChunkTaskProvider = uploadChunkTaskProvider;
 	}
 	
-	public void setExecutorService(IExecutorService executorService) {
+	public void setExecutorService(ExecutorService executorService) {
 		this.executorService = executorService;
 	}
 

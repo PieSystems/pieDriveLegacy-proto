@@ -13,7 +13,9 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.RecursiveAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
@@ -23,6 +25,7 @@ import org.pieShare.pieDrive.core.Raid5Service;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.stream.BoundedInputStream;
@@ -32,7 +35,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
-public class UploadRaid5FileTask implements IPieTask {
+public class UploadRaid5FileTask extends RecursiveAction {
 
 	private final int PARITY_SHARD_COUNT = 1;
 	private File file;
@@ -53,55 +56,80 @@ public class UploadRaid5FileTask implements IPieTask {
 	private ListeningExecutorService listeningExecutorService;
 
 	@Override
-	public void run() {
+	public void compute() {
 		try {
-			if (this.physicalChunksIterator == null) {
-				PieLogger.debug(this.getClass(), "Starting file upload for {}", this.file.getName());
+			PieLogger.debug(this.getClass(), "Starting file upload for {}", this.file.getName());
 
-				rFile = new RandomAccessFile(file, "r");
+			rFile = new RandomAccessFile(file, "r");
 
-				//we need to iterate twice so we can guarante that the object 
-				//will be completely initizilised before we start working on it
-				for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-					for (AdapterId id : adapterCoreService.getAdaptersKey()) {
-						//TODO what if chunk size is not dividable by 2?
-						long raidChunkSize = raid5Service.calculateRaidChunkSize(physicalChunk);
-						AdapterChunk chunk = adapterChunkProvider.get();
-						chunk.setAdapterId(id);
-						chunk.setUuid(UUID.randomUUID().toString());
-						chunk.setSize(raidChunkSize);
-						physicalChunk.addAdapterChunk(chunk);
+			//we need to iterate twice so we can guarante that the object 
+			//will be completely initizilised before we start working on it
+			
+			//we initialize randomly the shared
+			int shard = this.adapterCoreService
+					.calculateNextAdapter(new Random().nextInt());
+			
+			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+				//attention this works only due to the fact that we iterate over the keys!
+				for (AdapterId id : adapterCoreService.getAdaptersKey()) {
+					//TODO what if chunk size is not dividable by 2?
+					long raidChunkSize = raid5Service.calculateRaidChunkSize(physicalChunk);
+					AdapterChunk chunk = adapterChunkProvider.get();
+					chunk.setAdapterId(id);
+					chunk.setUuid(UUID.randomUUID().toString());
+					chunk.setSize(raidChunkSize);
+					chunk.setDataShard(shard);
+					physicalChunk.addAdapterChunk(chunk);
+					
+					//we here do make sure to take the next shared for this physical chunk
+					shard = this.adapterCoreService.calculateNextAdapter(shard);
+				}
+				//and here we make sure that not all parities are stored on the same adapter
+				shard = this.adapterCoreService.calculateNextAdapter(shard);
+			}
+
+			this.database.persistPieRaidFile(raidedFile);
+
+			this.physicalChunksIterator = this.raidedFile.getChunks().iterator();
+
+//			if (!raidedFile.getChunks().iterator().hasNext()) {
+//				return;
+//			}
+			//PhysicalChunk physicalChunk = this.physicalChunksIterator.next();
+			
+			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
+				//TODO calculate raid5 chunks
+				NioInputStream nioStream = StreamFactory.getNioInputStream(rFile, physicalChunk.getOffset());
+				byte[][] raidBuffers = raid5Service.generateRaidShards(nioStream, physicalChunk);
+				
+				//List<ListenableFuture<Void>> futures = new ArrayList<>();
+				List<UploadBufferChunkTask> tasks = new ArrayList<>();
+
+				for (AdapterChunk chunk : physicalChunk.getChunks()) {
+					UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
+					task.setChunk(chunk);
+					task.setBufer(raidBuffers[chunk.getDataShard()]);
+					
+					task.fork();
+					tasks.add(task);
+				}
+				
+				for(UploadBufferChunkTask task: tasks) {
+					task.join();
+					
+					if(task.isCompletedNormally()) {
+						task.getChunk().setState(ChunkHealthState.Healthy);
+					} else {
+						task.getChunk().setState(ChunkHealthState.Broken);
 					}
 				}
-
-				this.database.persistPieRaidFile(raidedFile);
-
-				this.physicalChunksIterator = this.raidedFile.getChunks().iterator();
+				
+				synchronized(this.database) {
+					for(AdapterChunk chunk : physicalChunk.getChunks()) {
+						this.database.updateAdaptorChunk(chunk);	
+					}
+				}
 			}
-
-			if (!raidedFile.getChunks().iterator().hasNext()) {
-				return;
-			}
-
-			PhysicalChunk physicalChunk = this.physicalChunksIterator.next();
-
-			//for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-			//TODO calculate raid5 chunks
-			NioInputStream nioStream = StreamFactory.getNioInputStream(rFile, physicalChunk.getOffset());
-			byte[][] raidBuffers = raid5Service.generateRaidShards(nioStream, physicalChunk);
-			List<ListenableFuture<Void>> futures = new ArrayList<>();
-
-			for (AdapterChunk chunk : physicalChunk.getChunks()) {
-				UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
-				task.setChunk(chunk);
-				//task.setBuffer(rFile);
-
-				futures.add((ListenableFuture<Void>) this.listeningExecutorService.submit(task));
-			}
-
-			ListenableFuture<List<Void>> combinedFuture = Futures.successfulAsList(futures);
-			combinedFuture.addListener(this, listeningExecutorService);
-			//}
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 		}

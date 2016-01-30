@@ -53,5 +53,5 @@ public class SimpleAdapterCoreService implements AdapterCoreService {
 	@Override
 	public int calculateNextAdapter(int lastChunk) {
 		return (++lastChunk) % this.adapters.size();
-	}	
+	}
 }

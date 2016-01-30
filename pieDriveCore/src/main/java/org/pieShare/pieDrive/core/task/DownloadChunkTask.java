@@ -13,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
@@ -34,13 +35,13 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 
-	private PieExecutorService executor;
+	private ExecutorService executor;
 	private IntegrityCheckTask task;
 	
 	private RandomAccessFile file;
 	private int adapterIndex;
 
-	public void setExecutor(PieExecutorService executor) {
+	public void setExecutor(ExecutorService executor) {
 		this.executor = executor;
 	}
 

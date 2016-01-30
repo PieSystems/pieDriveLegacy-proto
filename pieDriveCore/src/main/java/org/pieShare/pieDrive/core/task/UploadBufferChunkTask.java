@@ -8,6 +8,7 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.concurrent.RecursiveAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
@@ -21,7 +22,7 @@ import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
-public class UploadBufferChunkTask implements IPieTask {
+public class UploadBufferChunkTask extends RecursiveAction {
 
 	private AdapterCoreService adapterCoreService;
 	private AdapterChunk chunk;
@@ -36,6 +37,10 @@ public class UploadBufferChunkTask implements IPieTask {
 		this.chunk = chunk;
 	}
 
+	public AdapterChunk getChunk() {
+		return chunk;
+	}
+
 	public void setBufer(byte[] buffer) {
 		this.buffer = buffer;
 	}
@@ -45,7 +50,7 @@ public class UploadBufferChunkTask implements IPieTask {
 	}
 
 	@Override
-	public void run() {
+	public void compute() {
 		PieLogger.debug(this.getClass(), "Starting chunk upload for "
 				+ "{} with adapter {}", this.chunk.getUuid(), this.chunk.getAdapterId().getId());
 		DigestInputStream hStr = null;
