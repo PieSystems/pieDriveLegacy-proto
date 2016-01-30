@@ -85,6 +85,8 @@ public class DownloadRaid5FileTask extends RecursiveAction {
 						outputStream.write(buffer[i]);
 					}
 				} catch(LimitReachedException ex) {
+					//do nothing: intended to run into exception at last part
+				} finally {
 					outputStream.flush();
 					outputStream.close();
 				}
