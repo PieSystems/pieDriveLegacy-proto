@@ -39,6 +39,8 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected Provider<DeleteRaidFileTask> deleteRaidFileTaskProvider;
 	@Autowired
 	protected Provider<UploadChunkTask> uploadChunkTaskProvider;
+	@Autowired
+	protected Provider<DownloadRaid5ChunkTask> downloadRaid5ChunkTaskProvider;
 
 	@Autowired
 	protected Database db;
@@ -126,6 +128,11 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 		while (dio.read() != -1) {
 		}
 		return dio.getMessageDigest().digest();
+	}
+	
+	protected byte[] generateMd5(byte[] bytes) throws NoSuchAlgorithmException {
+		MessageDigest digest = MessageDigest.getInstance("MD5");
+		return digest.digest(bytes);
 	}
 	
 	protected AdapterChunk getAdapterChunkForAdapterId(List<AdapterChunk> chunks, AdapterId adapterId) {

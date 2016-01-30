@@ -52,6 +52,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
+import org.pieShare.pieDrive.core.task.DownloadRaid5ChunkTask;
 import org.pieShare.pieDrive.core.task.UploadRaid5FileTask;
 
 /**
@@ -309,4 +310,13 @@ public class CoreAppConfig {
         task.setAdapterCoreService(this.simpleAdapterCoreService());
         return task;
     }
+	
+	@Bean
+	@Lazy
+	@Scope("prototype")
+	public DownloadRaid5ChunkTask downloadRaid5ChunkTask() {
+		DownloadRaid5ChunkTask task = new DownloadRaid5ChunkTask();
+		task.setAdapterCoreService(this.simpleAdapterCoreService());
+		return task;
+	}
 }
