@@ -46,7 +46,7 @@ public class VersionedPieRaidFile {
 	public PieRaidFile getLatestVersion(){
 		long max = Collections.max(this.versions.keySet());
 		if(!(this.versions.isEmpty())){
-			return this.versions.get(max-1);
+			return this.versions.get(max);
 		} else {
 			return null;
 		}
