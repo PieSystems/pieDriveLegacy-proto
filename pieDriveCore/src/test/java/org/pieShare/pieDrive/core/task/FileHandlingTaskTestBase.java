@@ -21,8 +21,12 @@ import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
+import org.pieShare.pieDrive.core.model.PhysicalChunk;
+import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
@@ -33,6 +37,8 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected Provider<UploadRaid5FileTask> uploadRaid5FileProvider;
 	@Autowired
 	protected Provider<DownloadRaidFileTask> downloadRaidFileProvider;
+	@Autowired
+	protected Provider<DownloadRaid5FileTask> downloadRaid5FileProvider;
 	@Autowired
 	protected Provider<IntegrityCheckTask> integrityCheckTaskProvider;
 	@Autowired
@@ -96,6 +102,18 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 
 		//set chunk size for tests
 		((PieDriveCoreService)pieDriveCore).setChunkSize(20);
+	}
+	
+	protected void assertRaidFile(PieRaidFile file, ChunkHealthState state) {
+		for(PhysicalChunk chunk: file.getChunks()) {
+			this.assertAllState(chunk, state);
+		}
+        }
+	
+	protected void assertAllState(PhysicalChunk chunk, ChunkHealthState state) {
+		for(AdapterChunk aChunk: chunk.getChunks()) {
+			Assert.assertEquals(aChunk.getState(), state);
+		}
 	}
 
 	protected File createFileHelper(File parent, String fileName, int size) throws IOException {

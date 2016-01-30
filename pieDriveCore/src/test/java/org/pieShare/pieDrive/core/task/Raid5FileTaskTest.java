@@ -1,12 +1,9 @@
 package org.pieShare.pieDrive.core.task;
 
-import com.backblaze.erasure.ReedSolomon;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
@@ -49,7 +46,18 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 		
 		assertHashCodes(expectedRaidFile);
 		
-		//TODO download
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		DownloadRaid5FileTask downloadTask = downloadRaid5FileProvider.get();
+		downloadTask.setOutputDir(out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.compute();
+		
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(generateMd5(expected), generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
 	
 	@Test
@@ -71,6 +79,17 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 		
 		assertHashCodes(expectedRaidFile);
 		
-		//TODO download
+		PieRaidFile raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
+		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
+		
+		DownloadRaid5FileTask downloadTask = downloadRaid5FileProvider.get();
+		downloadTask.setOutputDir(out);
+		downloadTask.setRaidFile(raidFile);
+		downloadTask.compute();
+		
+		File[] downloadedFiles = this.out.listFiles();
+		Assert.assertEquals(1, downloadedFiles.length);
+		Assert.assertEquals(generateMd5(expected), generateMd5(downloadedFiles[0]));
+		this.assertRaidFile(raidFile, ChunkHealthState.Healthy);
 	}
 }

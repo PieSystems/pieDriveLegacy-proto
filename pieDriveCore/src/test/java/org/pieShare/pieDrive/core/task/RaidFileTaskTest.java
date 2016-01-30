@@ -25,19 +25,6 @@ import org.testng.annotations.Test;
 @DirtiesContext
 @ContextConfiguration(classes = FakeAdapterCoreTestConfig.class)
 public class RaidFileTaskTest extends FileHandlingTaskTestBase {
-	
-	private void assertRaidFile(PieRaidFile file, ChunkHealthState state) {
-		for(PhysicalChunk chunk: file.getChunks()) {
-			this.assertAllState(chunk, state);
-		}
-        }
-	
-	private void assertAllState(PhysicalChunk chunk, ChunkHealthState state) {
-		for(AdapterChunk aChunk: chunk.getChunks()) {
-			Assert.assertEquals(aChunk.getState(), state);
-		}
-	}
-	
 	@Test
 	public void testUpAndDownLoadFileRaid1() throws Exception {
 		String fileName = "testOneChunkFile";
@@ -119,8 +106,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.compute();
 		
-		
-		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
@@ -161,8 +146,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.compute();
 
-		
-
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
@@ -176,8 +159,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.compute();
-		
-		
 		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -223,8 +204,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.compute();
 
-		
-
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
@@ -235,8 +214,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
 		downloadTask.compute();
-		
-		
 		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -253,8 +230,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.compute();
-
-		
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();

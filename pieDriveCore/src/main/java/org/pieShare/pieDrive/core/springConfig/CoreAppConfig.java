@@ -8,7 +8,6 @@ package org.pieShare.pieDrive.core.springConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import javax.inject.Provider;
 import javax.persistence.spi.PersistenceProvider;
@@ -36,7 +35,6 @@ import org.pieShare.pieDrive.core.task.DownloadRaidFileTask;
 import org.pieShare.pieDrive.core.task.IntegrityCheckTask;
 import org.pieShare.pieDrive.core.task.UploadChunkTask;
 import org.pieShare.pieDrive.core.task.UploadRaidFileTask;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +50,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
+import org.pieShare.pieDrive.core.task.DownloadRaid5FileTask;
 import org.pieShare.pieDrive.core.task.UploadRaid5FileTask;
 
 /**
@@ -265,6 +264,18 @@ public class CoreAppConfig {
         task.setAdapterCoreService(this.simpleAdapterCoreService());
 
         task.setDownloadChunkProvider(downloadChunkProvider);
+        return task;
+    }
+	
+	@Bean
+    @Lazy
+    @Scope("prototype")
+    public DownloadRaid5FileTask downloadRaid5FileTask() {
+        DownloadRaid5FileTask task = new DownloadRaid5FileTask();
+        task.setAdapterCoreService(this.simpleAdapterCoreService());
+		task.setRaid5Service(raid5Service());
+
+        task.setDownloadRaid5ChunkProvider(downloadRaid5ChunkProvider);
         return task;
     }
 
