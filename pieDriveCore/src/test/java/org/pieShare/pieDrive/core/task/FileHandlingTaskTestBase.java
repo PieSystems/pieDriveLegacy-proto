@@ -30,6 +30,8 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	@Autowired
 	protected Provider<UploadRaidFileTask> uploadRaidFileProvider;
 	@Autowired
+	protected Provider<UploadRaid5FileTask> uploadRaid5FileProvider;
+	@Autowired
 	protected Provider<DownloadRaidFileTask> downloadRaidFileProvider;
 	@Autowired
 	protected Provider<IntegrityCheckTask> integrityCheckTaskProvider;

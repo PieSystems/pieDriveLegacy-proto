@@ -67,7 +67,7 @@ public class UploadRaid5FileTask extends RecursiveAction {
 			
 			//we initialize randomly the shared
 			int shard = this.adapterCoreService
-					.calculateNextAdapter(new Random().nextInt());
+					.calculateNextAdapter(new Random().nextInt(adapterCoreService.getAdaptersKey().size()));
 			
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
 				//attention this works only due to the fact that we iterate over the keys!
@@ -100,7 +100,8 @@ public class UploadRaid5FileTask extends RecursiveAction {
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
 				//TODO calculate raid5 chunks
 				NioInputStream nioStream = StreamFactory.getNioInputStream(rFile, physicalChunk.getOffset());
-				byte[][] raidBuffers = raid5Service.generateRaidShards(nioStream, physicalChunk);
+				BufferedInputStream bufferedStream = StreamFactory.getBufferedInputStream(nioStream, 65536); //64kB
+				byte[][] raidBuffers = raid5Service.generateRaidShards(bufferedStream, physicalChunk);
 				
 				//List<ListenableFuture<Void>> futures = new ArrayList<>();
 				List<UploadBufferChunkTask> tasks = new ArrayList<>();

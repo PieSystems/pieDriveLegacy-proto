@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.stream.BoundedInputStream;
@@ -57,7 +58,7 @@ public class ReedSolomonRaid5Service implements Raid5Service {
 		
 		for(int i = 0; i < getDataShardCount(); i++) {
 			try {
-				boundedStream.read(raidBuffers[i]);
+				boundedStream.read(raidBuffers[i], 0, raidChunkSize);
 			} catch (IOException ex) {
 				PieLogger.error(this.getClass(), "Could not read buffer from input stream", ex);
 			}
@@ -108,6 +109,15 @@ public class ReedSolomonRaid5Service implements Raid5Service {
 		
 		//TODO check if properly recovered and update physical chunk?
 		return true;
+	}
+
+	@Override
+	public boolean isParityChunk(AdapterChunk chunk) {
+		if(chunk.getDataShard() >= getDataShardCount()) {
+			return true;
+		}
+		
+		return false;
 	}
 
 }

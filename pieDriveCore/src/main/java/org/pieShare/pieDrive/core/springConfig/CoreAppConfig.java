@@ -53,6 +53,7 @@ import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
 import org.pieShare.pieDrive.core.task.UploadBufferChunkTask;
+import org.pieShare.pieDrive.core.task.UploadRaid5FileTask;
 
 /**
  *
@@ -232,6 +233,20 @@ public class CoreAppConfig {
 
         task.setAdapterChunkProvider(adapterChunkProvider);
         task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
+        return task;
+    }
+	
+	@Bean
+    @Lazy
+    @Scope("prototype")
+    public UploadRaid5FileTask uploadRaid5FileTask() {
+        UploadRaid5FileTask task = new UploadRaid5FileTask();
+        task.setAdapterCoreService(this.simpleAdapterCoreService());
+        task.setDatabase(this.database());
+        task.setDriveCoreService(this.pieDriveCoreService());
+		task.setRaid5Service(raid5Service());
+        task.setAdapterChunkProvider(adapterChunkProvider);
+        task.setUploadBufferChunkTaskProvider(uploadBuffereChunkTaskProvider);
         return task;
     }
 

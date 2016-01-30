@@ -2,6 +2,7 @@ package org.pieShare.pieDrive.core;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 
 public interface Raid5Service {
