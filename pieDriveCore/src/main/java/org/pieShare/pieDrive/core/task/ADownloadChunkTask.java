@@ -52,7 +52,7 @@ public abstract class ADownloadChunkTask extends RecursiveAction {
 		}
 		byte[] hash = stream.getMessageDigest().digest();
 
-		if (Arrays.equals(physicalChunk.getHash(), hash)) {
+		if (Arrays.equals(chunk.getHash(), hash)) {
 			chunk.setState(ChunkHealthState.Healthy);
 			return true;
 		}

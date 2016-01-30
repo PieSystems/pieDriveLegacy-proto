@@ -49,7 +49,8 @@ public class UploadRaid5FileTask extends RecursiveAction {
 	private Database database;
 
 	private Provider<AdapterChunk> adapterChunkProvider;
-	private Provider<UploadBufferChunkTask> uploadBufferChunkTaskProvider;
+	//private Provider<UploadBufferChunkTask> uploadBufferChunkTaskProvider;
+	private Provider<UploadChunkTask> uploadChunkTaskProvider;
 
 	private Iterator<PhysicalChunk> physicalChunksIterator;
 	private RandomAccessFile rFile;
@@ -104,18 +105,20 @@ public class UploadRaid5FileTask extends RecursiveAction {
 				byte[][] raidBuffers = raid5Service.generateRaidShards(bufferedStream, physicalChunk);
 				
 				//List<ListenableFuture<Void>> futures = new ArrayList<>();
-				List<UploadBufferChunkTask> tasks = new ArrayList<>();
+				List<UploadChunkTask> tasks = new ArrayList<>();
 
 				for (AdapterChunk chunk : physicalChunk.getChunks()) {
-					UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
+					//UploadBufferChunkTask task = uploadBufferChunkTaskProvider.get();
+					UploadChunkTask task = uploadChunkTaskProvider.get();
 					task.setChunk(chunk);
-					task.setBufer(raidBuffers[chunk.getDataShard()]);
+					//task.setBufer(raidBuffers[chunk.getDataShard()]);
+					task.setIn(StreamFactory.getInputStream(raidBuffers[chunk.getDataShard()]));
 					
 					task.fork();
 					tasks.add(task);
 				}
 				
-				for(UploadBufferChunkTask task: tasks) {
+				for(UploadChunkTask task: tasks) {
 					task.join();
 					
 					if(task.isCompletedNormally()) {
@@ -168,7 +171,7 @@ public class UploadRaid5FileTask extends RecursiveAction {
 		this.adapterChunkProvider = adapterChunkProvider;
 	}
 
-	public void setUploadBufferChunkTaskProvider(Provider<UploadBufferChunkTask> uploadBufferChunkTaskProvider) {
-		this.uploadBufferChunkTaskProvider = uploadBufferChunkTaskProvider;
+	public void setUploadChunkTaskProvider(Provider<UploadChunkTask> uploadChunkTaskProvider) {
+		this.uploadChunkTaskProvider = uploadChunkTaskProvider;
 	}
 }

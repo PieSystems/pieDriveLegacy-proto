@@ -26,6 +26,7 @@ import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -75,8 +76,9 @@ public class UploadRaidFileTask extends RecursiveAction {
 				for (AdapterChunk chunk : physicalChunk.getChunks()) {
 					UploadChunkTask task = uploadChunkTaskProvider.get();
 					task.setChunk(chunk);
-					task.setFile(rFile);
-					task.setPhysicalChunk(physicalChunk);
+//					task.setFile(rFile);
+//					task.setPhysicalChunk(physicalChunk);
+					task.setIn(StreamFactory.getInputStream(rFile, physicalChunk));
 					task.fork();
 					tasks.add(task);
 				}

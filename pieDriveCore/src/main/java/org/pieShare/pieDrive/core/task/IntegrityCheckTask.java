@@ -78,8 +78,9 @@ public class IntegrityCheckTask extends ADownloadChunkTask {
 				PieLogger.debug(this.getClass(), "Recovering chunk {} on adapter {}", adapterChunk.getUuid(), adapterChunk.getAdapterId().getId());
 				UploadChunkTask task = this.uploadChunkTaskProvider.get();
 				task.setChunk(adapterChunk);
-				task.setPhysicalChunk(physicalChunk);
-				task.setFile(file);
+//				task.setPhysicalChunk(physicalChunk);
+//				task.setFile(file);
+				task.setIn(StreamFactory.getInputStream(file, physicalChunk));
 				task.fork();
 				tasks.add(task);
 			}

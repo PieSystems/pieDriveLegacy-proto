@@ -7,12 +7,14 @@ package org.pieShare.pieDrive.core.stream.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
+import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.stream.BoundedOutputStream;
 import org.pieShare.pieDrive.core.stream.BoundedInputStream;
 import org.pieShare.pieDrive.core.stream.NioInputStream;
@@ -20,42 +22,44 @@ import org.pieShare.pieDrive.core.stream.NioOutputStream;
 
 /**
  *
- * Note2: It is not important for the DI to know this Streams as Beans due 
- * to the fact that this are already specific implementations and there is
- * no Interface structure provided. So exchanging it is difficult. However
- * for easier testing it could be useful to not create directly in code.
+ * Note2: It is not important for the DI to know this Streams as Beans due to
+ * the fact that this are already specific implementations and there is no
+ * Interface structure provided. So exchanging it is difficult. However for
+ * easier testing it could be useful to not create directly in code.
+ *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 //todo: consider changing this into a bean for easier testing?
 public class StreamFactory {
-	
+
 	public static BoundedInputStream getLimitingInputStream(InputStream in, long limit) {
 		return new BoundedInputStream(in, limit);
 	}
-	
+
 	/**
 	 * Returns a new HashingInputStream as InputStream.
-	 * 
-	 * Note1: If you really need a HashingInputStream create another Factory method.
-	 * 
-	 * Note2: It is not important for the DI to know this Stream as a Bean due 
+	 *
+	 * Note1: If you really need a HashingInputStream create another Factory
+	 * method.
+	 *
+	 * Note2: It is not important for the DI to know this Stream as a Bean due
 	 * to the fact that this is already a specific implementation and there is
 	 * no Interface structure provided. So exchanging it is difficult. However
 	 * for easier testing it could be useful to not create directly in code.
-	 * 
+	 *
 	 * @param stream
 	 * @param dig
 	 * @param cb
-	 * @return 
+	 * @return
 	 */
 	public static DigestInputStream getDigestInputStream(InputStream stream, MessageDigest dig) {
 		return new DigestInputStream(stream, dig);
 	}
-	
+
 	public static DigestOutputStream getDigestOutputStream(OutputStream stream, MessageDigest dig) {
 		return new DigestOutputStream(stream, dig);
 	}
-	
+
 	public static BoundedOutputStream getBoundedOutputStream(OutputStream out, long limit) {
 		return new BoundedOutputStream(out, limit);
 	}
@@ -74,5 +78,15 @@ public class StreamFactory {
 
 	public static BufferedInputStream getBufferedInputStream(InputStream in, int size) {
 		return new BufferedInputStream(in, size);
+	}
+
+	public static InputStream getInputStream(RandomAccessFile file, PhysicalChunk physicalChunk) {
+		NioInputStream nioStream = StreamFactory.getNioInputStream(file, physicalChunk.getOffset());
+		BufferedInputStream bufferedStream = StreamFactory.getBufferedInputStream(nioStream, 65536); //64kB
+		return StreamFactory.getLimitingInputStream(bufferedStream, physicalChunk.getSize());
+	}
+	
+	public static InputStream getInputStream(byte[] buffer) {
+		return new ByteArrayInputStream(buffer);
 	}
 }

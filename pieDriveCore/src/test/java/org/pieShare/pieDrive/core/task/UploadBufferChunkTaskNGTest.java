@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.UUID;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,8 +57,8 @@ public class UploadBufferChunkTaskNGTest extends FileHandlingTaskTestBase {
 		adapterChunk.setSize(bufferExpected.length);
 		adapterChunk.setUuid(uid);
 		
-		UploadBufferChunkTask task = this.uploadBuffereChunkTaskProvider.get();
-		task.setBufer(bufferExpected);
+		UploadChunkTask task = this.uploadChunkTaskProvider.get();
+		task.setIn(StreamFactory.getInputStream(bufferExpected));
 		task.setChunk(adapterChunk);
 		
 		task.compute();
