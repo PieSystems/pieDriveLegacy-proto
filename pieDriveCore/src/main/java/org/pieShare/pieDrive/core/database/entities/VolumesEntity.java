@@ -20,7 +20,7 @@ public class VolumesEntity {
     private List<PieRaidFileEntity> files;
 
     //TODO change to enum
-    private String raidLevel;
+    private int raidLevel;
 
     public VolumesEntity() {
         folders = new ArrayList<>();
@@ -57,11 +57,11 @@ public class VolumesEntity {
         this.volumeName = volumeName;
     }
 
-    public String getRaidLevel() {
+    public int getRaidLevel() {
         return raidLevel;
     }
 
-    public void setRaidLevel(String raidLevel) {
+    public void setRaidLevel(int raidLevel) {
         this.raidLevel = raidLevel;
     }
 

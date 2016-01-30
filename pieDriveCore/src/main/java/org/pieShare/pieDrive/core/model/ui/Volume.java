@@ -11,19 +11,22 @@ import java.io.Serializable;
 import java.util.List;
 import org.pieShare.pieDrive.core.database.entities.FolderEntity;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.model.RaidLevel;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class Volume extends PieFolder {
-	private String raidLevel;
+	private RaidLevel raidLevel;
 
-	public String getRaidLevel() {
+	public RaidLevel getRaidLevel() {
 		return raidLevel;
 	}
 
-	public void setRaidLevel(String raidLevel) {
+	public void setRaidLevel(RaidLevel raidLevel) {
 		this.raidLevel = raidLevel;
 	}
+
+	
 }
