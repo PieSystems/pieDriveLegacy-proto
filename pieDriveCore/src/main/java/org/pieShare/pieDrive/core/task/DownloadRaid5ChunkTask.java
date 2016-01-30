@@ -30,6 +30,10 @@ public class DownloadRaid5ChunkTask extends ADownloadChunkTask {
 		this.chunk = chunk;
 	}
 
+	public AdapterChunk getChunk() {
+		return chunk;
+	}
+
 	public void setOut(OutputStream out) {
 		this.out = out;
 	}
