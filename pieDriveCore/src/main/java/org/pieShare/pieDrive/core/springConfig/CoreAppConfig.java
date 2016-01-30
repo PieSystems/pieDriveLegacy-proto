@@ -289,7 +289,7 @@ public class CoreAppConfig {
 
     @Bean
     @Lazy
-    public ExecutorService executorService() {
+    public ForkJoinPool executorService() {
         ForkJoinPool pool = new ForkJoinPool(8);
 		return pool;
     }
