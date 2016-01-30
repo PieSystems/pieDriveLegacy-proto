@@ -15,6 +15,7 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.stream.util.LimitReachedException;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -79,8 +80,13 @@ public class DownloadRaid5FileTask extends RecursiveAction {
 				}
 
 				OutputStream outputStream = StreamFactory.getOutputStream(file, physicalChunk);
-				for (int i = 0; i < raid5Service.getDataShardCount(); i++) {
-					outputStream.write(buffer[i]);
+				try {
+					for (int i = 0; i < raid5Service.getDataShardCount(); i++) {
+						outputStream.write(buffer[i]);
+					}
+				} catch(LimitReachedException ex) {
+					outputStream.flush();
+					outputStream.close();
 				}
 			}
 		} catch (IOException ex) {
