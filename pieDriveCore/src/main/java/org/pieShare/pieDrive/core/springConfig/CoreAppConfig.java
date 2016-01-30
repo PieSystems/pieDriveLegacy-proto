@@ -256,7 +256,6 @@ public class CoreAppConfig {
     public DownloadChunkTask downloadChunkTask() {
         DownloadChunkTask task = new DownloadChunkTask();
         task.setAdapterCoreService(this.simpleAdapterCoreService());
-        task.setExecutor(this.executorService());
         task.setTask(this.integrityCheckTask());
         return task;
     }
@@ -279,7 +278,6 @@ public class CoreAppConfig {
     public IntegrityCheckTask integrityCheckTask() {
         IntegrityCheckTask task = new IntegrityCheckTask();
         task.setAdapterCoreService(this.simpleAdapterCoreService());
-        task.setExecutorService(this.executorService());
         task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
         return task;
     }

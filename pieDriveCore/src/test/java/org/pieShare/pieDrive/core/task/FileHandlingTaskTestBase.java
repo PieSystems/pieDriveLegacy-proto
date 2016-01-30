@@ -56,6 +56,8 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected File uploadAdapter3;
 	protected File in;
 	protected File out;
+	
+	protected File dbFile = new File("database.odb");
 
 	@Override
 	@BeforeClass

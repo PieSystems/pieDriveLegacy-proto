@@ -33,17 +33,17 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
+public class DownloadChunkTask extends ADownloadChunkTask {
 
-	private ExecutorService executor;
+	//private ExecutorService executor;
 	private IntegrityCheckTask task;
 	
 	private RandomAccessFile file;
 	private int adapterIndex;
 
-	public void setExecutor(ExecutorService executor) {
-		this.executor = executor;
-	}
+//	public void setExecutor(ExecutorService executor) {
+//		this.executor = executor;
+//	}
 
 	public void setTask(IntegrityCheckTask task) {
 		this.task = task;
@@ -58,7 +58,7 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 	}
 
 	@Override
-	public void run() {
+	public void compute() {
 		ArrayList<AdapterId> adatperIds = new ArrayList<>(this.adapterCoreService.getAdaptersKey());
 		int size = adatperIds.size();
 
@@ -76,7 +76,7 @@ public class DownloadChunkTask extends ADownloadChunkTask implements IPieTask {
 					PieLogger.debug(this.getClass(), "Download successfull for chunk {}", chunk.getUuid());
 					this.task.setPhysicalChunk(physicalChunk);
 					this.task.setFile(file);
-					this.executor.execute(task);
+					this.task.compute();
 					return;
 				}
 				

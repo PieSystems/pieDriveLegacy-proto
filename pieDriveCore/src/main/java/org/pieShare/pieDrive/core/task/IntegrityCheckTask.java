@@ -5,6 +5,8 @@ import java.io.RandomAccessFile;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,36 +20,37 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
-public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
-	
+public class IntegrityCheckTask extends ADownloadChunkTask {
+
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
-	private ExecutorService executorService;
+	//private ExecutorService executorService;
 	private RandomAccessFile file;
 
 	public void setUploadChunkTaskProvider(Provider<UploadChunkTask> uploadChunkTaskProvider) {
 		this.uploadChunkTaskProvider = uploadChunkTaskProvider;
 	}
-	
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
 
+//	public void setExecutorService(ExecutorService executorService) {
+//		this.executorService = executorService;
+//	}
 	public void setFile(RandomAccessFile file) {
 		this.file = file;
 	}
-	
+
 	@Override
-	public void run() {
-		
+	public void compute() {
+
 		AdapterChunk healtyChunk = null;
-		
+
 		for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
-			if(adapterChunk != null && adapterChunk.getState() == ChunkHealthState.Healthy) {
+			if (adapterChunk != null && adapterChunk.getState() == ChunkHealthState.Healthy) {
 				PieLogger.debug(this.getClass(), "Found healthy chunk on {}", adapterChunk.getAdapterId().getId());
 				healtyChunk = adapterChunk;
 			}
 		}
-		
+
+		List<UploadChunkTask> tasks = new ArrayList<>();
+
 		for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
 			if (adapterChunk.getState() == ChunkHealthState.NotChecked) {
 				DigestOutputStream digestStream = null;
@@ -56,7 +59,7 @@ public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 					NullOutputStream nullStream = new NullOutputStream();
 					digestStream = StreamFactory.getDigestOutputStream(nullStream, MessageDigest.getInstance("MD5"));
 
-					if(!this.download(adapterChunk, digestStream)) {
+					if (!this.download(adapterChunk, digestStream)) {
 						adapterChunk.setState(ChunkHealthState.Broken);
 					}
 				} catch (NoSuchAlgorithmException | AdaptorException ex) {
@@ -70,15 +73,25 @@ public class IntegrityCheckTask extends ADownloadChunkTask implements IPieTask {
 					}
 				}
 			}
-			
-			if(adapterChunk.getState() == ChunkHealthState.Broken) {
+
+			if (adapterChunk.getState() == ChunkHealthState.Broken) {
 				PieLogger.debug(this.getClass(), "Recovering chunk {} on adapter {}", adapterChunk.getUuid(), adapterChunk.getAdapterId().getId());
 				UploadChunkTask task = this.uploadChunkTaskProvider.get();
 				task.setChunk(adapterChunk);
 				task.setPhysicalChunk(physicalChunk);
 				task.setFile(file);
-				executorService.execute(task);
+				task.fork();
+				tasks.add(task);
 			}
+		}
+
+		for (UploadChunkTask task : tasks) {
+			task.join();
+//			if (task.isCompletedNormally()) {
+//				task.getChunk().setState(ChunkHealthState.Healthy);
+//			} else {
+//				task.getChunk().setState(ChunkHealthState.Broken);
+//			}
 		}
 	}
 }

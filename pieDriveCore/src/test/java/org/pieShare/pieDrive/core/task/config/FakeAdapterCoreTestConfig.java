@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieDrive.core.task.config;
 
+import java.util.Collections;
+import java.util.Map;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
 import org.pieShare.pieDrive.core.task.help.FakeAdapter;

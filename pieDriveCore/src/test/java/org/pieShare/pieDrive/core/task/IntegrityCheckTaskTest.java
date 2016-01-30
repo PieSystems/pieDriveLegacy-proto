@@ -23,9 +23,8 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
-
-		Thread.sleep(2000);
+		
+		uploadTask.compute();
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -48,9 +47,9 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
 		checkTask.setFile(new RandomAccessFile(expected, "r"));
-		checkTask.run();
 		
-		Thread.sleep(2000);
+		checkTask.compute();
+		
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Healthy);
@@ -64,9 +63,8 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
-
-		Thread.sleep(2000);
+		
+		uploadTask.compute();
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -96,9 +94,9 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
 		checkTask.setFile(new RandomAccessFile(expected, "r"));
-		checkTask.run();
 		
-		Thread.sleep(2000);
+		checkTask.compute();
+		
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Broken);
@@ -112,9 +110,8 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
-
-		Thread.sleep(2000);
+		
+		uploadTask.compute();
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -142,9 +139,9 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
 		checkTask.setFile(new RandomAccessFile(expected, "r"));
-		checkTask.run();
 		
-		Thread.sleep(2000);
+		checkTask.compute();
+		
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Broken);
@@ -158,9 +155,8 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
-
-		Thread.sleep(2000);
+		
+		uploadTask.compute();
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -188,9 +184,8 @@ public class IntegrityCheckTaskTest extends FileHandlingTaskTestBase {
 		IntegrityCheckTask checkTask = this.integrityCheckTaskProvider.get();
 		checkTask.setPhysicalChunk(raidFile.getChunks().get(0));
 		checkTask.setFile(new RandomAccessFile(expected, "r"));
-		checkTask.run();
 		
-		Thread.sleep(2000);
+		checkTask.compute();
 		
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Broken);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Broken);
