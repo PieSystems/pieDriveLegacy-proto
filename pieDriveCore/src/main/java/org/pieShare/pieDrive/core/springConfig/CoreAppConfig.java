@@ -14,7 +14,9 @@ import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.adapter.box.BoxAdapter;
 import org.pieShare.pieDrive.adapter.box.BoxAuthentication;
 import org.pieShare.pieDrive.adapter.dropbox.DropboxAdapter;
+import org.pieShare.pieDrive.adapter.dropbox.DropboxAuthentication;
 import org.pieShare.pieDrive.adapter.s3.S3Adapter;
+import org.pieShare.pieDrive.adapter.s3.S3Authentication;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
@@ -291,5 +293,17 @@ public class CoreAppConfig {
 	@Lazy
 	public ConfigService configService(){
 		return new ConfigService();
+	}
+	
+	@Bean
+	@Lazy
+	public S3Authentication s3Authentication(){
+		return new S3Authentication();
+	}
+	
+	@Bean
+	@Lazy
+	public DropboxAuthentication dropboxAuthentication(){
+		return new DropboxAuthentication();
 	}
 }
