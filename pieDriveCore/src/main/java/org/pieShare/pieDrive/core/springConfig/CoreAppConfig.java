@@ -18,6 +18,7 @@ import org.pieShare.pieDrive.adapter.s3.S3Adapter;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
+import org.pieShare.pieDrive.core.config.ConfigService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryCustom;
@@ -284,5 +285,11 @@ public class CoreAppConfig {
 	@Lazy
 	public VersionedPieRaidFileEntityRepositoryCustom versionedPieRaidFileEntityRepository() {
 		return new VersionedPieRaidFileEntityRepositoryImpl();
+	}
+	
+	@Bean
+	@Lazy
+	public ConfigService configService(){
+		return new ConfigService();
 	}
 }
