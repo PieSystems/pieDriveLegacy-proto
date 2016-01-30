@@ -17,4 +17,6 @@ public interface Adaptor {
     void upload(PieDriveFile file, InputStream stream) throws AdaptorException;
 
     void download(PieDriveFile file, OutputStream stream) throws AdaptorException;
+	
+	boolean authenticate();
 }
