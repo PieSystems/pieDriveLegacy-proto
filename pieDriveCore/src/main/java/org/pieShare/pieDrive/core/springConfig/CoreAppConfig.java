@@ -22,6 +22,7 @@ import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.Raid5Service;
 import org.pieShare.pieDrive.core.ReedSolomonRaid5Service;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
+import org.pieShare.pieDrive.core.config.ConfigService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.database.repository.*;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
@@ -304,5 +305,11 @@ public class CoreAppConfig {
 	@Lazy
 	public VersionedPieRaidFileEntityRepositoryCustom versionedPieRaidFileEntityRepository() {
 		return new VersionedPieRaidFileEntityRepositoryImpl();
+	}
+	
+	@Bean
+	@Lazy
+	public ConfigService configService(){
+		return new ConfigService();
 	}
 }
