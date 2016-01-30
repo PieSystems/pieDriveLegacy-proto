@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
@@ -34,7 +35,7 @@ public class UploadRaidFileTask implements IPieTask {
 	private File file;
 	private PieRaidFile raidedFile;
 
-	private IExecutorService executorService;
+	private ExecutorService executorService;
 	private PieDriveCore driveCoreService;
 	private AdapterCoreService adapterCoreService;
 	//todo: will need abstraction when merging into PieShare
@@ -87,7 +88,7 @@ public class UploadRaidFileTask implements IPieTask {
 		this.raidedFile = raidedFile;
 	}
 
-	public void setExecutorService(IExecutorService executorService) {
+	public void setExecutorService(ExecutorService executorService) {
 		this.executorService = executorService;
 	}
 

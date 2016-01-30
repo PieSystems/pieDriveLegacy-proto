@@ -8,6 +8,7 @@ package org.pieShare.pieDrive.core.task;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
@@ -25,7 +26,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class DownloadRaidFileTask implements IPieTask {
 
 	private AdapterCoreService adapterCoreService;
-	private IExecutorService executorService;
+	private ExecutorService executorService;
 	private File outputDir;
 
 	private PieRaidFile raidFile;
@@ -62,7 +63,7 @@ public class DownloadRaidFileTask implements IPieTask {
 		this.adapterCoreService = adapterCoreService;
 	}
 
-	public void setExecutorService(IExecutorService executorService) {
+	public void setExecutorService(ExecutorService executorService) {
 		this.executorService = executorService;
 	}
 

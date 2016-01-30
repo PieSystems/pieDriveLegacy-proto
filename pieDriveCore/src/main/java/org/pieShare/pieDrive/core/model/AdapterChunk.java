@@ -15,9 +15,11 @@ public class AdapterChunk extends PieDriveFile {
 	private AdapterId adapterId;
 	private byte[] hash;
 	private ChunkHealthState state;
+	private int dataShard;
 	
 	public AdapterChunk() {
 		this.state = ChunkHealthState.NotChecked;
+		this.dataShard = 0;
 	}
 
 	public AdapterId getAdapterId() {
@@ -61,6 +63,12 @@ public class AdapterChunk extends PieDriveFile {
     public int hashCode() {
         return this.getUuid().hashCode();
     }
-        
-        
+
+	public int getDataShard() {
+		return dataShard;
+	}
+
+	public void setDataShard(int dataShard) {
+		this.dataShard = dataShard;
+	}
 }
