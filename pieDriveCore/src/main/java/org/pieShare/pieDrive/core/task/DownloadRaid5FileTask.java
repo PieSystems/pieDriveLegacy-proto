@@ -2,6 +2,7 @@ package org.pieShare.pieDrive.core.task;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.inject.Provider;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.Raid5Service;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
@@ -24,7 +26,8 @@ public class DownloadRaid5FileTask extends RecursiveAction {
 	private PieRaidFile raidFile;
 	private RandomAccessFile file;
 
-	private Provider<DownloadChunkTask> downloadChunkProvider;
+	private Provider<DownloadRaid5ChunkTask> downloadRaid5ChunkProvider;
+	private Provider<UploadChunkTask> uploadChunkProvider;
 	
 	@Override
 	protected void compute() {
@@ -34,24 +37,58 @@ public class DownloadRaid5FileTask extends RecursiveAction {
 			file.setLength(raidFile.getFileSize());
 			
 			for(PhysicalChunk physicalChunk : raidFile.getChunks()) {
-				List<DownloadChunkTask> tasks = new ArrayList<>();
+				List<DownloadRaid5ChunkTask> tasks = new ArrayList<>();
 				byte[][] buffer = new byte[raid5Service.getTotalShardCount()][raid5Service.calculateRaidChunkSize(physicalChunk)];
 				for(AdapterChunk adapterChunk : physicalChunk.getChunks()) {
-					DownloadChunkTask task = downloadChunkProvider.get();
+					DownloadRaid5ChunkTask task = downloadRaid5ChunkProvider.get();
 					task.setChunk(adapterChunk);
-					task.setStream(StreamFactory.getOutputStream(buffer[adapterChunk.getDataShard()]));
+					task.setOut(StreamFactory.getOutputStream(buffer[adapterChunk.getDataShard()]));
 					task.fork();
 					tasks.add(task);
 				}
 				
-				for(DownloadChunkTask task : tasks) {
+				for(DownloadRaid5ChunkTask task : tasks) {
 					task.join();
 				}
 				
 				//TODO implement integrity check, recovery and write to file
+				boolean healthy = true;
+				for(AdapterChunk adapterChunk : physicalChunk.getChunks()) {
+					if(adapterChunk.getState() != ChunkHealthState.Healthy) {
+						healthy = false;
+						break;
+					}
+				}
+				
+				if(!healthy) {
+					if(!raid5Service.repairRaidShards(buffer, physicalChunk)) {
+						PieLogger.error(this.getClass(), "Raid file is corrupted beyond repair");
+						return;
+					}
+				}
+				
+				List<UploadChunkTask> recoveryTasks = new ArrayList<>();
+				for(AdapterChunk adapterChunk : physicalChunk.getChunks()) {
+					if(adapterChunk.getState() != ChunkHealthState.Healthy) {
+						UploadChunkTask task = uploadChunkProvider.get();
+						task.setChunk(adapterChunk);
+						task.setIn(StreamFactory.getInputStream(buffer[adapterChunk.getDataShard()]));
+						task.fork();
+						recoveryTasks.add(task);
+					}
+				}
+				
+				for(UploadChunkTask task : recoveryTasks) {
+					task.join();
+				}
+				
+				OutputStream outputStream = StreamFactory.getOutputStream(file, physicalChunk);
+				for(int i = 0; i < raid5Service.getDataShardCount(); i++) {
+					outputStream.write(buffer[i]);
+				}
 			}
 		} catch(IOException ex) {
-			PieLogger.debug(this.getClass(), "Could not download raid file", ex);
+			PieLogger.error(this.getClass(), "Could not download raid file", ex);
 		}
 	}
 
@@ -71,8 +108,11 @@ public class DownloadRaid5FileTask extends RecursiveAction {
 		this.raidFile = raidFile;
 	}
 
-	public void setDownloadChunkProvider(Provider<DownloadChunkTask> downloadChunkProvider) {
-		this.downloadChunkProvider = downloadChunkProvider;
+	public void setDownloadRaid5ChunkProvider(Provider<DownloadRaid5ChunkTask> downloadRaid5ChunkProvider) {
+		this.downloadRaid5ChunkProvider = downloadRaid5ChunkProvider;
 	}
-	
+
+	public void setUploadChunkProvider(Provider<UploadChunkTask> uploadChunkProvider) {
+		this.uploadChunkProvider = uploadChunkProvider;
+	}
 }

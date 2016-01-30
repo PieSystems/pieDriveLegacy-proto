@@ -97,4 +97,10 @@ public class StreamFactory {
 		ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
 		return new ByteBufferBackedOutputStream(byteBuffer);
 	}
+	
+	public static OutputStream getOutputStream(RandomAccessFile file, PhysicalChunk physicalChunk) {
+		NioOutputStream nioStream = StreamFactory.getNioOutputStream(file, physicalChunk.getOffset());
+		BufferedOutputStream bufferedStream = StreamFactory.getBufferedOutputStream(nioStream, 65536); //64kB
+		return StreamFactory.getBoundedOutputStream(bufferedStream, physicalChunk.getSize());
+	}
 }
