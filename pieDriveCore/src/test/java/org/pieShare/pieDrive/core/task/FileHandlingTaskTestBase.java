@@ -30,11 +30,15 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	@Autowired
 	protected Provider<UploadRaidFileTask> uploadRaidFileProvider;
 	@Autowired
+	protected Provider<UploadRaid5FileTask> uploadRaid5FileProvider;
+	@Autowired
 	protected Provider<DownloadRaidFileTask> downloadRaidFileProvider;
 	@Autowired
 	protected Provider<IntegrityCheckTask> integrityCheckTaskProvider;
 	@Autowired
 	protected Provider<DeleteRaidFileTask> deleteRaidFileTaskProvider;
+	@Autowired
+	protected Provider<UploadChunkTask> uploadChunkTaskProvider;
 
 	@Autowired
 	protected Database db;
@@ -52,6 +56,8 @@ public abstract class FileHandlingTaskTestBase extends IntegrationTestBase {
 	protected File uploadAdapter3;
 	protected File in;
 	protected File out;
+	
+	protected File dbFile = new File("database.odb");
 
 	@Override
 	@BeforeClass

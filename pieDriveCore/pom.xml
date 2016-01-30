@@ -84,13 +84,6 @@
             <artifactId>spring-data-jpa</artifactId>
             <version>1.9.1.RELEASE</version>
         </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
         
         <dependency>
             <groupId>org.springframework</groupId>
@@ -147,6 +140,26 @@
 			<artifactId>jcl-over-slf4j</artifactId>    
 			<version>1.7.7</version>  
 		</dependency>
+		
+		<dependency>
+			<groupId>com.github</groupId>
+			<artifactId>JavaReedSolomon</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     
     <properties>

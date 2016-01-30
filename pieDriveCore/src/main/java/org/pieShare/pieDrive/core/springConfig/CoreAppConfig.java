@@ -8,6 +8,8 @@ package org.pieShare.pieDrive.core.springConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import javax.inject.Provider;
 import javax.persistence.spi.PersistenceProvider;
 import org.pieShare.pieDrive.adapter.api.Adaptor;
@@ -17,11 +19,11 @@ import org.pieShare.pieDrive.adapter.dropbox.DropboxAdapter;
 import org.pieShare.pieDrive.adapter.s3.S3Adapter;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
+import org.pieShare.pieDrive.core.Raid5Service;
+import org.pieShare.pieDrive.core.ReedSolomonRaid5Service;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryImpl;
-import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryCustom;
-import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryImpl;
+import org.pieShare.pieDrive.core.database.repository.*;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.task.DeleteRaidFileTask;
@@ -45,9 +47,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
-import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepositoryCustom;
-import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepositoryImpl;
+import org.pieShare.pieDrive.core.task.UploadRaid5FileTask;
 
 /**
  *
@@ -160,6 +160,15 @@ public class CoreAppConfig {
         service.setChunkSize(5 * 1024 * 1024); // 5MiB
         return service;
     }
+	
+	@Bean
+	@Lazy
+	public Raid5Service raid5Service() {
+		ReedSolomonRaid5Service service = new ReedSolomonRaid5Service();
+		service.setAdapterCoreService(simpleAdapterCoreService());
+		service.setParityShardCount(1);
+		return service;
+	}
 
     @Bean
     @Lazy
@@ -212,6 +221,20 @@ public class CoreAppConfig {
         task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
         return task;
     }
+	
+	@Bean
+    @Lazy
+    @Scope("prototype")
+    public UploadRaid5FileTask uploadRaid5FileTask() {
+        UploadRaid5FileTask task = new UploadRaid5FileTask();
+        task.setAdapterCoreService(this.simpleAdapterCoreService());
+        task.setDatabase(this.database());
+        task.setDriveCoreService(this.pieDriveCoreService());
+		task.setRaid5Service(raid5Service());
+        task.setAdapterChunkProvider(adapterChunkProvider);
+        task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
+        return task;
+    }
 
     @Bean
     @Lazy
@@ -219,7 +242,6 @@ public class CoreAppConfig {
     public DownloadChunkTask downloadChunkTask() {
         DownloadChunkTask task = new DownloadChunkTask();
         task.setAdapterCoreService(this.simpleAdapterCoreService());
-        task.setExecutor(this.executorService());
         task.setTask(this.integrityCheckTask());
         return task;
     }
@@ -242,7 +264,6 @@ public class CoreAppConfig {
     public IntegrityCheckTask integrityCheckTask() {
         IntegrityCheckTask task = new IntegrityCheckTask();
         task.setAdapterCoreService(this.simpleAdapterCoreService());
-        task.setExecutorService(this.executorService());
         task.setUploadChunkTaskProvider(uploadChunkTaskProvider);
         return task;
     }
@@ -257,10 +278,9 @@ public class CoreAppConfig {
 
     @Bean
     @Lazy
-    public PieExecutorService executorService() {
-        PieExecutorService service = PieExecutorService.newCachedPieExecutorService();
-        service.setExecutorFactory(this.executorFactory());
-        return service;
+    public ForkJoinPool executorService() {
+        ForkJoinPool pool = new ForkJoinPool(8);
+		return pool;
     }
 
     @Bean

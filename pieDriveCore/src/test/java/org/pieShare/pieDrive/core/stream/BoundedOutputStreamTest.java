@@ -1,20 +1,12 @@
 package org.pieShare.pieDrive.core.stream;
 
 import org.pieShare.pieDrive.core.stream.util.LimitReachedException;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import junit.framework.Assert;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.pieShare.pieDrive.core.springConfig.CoreAppConfig;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = CoreAppConfig.class)
 public class BoundedOutputStreamTest {
 	private int bufferLength = 4096;
 	private byte[] inputBuffer = new byte[bufferLength];
@@ -22,7 +14,7 @@ public class BoundedOutputStreamTest {
 	byte inputValue = (byte)1;
 	byte emptyValue = (byte)0;	
 
-	@Before
+	@BeforeTest
 	public void setUp() {
 		initializeBuffer(inputBuffer, inputValue);
 	}
@@ -64,7 +56,7 @@ public class BoundedOutputStreamTest {
 		verifyOutputBuffer(outputBuffer, limit);
 	}
 	
-	@Test(expected=LimitReachedException.class)
+	@Test(expectedExceptions = LimitReachedException.class)
 	public void testRead_ValidOutputStream_BufferLengthSmaller() throws IOException {
 		int limit = bufferLength / 2;
 		
