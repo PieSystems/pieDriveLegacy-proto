@@ -11,6 +11,7 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.concurrent.RecursiveAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
@@ -28,7 +29,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public abstract class ADownloadChunkTask implements IPieTask {
+public abstract class ADownloadChunkTask extends RecursiveAction {
 
 	protected AdapterCoreService adapterCoreService;
 	protected PhysicalChunk physicalChunk;

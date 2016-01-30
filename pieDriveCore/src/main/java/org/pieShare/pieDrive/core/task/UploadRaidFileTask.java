@@ -10,8 +10,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RecursiveAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
@@ -20,6 +23,7 @@ import org.pieShare.pieDrive.core.PieDriveCore;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -30,7 +34,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class UploadRaidFileTask implements IPieTask {
+public class UploadRaidFileTask extends RecursiveAction {
 
 	private File file;
 	private PieRaidFile raidedFile;
@@ -45,12 +49,12 @@ public class UploadRaidFileTask implements IPieTask {
 	private Provider<UploadChunkTask> uploadChunkTaskProvider;
 
 	@Override
-	public void run() {
+	public void compute() {
 		try {
 			PieLogger.debug(this.getClass(), "Starting file upload for {}", this.file.getName());
-			
+
 			RandomAccessFile rFile = new RandomAccessFile(file, "r");
-			
+
 			//we need to iterate twice so we can guarante that the object 
 			//will be completely initizilised before we start working on it
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
@@ -62,17 +66,28 @@ public class UploadRaidFileTask implements IPieTask {
 					physicalChunk.addAdapterChunk(chunk);
 				}
 			}
-			
+
 			this.database.persistPieRaidFile(raidedFile);
 
+			List<UploadChunkTask> tasks = new ArrayList<>();
+
 			for (PhysicalChunk physicalChunk : raidedFile.getChunks()) {
-				for (AdapterChunk chunk: physicalChunk.getChunks()) {
+				for (AdapterChunk chunk : physicalChunk.getChunks()) {
 					UploadChunkTask task = uploadChunkTaskProvider.get();
 					task.setChunk(chunk);
 					task.setFile(rFile);
 					task.setPhysicalChunk(physicalChunk);
+					task.fork();
+					tasks.add(task);
+				}
+			}
 
-					this.executorService.execute(task);
+			for (UploadChunkTask task : tasks) {
+				task.join();
+				if (task.isCompletedNormally()) {
+					task.getChunk().setState(ChunkHealthState.Healthy);
+				} else {
+					task.getChunk().setState(ChunkHealthState.Broken);
 				}
 			}
 		} catch (FileNotFoundException ex) {

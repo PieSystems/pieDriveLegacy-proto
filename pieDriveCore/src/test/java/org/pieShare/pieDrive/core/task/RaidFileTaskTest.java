@@ -46,9 +46,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
-
-		Thread.sleep(2000);
+		uploadTask.compute();
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -67,9 +65,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
-
-		Thread.sleep(2000);
+		downloadTask.compute();
 
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -85,9 +81,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
-
-		Thread.sleep(2000);
+		uploadTask.compute();
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -109,9 +103,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
-
-		Thread.sleep(2000);
+		downloadTask.compute();
 
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -125,9 +117,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 		
-		Thread.sleep(2000);
+		
 		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -143,9 +135,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
-
-		Thread.sleep(2000);
+		uploadTask.compute();
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -169,9 +159,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 
-		Thread.sleep(2000);
+		
 
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -185,9 +175,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 		
-		Thread.sleep(2000);
+		
 		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -203,9 +193,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
+		uploadTask.compute();
 
-		Thread.sleep(2000);
+		
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -231,9 +221,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 
-		Thread.sleep(2000);
+		
 
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -244,9 +234,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 		
-		Thread.sleep(2000);
+		
 		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -262,9 +252,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
+		uploadTask.compute();
 
-		Thread.sleep(2000);
+		
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -279,9 +269,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
-
-		Thread.sleep(4000);
+		downloadTask.compute();
 
 		byte[] expectedBytes = this.generateMd5(expected);
 		File[] downloadedFiles = this.out.listFiles();
@@ -298,9 +286,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
+		uploadTask.compute();
 
-		Thread.sleep(2000);
+		
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -319,9 +307,7 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
-
-		Thread.sleep(4000);
+		downloadTask.compute();
 
 		byte[] expectedBytes = this.generateMd5(expected);
 		File[] downloadedFiles = this.out.listFiles();
@@ -352,9 +338,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 		
-		Thread.sleep(2000);
+		
 		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -370,9 +356,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
+		uploadTask.compute();
 
-		Thread.sleep(2000);
+		
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -397,23 +383,23 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DownloadRaidFileTask downloadTask = this.downloadRaidFileProvider.get();
 		downloadTask.setOutputDir(this.out);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 		
 		byte[] expectedBytes = this.generateMd5(expected);
 		File[] downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
 		Assert.assertNotEquals(expectedBytes, this.generateMd5(downloadedFiles[0]));
 
-		Thread.sleep(2000);
+		
 
 		this.assertRaidFile(raidFile, ChunkHealthState.Broken);
 		
 		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
 		this.assertRaidFile(raidFile, ChunkHealthState.NotChecked);
 		downloadTask.setRaidFile(raidFile);
-		downloadTask.run();
+		downloadTask.compute();
 		
-		Thread.sleep(2000);
+		
 		
 		downloadedFiles = this.out.listFiles();
 		Assert.assertEquals(1, downloadedFiles.length);
@@ -429,9 +415,9 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		UploadRaidFileTask uploadTask = this.uploadRaidFileProvider.get();
 		uploadTask.setFile(expected);
 		uploadTask.setRaidedFile(expectedRaidFile);
-		uploadTask.run();
+		uploadTask.compute();
                 
-		Thread.sleep(2000);
+		
 
 		File[] uploadedFilesAdapter1 = this.uploadAdapter1.listFiles();
 		File[] uploadedFilesAdapter2 = this.uploadAdapter2.listFiles();
@@ -451,8 +437,6 @@ public class RaidFileTaskTest extends FileHandlingTaskTestBase {
 		DeleteRaidFileTask deleteTask = this.deleteRaidFileTaskProvider.get();
 		deleteTask.setPieRaidFile(raidFile);
 		deleteTask.run();
-		
-		Thread.sleep(2000);
 
 		assertFalse(this.db.findAllPieRaidFiles().contains(raidFile));
 		Assert.assertNull(this.db.findPieRaidFileById(expectedRaidFile.getUid()));
