@@ -24,6 +24,7 @@ public class PieRaidFileEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pieRaidFileEntity")
     private List<PhysicalChunkEntity> chunks;
     private String relativeFilePath;
+    private long fileSize;
 
     @Id
     private String uid;
@@ -70,13 +71,21 @@ public class PieRaidFileEntity {
     public void setUid(String uid) {
         this.uid = uid;
     }
-    
-     public String getId() {
+
+    public String getId() {
         return uid;
     }
 
     public void setId(String uid) {
         this.uid = uid;
+    }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
 
 }

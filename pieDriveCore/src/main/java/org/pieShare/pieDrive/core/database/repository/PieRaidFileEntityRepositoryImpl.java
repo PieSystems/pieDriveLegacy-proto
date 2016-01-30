@@ -51,6 +51,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
                 adc.setHash(adapterChunk.getHash());
                 adc.setPhysicalChunkEntity(physicalChunkEntity);
                 adc.setUUID(adapterChunk.getUuid());
+                adc.setDataShard(adapterChunk.getDataShard());
 
                 ace.add(adc);
             }
@@ -69,13 +70,14 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
         pieRaidFileEntity.setLastModified(pieRaidFile.getLastModified());
         pieRaidFileEntity.setRelativeFilePath(pieRaidFile.getRelativeFilePath());
         pieRaidFileEntity.setUid(pieRaidFile.getUid());
+        pieRaidFileEntity.setFileSize(pieRaidFile.getFileSize());
 
         return pieRaidFileEntityRepository.save(pieRaidFileEntity);
         /*
-        EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
-        em.getTransaction().begin();
-        em.persist(pieRaidFileEntity);
-        em.getTransaction().commit();*/
+         EntityManager em = databseFactory.getEntityManger(PieRaidFileEntity.class);
+         em.getTransaction().begin();
+         em.persist(pieRaidFileEntity);
+         em.getTransaction().commit();*/
     }
 
     private PieRaidFile convertPieRaidFileEntityToObject(PieRaidFileEntity pieRaidFileEntity) {
@@ -99,6 +101,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
                 adapterChunk.setAdapterId(id);
                 adapterChunk.setHash(adapterChunkEntity.getHash());
                 adapterChunk.setUuid(adapterChunkEntity.getUUID());
+                adapterChunk.setDataShard(adapterChunkEntity.getDataShard());
 
                 physicalChunk.addAdapterChunk(adapterChunk);
             }
@@ -115,7 +118,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
         piePieRaidFile.setLastModified(pieRaidFileEntity.getLastModified());
         piePieRaidFile.setRelativeFilePath(pieRaidFileEntity.getRelativeFilePath());
         piePieRaidFile.setUid(pieRaidFileEntity.getUid());
-
+        piePieRaidFile.setFileSize(pieRaidFileEntity.getFileSize());
         return piePieRaidFile;
     }
 

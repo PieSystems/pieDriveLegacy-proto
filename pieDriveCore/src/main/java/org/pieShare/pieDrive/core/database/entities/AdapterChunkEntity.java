@@ -23,6 +23,8 @@ public class AdapterChunkEntity {
     @Column(nullable = true)
     private byte[] hashValue;
     
+    private int dataShard;
+    
     public AdapterChunkEntity()
     {
         //values = new HashMap<>();
@@ -87,4 +89,22 @@ public class AdapterChunkEntity {
     public void setUUID(String UUID) {
         this.UUID = UUID;
     }
+
+    public byte[] getHashValue() {
+        return hashValue;
+    }
+
+    public void setHashValue(byte[] hashValue) {
+        this.hashValue = hashValue;
+    }
+
+    public int getDataShard() {
+        return dataShard;
+    }
+
+    public void setDataShard(int dataShard) {
+        this.dataShard = dataShard;
+    }
+    
+    
 }
