@@ -18,8 +18,6 @@ import javax.inject.Provider;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -29,7 +27,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class DownloadRaidFileTask extends RecursiveAction {
 
 	private AdapterCoreService adapterCoreService;
-	private ExecutorService executorService;
 	private File outputDir;
 
 	private PieRaidFile raidFile;
@@ -45,7 +42,6 @@ public class DownloadRaidFileTask extends RecursiveAction {
 
 			File ffile = new File(this.outputDir, raidFile.getFileName());
 			this.file = new RandomAccessFile(ffile, "rw");
-			this.file.setLength(raidFile.getFileSize());
 			this.file.setLength(this.raidFile.getFileSize());
 
 			List<DownloadChunkTask> tasks = new ArrayList<>();
@@ -65,16 +61,12 @@ public class DownloadRaidFileTask extends RecursiveAction {
 			}
 			
 		} catch (IOException ex) {
-			Logger.getLogger(DownloadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.debug(this.getClass(), "Could not download raid file", ex);
 		}
 	}
 
 	public void setAdapterCoreService(AdapterCoreService adapterCoreService) {
 		this.adapterCoreService = adapterCoreService;
-	}
-
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
 	}
 
 	public void setDownloadChunkProvider(Provider<DownloadChunkTask> downloadChunkProvider) {

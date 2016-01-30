@@ -263,7 +263,6 @@ public class CoreAppConfig {
     public DownloadRaidFileTask downloadRaidFileTask() {
         DownloadRaidFileTask task = new DownloadRaidFileTask();
         task.setAdapterCoreService(this.simpleAdapterCoreService());
-        task.setExecutorService(this.executorService());
 
         task.setDownloadChunkProvider(downloadChunkProvider);
         return task;

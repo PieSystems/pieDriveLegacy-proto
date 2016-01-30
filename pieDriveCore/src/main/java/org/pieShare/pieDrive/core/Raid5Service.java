@@ -11,4 +11,7 @@ public interface Raid5Service {
 	boolean repairRaidShards(byte[][] shards, PhysicalChunk physicalChunk);
 	int calculateRaidChunkSize(PhysicalChunk physicalChunk);
 	boolean isParityChunk(AdapterChunk chunk);
+	int getParityShardCount();
+	int getDataShardCount();
+	int getTotalShardCount();
 }

@@ -5,12 +5,15 @@
  */
 package org.pieShare.pieDrive.core.stream.util;
 
+import com.fasterxml.jackson.databind.util.ByteBufferBackedOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -88,5 +91,10 @@ public class StreamFactory {
 	
 	public static InputStream getInputStream(byte[] buffer) {
 		return new ByteArrayInputStream(buffer);
+	}
+	
+	public static OutputStream getOutputStream(byte[] buffer) {
+		ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+		return new ByteBufferBackedOutputStream(byteBuffer);
 	}
 }
