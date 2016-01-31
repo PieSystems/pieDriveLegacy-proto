@@ -95,7 +95,7 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 		Assert.assertEquals(generateMd5(expected), generateMd5(downloadedFiles[0]));
 		ArrayList<AdapterChunk> adapterChunks = new ArrayList<>(raidFile.getChunks().get(0).getChunks());
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Healthy);
-		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Broken);
+		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Healthy);
 		Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Healthy);
 		
 		raidFile = this.db.findPieRaidFileById(expectedRaidFile.getUid());
@@ -232,7 +232,7 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 		for(PhysicalChunk physicalChunk : raidFile.getChunks()) {
 			List<AdapterChunk> adapterChunks = physicalChunk.getChunks();
 			
-			Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Broken);
+			Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(0)).getState(), ChunkHealthState.Healthy);
 			Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(1)).getState(), ChunkHealthState.Healthy);
 			Assert.assertEquals(getAdapterChunkForAdapterId(adapterChunks, adapterIds.get(2)).getState(), ChunkHealthState.Healthy);
 		}
