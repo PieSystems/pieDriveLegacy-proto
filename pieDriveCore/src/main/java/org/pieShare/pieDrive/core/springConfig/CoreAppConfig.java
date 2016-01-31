@@ -279,6 +279,7 @@ public class CoreAppConfig {
 		task.setRaid5Service(raid5Service());
 
         task.setDownloadRaid5ChunkProvider(downloadRaid5ChunkProvider);
+		task.setUploadChunkProvider(uploadChunkTaskProvider);
         return task;
     }
 
