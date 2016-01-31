@@ -29,7 +29,11 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
 
     @Override
     public void persistVolume(Volume volume) {
-        VolumesEntity entity = new VolumesEntity();
+        VolumesEntity entity = volumeEntityRepository.findOne(volume.getId());
+		
+		if(entity == null) {
+			entity = new VolumesEntity();
+		}
 
         entity.setVolumeName(volume.getName());
         entity.setId(volume.getId());
