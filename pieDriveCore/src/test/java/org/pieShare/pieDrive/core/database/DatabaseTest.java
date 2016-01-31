@@ -13,7 +13,9 @@ import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.AdapterId;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
 import org.pieShare.pieDrive.core.model.PieRaidFile;
+import org.pieShare.pieDrive.core.model.RaidLevel;
 import org.pieShare.pieDrive.core.model.VersionedPieRaidFile;
+import org.pieShare.pieDrive.core.model.ui.Volume;
 import org.pieShare.pieDrive.core.task.config.FakeAdapterCoreTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -31,6 +33,8 @@ import org.testng.annotations.Test;
 public class DatabaseTest extends IntegrationTestBase {
 
     private String databaseTestFile = "databaseTest.odb";
+	private String volumeId = "volName";
+	private String volumneName = "volName";
 
     @Autowired
     private Database database;
@@ -42,6 +46,11 @@ public class DatabaseTest extends IntegrationTestBase {
 
     @Test
     public void TestPieRaidFilePersistAndFind() {
+		Volume volume = new Volume();
+		volume.setId(volumeId);
+		volume.setName(volumneName);
+		volume.setRaidLevel(RaidLevel.Raid1);
+		
 		String versionedUid = "versionedTestUid";
 
 		VersionedPieRaidFile versiondFile = new VersionedPieRaidFile();
@@ -155,9 +164,14 @@ public class DatabaseTest extends IntegrationTestBase {
 		versiondFile.add(file1);
 		versiondFile.add(file2);
 		
-		database.persistVersionedPieRaidFile(versiondFile);
-				
-		VersionedPieRaidFile versionedFromDB = database.getVersionedPieRaidFileById(versionedUid);
+		volume.addFile(versiondFile);
+		
+		//database.persistVersionedPieRaidFile(versiondFile);
+		database.persistVolume(volume);
+		
+		Volume volFromDb = database.getVolumeById(volumeId);
+		
+		VersionedPieRaidFile versionedFromDB = volFromDb.getFiles().get(0);
 
         PieRaidFile fromDB = versionedFromDB.getSpecificVersion(0L);
         Assert.notNull(fromDB);
