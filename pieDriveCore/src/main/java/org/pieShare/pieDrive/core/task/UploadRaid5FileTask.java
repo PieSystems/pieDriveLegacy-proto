@@ -120,12 +120,6 @@ public class UploadRaid5FileTask extends RecursiveAction {
 				
 				for(UploadChunkTask task: tasks) {
 					task.join();
-					
-					if(task.isCompletedNormally()) {
-						task.getChunk().setState(ChunkHealthState.Healthy);
-					} else {
-						task.getChunk().setState(ChunkHealthState.Broken);
-					}
 				}
 				
 				synchronized(this.database) {

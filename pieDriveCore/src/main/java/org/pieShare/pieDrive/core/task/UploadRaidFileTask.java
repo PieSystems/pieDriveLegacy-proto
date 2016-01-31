@@ -86,11 +86,6 @@ public class UploadRaidFileTask extends RecursiveAction {
 
 			for (UploadChunkTask task : tasks) {
 				task.join();
-				if (task.isCompletedNormally()) {
-					task.getChunk().setState(ChunkHealthState.Healthy);
-				} else {
-					task.getChunk().setState(ChunkHealthState.Broken);
-				}
 			}
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);

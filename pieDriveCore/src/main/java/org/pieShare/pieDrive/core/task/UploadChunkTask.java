@@ -17,6 +17,7 @@ import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
+import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -53,11 +54,9 @@ public class UploadChunkTask extends RecursiveAction {
 //	public void setFile(RandomAccessFile file) {
 //		this.file = file;
 //	}
-
 //	public void setPhysicalChunk(PhysicalChunk physicalChunk) {
 //		this.physicalChunk = physicalChunk;
 //	}
-
 	public void setDatabase(Database database) {
 		this.database = database;
 	}
@@ -81,6 +80,7 @@ public class UploadChunkTask extends RecursiveAction {
 			//is this really neccessary?!
 			//boolean updateChunk = (chunk.getHash() == null || chunk.getHash().length == 0);
 			chunk.setHash(hash);
+			chunk.setState(ChunkHealthState.Healthy);
 			//if we are the first and the physical chunk has not yet a hash value
 			//has to be synchronized for the adapters of the same physical chunk
 			//after this point they can work in parallel again
@@ -106,11 +106,15 @@ public class UploadChunkTask extends RecursiveAction {
 			//produced different hashes while reading the samephysical chunk
 			//todo: log! eventually pass on to user
 		} catch (NoSuchAlgorithmException | AdaptorException ex) {
-			Logger.getLogger(UploadChunkTask.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.warn(this.getClass(), "An exception was thrown during upload!", ex);
+			chunk.setState(ChunkHealthState.Broken);
+		} finally {
 			try {
-				hStr.close();
+				if (hStr != null) {
+					hStr.close();
+				}
 			} catch (IOException e) {
-				Logger.getLogger(UploadChunkTask.class.getName()).log(Level.SEVERE, null, e);
+				PieLogger.warn(this.getClass(), "An exception was thrown during stream close!", e);
 			}
 		}
 	}
