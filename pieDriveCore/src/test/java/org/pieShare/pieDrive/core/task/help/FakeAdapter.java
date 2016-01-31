@@ -77,5 +77,4 @@ public class FakeAdapter implements Adaptor {
 			Logger.getLogger(FakeAdapter.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
 }

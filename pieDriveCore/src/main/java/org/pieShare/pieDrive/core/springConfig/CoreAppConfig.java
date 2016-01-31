@@ -15,15 +15,16 @@ import org.pieShare.pieDrive.adapter.api.Adaptor;
 import org.pieShare.pieDrive.adapter.box.BoxAdapter;
 import org.pieShare.pieDrive.adapter.box.BoxAuthentication;
 import org.pieShare.pieDrive.adapter.dropbox.DropboxAdapter;
+import org.pieShare.pieDrive.adapter.dropbox.DropboxAuthentication;
 import org.pieShare.pieDrive.adapter.s3.S3Adapter;
+import org.pieShare.pieDrive.adapter.s3.S3Authentication;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.PieDriveCoreService;
 import org.pieShare.pieDrive.core.Raid5Service;
 import org.pieShare.pieDrive.core.ReedSolomonRaid5Service;
 import org.pieShare.pieDrive.core.SimpleAdapterCoreService;
+import org.pieShare.pieDrive.core.config.ConfigService;
 import org.pieShare.pieDrive.core.database.Database;
-import org.pieShare.pieDrive.core.database.repository.FolderEntityRepositoryCustom;
-import org.pieShare.pieDrive.core.database.repository.FolderEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryCustom;
 import org.pieShare.pieDrive.core.database.repository.VolumeEntityRepositoryImpl;
@@ -52,6 +53,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.pieShare.pieDrive.core.database.repository.PieRaidFileEntityRepositoryCustom;
 import org.pieShare.pieDrive.core.task.DownloadRaid5FileTask;
 import org.pieShare.pieDrive.core.task.DownloadRaid5ChunkTask;
+import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepositoryCustom;
+import org.pieShare.pieDrive.core.database.repository.VersionedPieRaidFileEntityRepositoryImpl;
 import org.pieShare.pieDrive.core.task.UploadRaid5FileTask;
 
 /**
@@ -131,12 +134,6 @@ public class CoreAppConfig {
     @Lazy
     public VolumeEntityRepositoryCustom volumeEntityRepositoryCustom() {
         return new VolumeEntityRepositoryImpl();
-    }
-
-    @Bean
-    @Lazy
-    public FolderEntityRepositoryCustom folderEntityRepositoryCustom() {
-        return new FolderEntityRepositoryImpl();
     }
 
     @Bean
@@ -331,5 +328,29 @@ public class CoreAppConfig {
 		DownloadRaid5ChunkTask task = new DownloadRaid5ChunkTask();
 		task.setAdapterCoreService(this.simpleAdapterCoreService());
 		return task;
+	}
+	
+	@Bean
+	@Lazy
+	public VersionedPieRaidFileEntityRepositoryCustom versionedPieRaidFileEntityRepository() {
+		return new VersionedPieRaidFileEntityRepositoryImpl();
+	}
+	
+	@Bean
+	@Lazy
+	public ConfigService configService(){
+		return new ConfigService();
+	}
+	
+	@Bean
+	@Lazy
+	public S3Authentication s3Authentication(){
+		return new S3Authentication();
+	}
+	
+	@Bean
+	@Lazy
+	public DropboxAuthentication dropboxAuthentication(){
+		return new DropboxAuthentication();
 	}
 }

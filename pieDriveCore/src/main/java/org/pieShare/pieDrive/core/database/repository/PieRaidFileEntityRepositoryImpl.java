@@ -80,7 +80,7 @@ public class PieRaidFileEntityRepositoryImpl implements PieRaidFileEntityReposit
          em.getTransaction().commit();*/
     }
 
-    private PieRaidFile convertPieRaidFileEntityToObject(PieRaidFileEntity pieRaidFileEntity) {
+    protected PieRaidFile convertPieRaidFileEntityToObject(PieRaidFileEntity pieRaidFileEntity) {
         PieRaidFile piePieRaidFile = new PieRaidFile();
 
         if (pieRaidFileEntity == null) {
