@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -22,6 +23,9 @@ public class VersionedPieRaidFileEntity {
 	
 	@Id
 	protected String uid;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	protected VolumesEntity volumesEntity;
 	
 	public VersionedPieRaidFileEntity() {
 		this.versions = new HashMap<>();
@@ -42,5 +46,13 @@ public class VersionedPieRaidFileEntity {
 	public void setVersions(Map<Long,PieRaidFileEntity> versions){
 		this.versions.clear();
 		this.versions.putAll(versions);		
+	}
+
+	public VolumesEntity getVolumesEntity() {
+		return volumesEntity;
+	}
+
+	public void setVolumesEntity(VolumesEntity volumesEntity) {
+		this.volumesEntity = volumesEntity;
 	}
 }

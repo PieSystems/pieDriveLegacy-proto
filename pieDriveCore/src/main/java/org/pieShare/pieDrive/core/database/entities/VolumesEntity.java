@@ -16,7 +16,7 @@ public class VolumesEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FolderEntity> folders;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "volumesEntity")
     private List<VersionedPieRaidFileEntity> files;
 
     //TODO change to enum
