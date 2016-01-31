@@ -58,38 +58,28 @@ public class DownloadRaid5FileTask extends RecursiveAction {
 				}
 
 				if (!healthy) {
-					if (!raid5Service.repairRaidShards(buffer, physicalChunk)) {
-						PieLogger.error(this.getClass(), "Raid file is corrupted beyond repair");
-						return;
-					}
-
-					List<UploadChunkTask> recoveryTasks = new ArrayList<>();
-					for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
-						if (adapterChunk.getState() != ChunkHealthState.Healthy) {
-							UploadChunkTask task = uploadChunkProvider.get();
-							task.setChunk(adapterChunk);
-							task.setIn(StreamFactory.getInputStream(buffer[adapterChunk.getDataShard()]));
-							task.fork();
-							recoveryTasks.add(task);
+					if (raid5Service.repairRaidShards(buffer, physicalChunk)) {
+						List<UploadChunkTask> recoveryTasks = new ArrayList<>();
+						for (AdapterChunk adapterChunk : physicalChunk.getChunks()) {
+							if (adapterChunk.getState() != ChunkHealthState.Healthy) {
+								UploadChunkTask task = uploadChunkProvider.get();
+								task.setChunk(adapterChunk);
+								task.setIn(StreamFactory.getInputStream(buffer[adapterChunk.getDataShard()]));
+								task.fork();
+								recoveryTasks.add(task);
+							}
 						}
-					}
 
-					for (UploadChunkTask task : recoveryTasks) {
-						task.join();
+						for (UploadChunkTask task : recoveryTasks) {
+							task.join();
+						}
+					} else {
+						PieLogger.error(this.getClass(), "Raid file is corrupted beyond repair");
 					}
 				}
 
 				OutputStream outputStream = StreamFactory.getOutputStream(file, physicalChunk);
-				try {
-					for (int i = 0; i < raid5Service.getDataShardCount(); i++) {
-						outputStream.write(buffer[i]);
-					}
-				} catch(LimitReachedException ex) {
-					//do nothing: intended to run into exception at last part
-				} finally {
-					outputStream.flush();
-					outputStream.close();
-				}
+				raid5Service.recombineRaidShards(outputStream, physicalChunk, buffer);
 			}
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Could not download raid file", ex);
