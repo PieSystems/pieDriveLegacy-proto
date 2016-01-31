@@ -43,8 +43,11 @@ public class VolumeEntityRepositoryImpl implements VolumeEntityRepositoryCustom 
             if (d != null) {
                 versionedPieRaidFileEntities.add(d);
             } else {
-                versionedPieRaidFileEntities.add(versionedPieRaidFileEntityRepository.persistVersionedPieRaidFile(raidFile));
+				d = versionedPieRaidFileEntityRepository.persistVersionedPieRaidFile(raidFile);
+                versionedPieRaidFileEntities.add(d);
             }
+			
+			d.setVolumesEntity(entity);
 
         }
         entity.setFiles(versionedPieRaidFileEntities);
