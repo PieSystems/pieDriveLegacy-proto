@@ -32,7 +32,11 @@ public class VersionedPieRaidFileEntityRepositoryImpl implements VersionedPieRai
 
 	@Override
 	public VersionedPieRaidFileEntity persistVersionedPieRaidFile(VersionedPieRaidFile versionedPieRaidFile) {
-		VersionedPieRaidFileEntity versionedRaidFileEntity = new VersionedPieRaidFileEntity();
+		VersionedPieRaidFileEntity versionedRaidFileEntity = versionedPieRaidFileEntityRepository.findOne(versionedPieRaidFile.getUid());
+		
+        if (versionedRaidFileEntity == null) {
+            versionedRaidFileEntity = new VersionedPieRaidFileEntity();
+        }
 		
 		versionedRaidFileEntity.setUid(versionedPieRaidFile.getUid());
 		HashMap<Long, PieRaidFileEntity> raidFiles = new HashMap<>();
