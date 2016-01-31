@@ -87,6 +87,8 @@ public class UploadRaidFileTask extends RecursiveAction {
 			for (UploadChunkTask task : tasks) {
 				task.join();
 			}
+			
+			file.delete();
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 		}

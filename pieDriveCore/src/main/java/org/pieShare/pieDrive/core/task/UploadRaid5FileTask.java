@@ -128,6 +128,8 @@ public class UploadRaid5FileTask extends RecursiveAction {
 					}
 				}
 			}
+			
+			file.delete();
 		} catch (FileNotFoundException ex) {
 			Logger.getLogger(UploadRaidFileTask.class.getName()).log(Level.SEVERE, null, ex);
 		}
