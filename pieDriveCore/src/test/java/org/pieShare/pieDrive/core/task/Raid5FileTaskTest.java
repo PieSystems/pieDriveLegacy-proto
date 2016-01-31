@@ -3,6 +3,7 @@ package org.pieShare.pieDrive.core.task;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
 import org.pieShare.pieDrive.core.model.ChunkHealthState;
 import org.pieShare.pieDrive.core.model.PhysicalChunk;
@@ -31,10 +32,13 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testUpAndDownloadFileRaid5() throws Exception {
 		String fileName = "testUpAndDownloadFileRaid5";
-		File expected = createFileHelper(in, fileName, 15);
-		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
+		String fileNameExpected = fileName + "Expected";
+		File source = this.createFileHelper(this.in, fileName, 15);
+		File expected = new File(this.in, fileNameExpected);
+		FileUtils.copyFile(source, expected);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(source);
 		UploadRaid5FileTask uploadTask = this.uploadRaid5FileProvider.get();
-		uploadTask.setFile(expected);
+		uploadTask.setFile(source);
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.compute();
 		
@@ -64,10 +68,13 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testUpAndDownloadFileRaid5RecoverableCorruption() throws Exception {
 		String fileName = "testUpAndDownloadFileRaid5RecoverableCorruption";
-		File expected = createFileHelper(in, fileName, 15);
-		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
+		String fileNameExpected = fileName + "Expected";
+		File source = this.createFileHelper(this.in, fileName, 15);
+		File expected = new File(this.in, fileNameExpected);
+		FileUtils.copyFile(source, expected);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(source);
 		UploadRaid5FileTask uploadTask = this.uploadRaid5FileProvider.get();
-		uploadTask.setFile(expected);
+		uploadTask.setFile(source);
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.compute();
 		
@@ -112,10 +119,13 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testUpAndDownloadFileRaid5IrrecoverableCorruption() throws Exception {
 		String fileName = "testUpAndDownloadFileRaid5IrrecoverableCorruption";
-		File expected = createFileHelper(in, fileName, 15);
-		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
+		String fileNameExpected = fileName + "Expected";
+		File source = this.createFileHelper(this.in, fileName, 15);
+		File expected = new File(this.in, fileNameExpected);
+		FileUtils.copyFile(source, expected);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(source);
 		UploadRaid5FileTask uploadTask = this.uploadRaid5FileProvider.get();
-		uploadTask.setFile(expected);
+		uploadTask.setFile(source);
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.compute();
 		
@@ -165,10 +175,13 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testUpAndDownLoadFileRaid5WithMultiChunks() throws Exception {
 		String fileName = "testUpAndDownLoadFileRaid5WithMultiChunks";
-		File expected = createFileHelper(in, fileName, 96);
-		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
+		String fileNameExpected = fileName + "Expected";
+		File source = this.createFileHelper(this.in, fileName, 96);
+		File expected = new File(this.in, fileNameExpected);
+		FileUtils.copyFile(source, expected);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(source);
 		UploadRaid5FileTask uploadTask = this.uploadRaid5FileProvider.get();
-		uploadTask.setFile(expected);
+		uploadTask.setFile(source);
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.compute();
 		
@@ -198,10 +211,13 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testUpAndDownLoadFileRaid5WithMultiChunksRecoverableCorruption() throws Exception {
 		String fileName = "testUpAndDownLoadFileRaid5WithMultiChunks";
-		File expected = createFileHelper(in, fileName, 96);
-		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
+		String fileNameExpected = fileName + "Expected";
+		File source = this.createFileHelper(this.in, fileName, 96);
+		File expected = new File(this.in, fileNameExpected);
+		FileUtils.copyFile(source, expected);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(source);
 		UploadRaid5FileTask uploadTask = this.uploadRaid5FileProvider.get();
-		uploadTask.setFile(expected);
+		uploadTask.setFile(source);
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.compute();
 		
@@ -251,10 +267,13 @@ public class Raid5FileTaskTest extends FileHandlingTaskTestBase {
 	@Test
 	public void testUpAndDownLoadFileRaid5WithMultiChunksIrrecoverableCorruption() throws Exception {
 		String fileName = "testUpAndDownLoadFileRaid5WithMultiChunks";
-		File expected = createFileHelper(in, fileName, 96);
-		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(expected);
+		String fileNameExpected = fileName + "Expected";
+		File source = this.createFileHelper(this.in, fileName, 96);
+		File expected = new File(this.in, fileNameExpected);
+		FileUtils.copyFile(source, expected);
+		PieRaidFile expectedRaidFile = pieDriveCore.calculateRaidFile(source);
 		UploadRaid5FileTask uploadTask = this.uploadRaid5FileProvider.get();
-		uploadTask.setFile(expected);
+		uploadTask.setFile(source);
 		uploadTask.setRaidedFile(expectedRaidFile);
 		uploadTask.compute();
 		
