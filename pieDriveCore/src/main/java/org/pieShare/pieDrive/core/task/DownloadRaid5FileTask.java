@@ -72,6 +72,7 @@ public class DownloadRaid5FileTask extends RecursiveAction {
 
 						for (UploadChunkTask task : recoveryTasks) {
 							task.join();
+							task.getChunk().setState(ChunkHealthState.Healthy);
 						}
 					} else {
 						PieLogger.error(this.getClass(), "Raid file is corrupted beyond repair");

@@ -5,14 +5,11 @@
  */
 package org.pieShare.pieDrive.core.task;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.concurrent.RecursiveAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,11 +17,7 @@ import org.pieShare.pieDrive.adapter.exceptions.AdaptorException;
 import org.pieShare.pieDrive.core.AdapterCoreService;
 import org.pieShare.pieDrive.core.database.Database;
 import org.pieShare.pieDrive.core.model.AdapterChunk;
-import org.pieShare.pieDrive.core.model.PhysicalChunk;
-import org.pieShare.pieDrive.core.stream.BoundedInputStream;
-import org.pieShare.pieDrive.core.stream.NioInputStream;
 import org.pieShare.pieDrive.core.stream.util.StreamFactory;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
